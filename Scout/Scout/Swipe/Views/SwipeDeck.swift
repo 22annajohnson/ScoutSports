@@ -1,0 +1,139 @@
+//
+//  SwipeDeck.swift
+//  Scout
+//
+//  Created by Anna on 2/19/26.
+//
+
+import SwiftUI
+
+struct SwipeDeck: View {
+    @State private var index = 0
+    @State private var drag: CGSize = .zero
+    @State private var isSwipingHorizontally = false
+    @State private var isDismissing = false
+
+    let models: [CardViewModel]
+
+    private let threshold: CGFloat = 140
+
+    var body: some View {
+        GeometryReader { geo in
+            ZStack {
+                if index < models.count {
+                    let dx = drag.width
+                    let progress = min(abs(dx) / threshold, 1)
+                    let side: SwipeArcShape.Side = dx < 0 ? .right : .left
+
+                    // NEXT card underneath (full-screen, becomes clear as progress -> 1)
+                    if index + 1 < models.count {
+                        // Ease so it stays blurrier early and clears as you commit
+                        let eased = pow(progress, 0.9)
+                        let blurRadius = max(0, 18 * (1 - eased))
+                        let dimOpacity = 0.10 * (1 - eased)
+
+                        PlayerSwipeScrollView(model: models[index + 1])
+                            .id(index + 1)
+                            .scrollDisabled(true)
+                            .blur(radius: blurRadius)
+                            .overlay(Color.black.opacity(dimOpacity).allowsHitTesting(false))
+                            .animation(.easeOut(duration: 0.12), value: progress)
+                            .zIndex(0)
+                    }
+
+                    // CURRENT card on top
+                    PlayerSwipeScrollView(model: models[index])
+                        .id(index)
+                        .scrollDisabled(isSwipingHorizontally)
+                        .offset(x: dx, y: 0)
+                        .rotationEffect(.degrees(Double(dx / 26)))
+                        .animation(.interactiveSpring(response: 0.28, dampingFraction: 0.86), value: drag)
+                        .zIndex(1)
+                        .simultaneousGesture(
+                            DragGesture(minimumDistance: 10)
+                                .onChanged { value in
+                                    guard !isDismissing else { return }
+
+                                    let dx = value.translation.width
+                                    let dy = value.translation.height
+
+                                    // Only treat it as a swipe if it is clearly horizontal.
+                                    // Otherwise, let the inner ScrollView handle vertical scrolling.
+                                    if abs(dx) > abs(dy) {
+                                        isSwipingHorizontally = true
+                                        drag = CGSize(width: dx, height: 0)
+                                    }
+                                }
+                                .onEnded { _ in
+                                    guard !isDismissing else { return }
+
+                                    if isSwipingHorizontally {
+                                        finishSwipe(dx: drag.width, geo: geo)
+                                    }
+
+                                    // Reset the horizontal swipe mode after the gesture ends.
+                                    isSwipingHorizontally = false
+                                }
+                        )
+
+                    // Arc reveal overlay (still sits above everything)
+                    if progress > 0 {
+                        SwipeArcOverlay(
+                            side: side,
+                            progress: progress,
+                            color: side == .left ? Color.scout : Color.gray,
+                            title: side == .right ? "NEXT TIME" : "MATCH"
+                        )
+                        .allowsHitTesting(false)
+                        .ignoresSafeArea()
+                        .transition(.opacity)
+                        .zIndex(2)
+                    }
+
+                } else {
+                    Text("No more players")
+                        .font(.title.bold())
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .background(Color(.systemBackground))
+                }
+            }
+        }
+    }
+
+    private func finishSwipe(dx: CGFloat, geo: GeometryProxy) {
+        let shouldDismiss = abs(dx) > threshold
+        let direction: CGFloat = dx >= 0 ? 1 : -1
+
+        if shouldDismiss {
+            isDismissing = true
+            isSwipingHorizontally = true
+
+            // Animate card off-screen
+            withAnimation(.easeInOut(duration: 0.22)) {
+                drag = CGSize(width: direction * (geo.size.width + 160), height: 0)
+            }
+
+            // Swap to next card after the off-screen animation completes
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.23) {
+                // Swap & reset with animations disabled to avoid flashing the previous card
+                var transaction = Transaction()
+                transaction.disablesAnimations = true
+                withTransaction(transaction) {
+                    index += 1
+                    drag = .zero
+                    isSwipingHorizontally = false
+                    isDismissing = false
+                }
+            }
+        } else {
+            // Snap back with a nice spring
+            withAnimation(.spring(response: 0.35, dampingFraction: 0.86)) {
+                drag = .zero
+            }
+        }
+    }
+}
+
+#Preview {
+    SwipeDeck(models: getMockCardViewModels())
+}
