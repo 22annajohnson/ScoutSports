@@ -1,5 +1,5 @@
 //
-//  SwipeDeck.swift
+//  SwipeDeckView.swift
 //  Scout
 //
 //  Created by Anna on 2/19/26.
@@ -7,11 +7,14 @@
 
 import SwiftUI
 
-struct SwipeDeck: View {
+struct SwipeDeckView: View {
     @State private var index = 0
     @State private var drag: CGSize = .zero
     @State private var isSwipingHorizontally = false
     @State private var isDismissing = false
+    @State private var showMatch = false
+    @State private var matchedModel: CardViewModel? = nil
+    @EnvironmentObject private var session: SessionStore
 
     let models: [CardViewModel]
 
@@ -98,11 +101,42 @@ struct SwipeDeck: View {
                 }
             }
         }
+        .overlay(alignment: .topLeading) {
+            #if DEBUG
+            Button {
+                Task { try? await session.signOut() }
+            } label: {
+                Label("Sign out", systemImage: "rectangle.portrait.and.arrow.right")
+                    .font(.subheadline.weight(.semibold))
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 10)
+                    .background(.ultraThinMaterial)
+                    .clipShape(Capsule())
+            }
+            .padding(.top, 16)
+            .padding(.leading, 16)
+            #endif
+        }
+        .fullScreenCover(isPresented: $showMatch) {
+            if let matchedModel {
+                MatchView(
+                    currentUserName: "You",
+                    matchedUserName: matchedModel.name,
+                    currentUserImageURL: nil,
+                    matchedUserImageURL: matchedModel.heroImageURL,
+                    accent: Color.scout,
+                    onProposeTime: {},
+                    onSendMessage: {}
+                )
+            }
+        }
     }
 
     private func finishSwipe(dx: CGFloat, geo: GeometryProxy) {
         let shouldDismiss = abs(dx) > threshold
         let direction: CGFloat = dx >= 0 ? 1 : -1
+        let isRightSwipe = dx > 0
+        let isMutualLike = isRightSwipe && index < models.count && models[index].didLike
 
         if shouldDismiss {
             isDismissing = true
@@ -118,11 +152,17 @@ struct SwipeDeck: View {
                 // Swap & reset with animations disabled to avoid flashing the previous card
                 var transaction = Transaction()
                 transaction.disablesAnimations = true
+
+                if isMutualLike {
+                    matchedModel = models[index]
+                    showMatch = true
+                }
+
                 withTransaction(transaction) {
-                    index += 1
                     drag = .zero
                     isSwipingHorizontally = false
                     isDismissing = false
+                    index += 1
                 }
             }
         } else {
@@ -132,8 +172,4 @@ struct SwipeDeck: View {
             }
         }
     }
-}
-
-#Preview {
-    SwipeDeck(models: getMockCardViewModels())
 }

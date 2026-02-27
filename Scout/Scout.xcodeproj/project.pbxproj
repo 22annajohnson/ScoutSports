@@ -6,6 +6,12 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		95141FFB2F4E45500046886B /* Auth in Frameworks */ = {isa = PBXBuildFile; productRef = 95141FFA2F4E45500046886B /* Auth */; };
+		95141FFD2F4E45500046886B /* Functions in Frameworks */ = {isa = PBXBuildFile; productRef = 95141FFC2F4E45500046886B /* Functions */; };
+		9580C96C2F4E463B00093095 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 9580C96B2F4E463B00093095 /* Supabase */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		954A49212F47530800BFAC10 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -29,9 +35,22 @@
 		954A492A2F47530800BFAC10 /* ScoutUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ScoutUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		9580CA592F50D02700093095 /* Exceptions for "Scout" folder in "Scout" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 954A49122F47530800BFAC10 /* Scout */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		954A49152F47530800BFAC10 /* Scout */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				9580CA592F50D02700093095 /* Exceptions for "Scout" folder in "Scout" target */,
+			);
 			path = Scout;
 			sourceTree = "<group>";
 		};
@@ -52,6 +71,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				95141FFD2F4E45500046886B /* Functions in Frameworks */,
+				95141FFB2F4E45500046886B /* Auth in Frameworks */,
+				9580C96C2F4E463B00093095 /* Supabase in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +100,7 @@
 				954A49152F47530800BFAC10 /* Scout */,
 				954A49232F47530800BFAC10 /* ScoutTests */,
 				954A492D2F47530800BFAC10 /* ScoutUITests */,
+				9580C96A2F4E463B00093095 /* Frameworks */,
 				954A49142F47530800BFAC10 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -90,6 +113,13 @@
 				954A492A2F47530800BFAC10 /* ScoutUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		9580C96A2F4E463B00093095 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -112,6 +142,9 @@
 			);
 			name = Scout;
 			packageProductDependencies = (
+				95141FFA2F4E45500046886B /* Auth */,
+				95141FFC2F4E45500046886B /* Functions */,
+				9580C96B2F4E463B00093095 /* Supabase */,
 			);
 			productName = Scout;
 			productReference = 954A49132F47530800BFAC10 /* Scout.app */;
@@ -195,6 +228,9 @@
 			);
 			mainGroup = 954A490A2F47530800BFAC10;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				95141FF92F4E45500046886B /* XCRemoteSwiftPackageReference "supabase-swift" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 954A49142F47530800BFAC10 /* Products */;
 			projectDirPath = "";
@@ -271,6 +307,8 @@
 /* Begin XCBuildConfiguration section */
 		954A49322F47530800BFAC10 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 954A49152F47530800BFAC10 /* Scout */;
+			baseConfigurationReferenceRelativePath = Debug.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -335,6 +373,8 @@
 		};
 		954A49332F47530800BFAC10 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 954A49152F47530800BFAC10 /* Scout */;
+			baseConfigurationReferenceRelativePath = Release.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -392,6 +432,8 @@
 		};
 		954A49352F47530800BFAC10 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 954A49152F47530800BFAC10 /* Scout */;
+			baseConfigurationReferenceRelativePath = Debug.xcconfig;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -400,6 +442,8 @@
 				DEVELOPMENT_TEAM = QTSJFA7Y7P;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Scout/Info.plist;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Scout uses your location to show nearby players and suggest meet-up spots.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -424,6 +468,8 @@
 		};
 		954A49362F47530800BFAC10 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 954A49152F47530800BFAC10 /* Scout */;
+			baseConfigurationReferenceRelativePath = Release.xcconfig;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -432,6 +478,8 @@
 				DEVELOPMENT_TEAM = QTSJFA7Y7P;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Scout/Info.plist;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Scout uses your location to show nearby players and suggest meet-up spots.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -578,6 +626,35 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		95141FF92F4E45500046886B /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/supabase/supabase-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.5.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		95141FFA2F4E45500046886B /* Auth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 95141FF92F4E45500046886B /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Auth;
+		};
+		95141FFC2F4E45500046886B /* Functions */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 95141FF92F4E45500046886B /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Functions;
+		};
+		9580C96B2F4E463B00093095 /* Supabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 95141FF92F4E45500046886B /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Supabase;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 954A490B2F47530800BFAC10 /* Project object */;
 }

@@ -12,11 +12,12 @@ struct ContentView: View {
     var body: some View {
         VStack {
 //            RatingsView(stats: model.stats)
-            PlayerSwipeScrollView(model: model)
+//            PlayerSwipeScrollView(model: model)
+//            NetworkTestView()
         }
     }
 }
 
 #Preview {
-    ContentView(model: randomMockCardViewModel())
+//    ContentView(model: randomMockCardViewModel())
 }
