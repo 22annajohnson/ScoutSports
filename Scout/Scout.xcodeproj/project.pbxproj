@@ -43,6 +43,24 @@
 			);
 			target = 954A49122F47530800BFAC10 /* Scout */;
 		};
+		9595DE492F5609E7002946A6 /* Exceptions for "ScoutTests" folder in "Scout" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Data/ProfileDTOTests.swift,
+				ScoutTests.swift,
+				Session/SessionStoreTests.swift,
+			);
+			target = 954A49122F47530800BFAC10 /* Scout */;
+		};
+		9595DE4A2F5609E7002946A6 /* Exceptions for "ScoutTests" folder in "ScoutTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Data/ProfileDTOTests.swift,
+				ScoutTests.swift,
+				Session/SessionStoreTests.swift,
+			);
+			target = 954A491F2F47530800BFAC10 /* ScoutTests */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -54,14 +72,18 @@
 			path = Scout;
 			sourceTree = "<group>";
 		};
-		954A49232F47530800BFAC10 /* ScoutTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = ScoutTests;
-			sourceTree = "<group>";
-		};
 		954A492D2F47530800BFAC10 /* ScoutUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = ScoutUITests;
+			sourceTree = "<group>";
+		};
+		9595DE472F5609E7002946A6 /* ScoutTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				9595DE492F5609E7002946A6 /* Exceptions for "ScoutTests" folder in "Scout" target */,
+				9595DE4A2F5609E7002946A6 /* Exceptions for "ScoutTests" folder in "ScoutTests" target */,
+			);
+			path = ScoutTests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -98,7 +120,7 @@
 			isa = PBXGroup;
 			children = (
 				954A49152F47530800BFAC10 /* Scout */,
-				954A49232F47530800BFAC10 /* ScoutTests */,
+				9595DE472F5609E7002946A6 /* ScoutTests */,
 				954A492D2F47530800BFAC10 /* ScoutUITests */,
 				9580C96A2F4E463B00093095 /* Frameworks */,
 				954A49142F47530800BFAC10 /* Products */,
@@ -139,6 +161,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				954A49152F47530800BFAC10 /* Scout */,
+				9595DE472F5609E7002946A6 /* ScoutTests */,
 			);
 			name = Scout;
 			packageProductDependencies = (
@@ -162,9 +185,6 @@
 			);
 			dependencies = (
 				954A49222F47530800BFAC10 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				954A49232F47530800BFAC10 /* ScoutTests */,
 			);
 			name = ScoutTests;
 			packageProductDependencies = (
