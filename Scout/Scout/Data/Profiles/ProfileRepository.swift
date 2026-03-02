@@ -15,7 +15,7 @@ enum DataError: Error {
 final class ProfileRepository: ProfileProviding {
     private let supabase: SupabaseClient
 
-    init(supabase: SupabaseClient = SupabaseProvider.shared.client) {
+    init(supabase: SupabaseClient) {
         self.supabase = supabase
     }
 

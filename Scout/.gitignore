@@ -7,10 +7,8 @@ xcuserdata/
 DerivedData/
 
 # xcconfig (do not commit secrets)
-Debug.xcconfig
-Release.xcconfig
-Config/Debug.xcconfig
-Config/Release.xcconfig
+Scout/Debug.xcconfig
+Scout/Release.xcconfig
 
 # macOS
 .DS_Store

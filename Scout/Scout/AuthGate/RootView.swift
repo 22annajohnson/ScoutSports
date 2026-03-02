@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-internal import Auth
 
 struct RootView: View {
     @EnvironmentObject var session: SessionStore
@@ -16,10 +15,10 @@ struct RootView: View {
         Group {
             if session.isLoading {
                 ProgressView()
-            } else if session.user == nil {
+            } else if session.userID == nil {
                 LoginView(session: session)
             } else {
-                let currentId = session.user?.id.uuidString ?? ""
+                let currentId = session.userID?.uuidString ?? ""
 
                 let didCompleteOnboarding = Binding<Bool>(
                     get: { onboardedUserId == currentId && !currentId.isEmpty },
@@ -44,8 +43,8 @@ struct RootView: View {
         }
     }
 }
-//
-//#Preview {
-//  RootView()
-//    .environmentObject(SessionStore())
-//}
+
+#Preview {
+    RootView()
+        .environmentObject(SessionStore(supabase: AppEnvironment.shared.supabase))
+}

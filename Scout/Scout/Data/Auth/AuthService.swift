@@ -11,7 +11,7 @@ import Supabase
 final class AuthService: AuthProviding {
     private let supabase: SupabaseClient
 
-    init(supabase: SupabaseClient = SupabaseProvider.shared.client) {
+    init(supabase: SupabaseClient) {
         self.supabase = supabase
     }
 
