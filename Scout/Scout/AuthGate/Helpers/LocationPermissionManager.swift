@@ -7,8 +7,8 @@
 
 // MARK: - Location
 import Combine
-import SwiftUI
 import CoreLocation
+import SwiftUI
 
 @MainActor
 final class LocationPermissionManager: NSObject, ObservableObject, CLLocationManagerDelegate {
