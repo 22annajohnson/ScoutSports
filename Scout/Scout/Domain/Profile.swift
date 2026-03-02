@@ -6,6 +6,7 @@
 //
 
 import Foundation
+
 struct Profile: Identifiable, Equatable {
     let id: String
     var displayName: String
