@@ -13,6 +13,7 @@ struct CardViewModel: Identifiable {
     var sports: [String]
     var heroImageURL: URL
     var stats: [StatsViewModel]
+    var didLike: Bool
 }
 
 struct StatsViewModel: Identifiable {

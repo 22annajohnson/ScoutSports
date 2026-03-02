@@ -10,7 +10,6 @@ import SwiftUI
 struct PlayerSwipeScrollView: View {
     let model: CardViewModel
 
-    // Use your chosen palette token here
     private let accent = Color(.secondaryAccent)
 
     var body: some View {
@@ -85,40 +84,6 @@ struct PlayerSwipeScrollView: View {
 }
 
 
-
-
-
 #Preview {
     PlayerSwipeScrollView(model: randomMockCardViewModel())
 }
-
-
-
-//                    VStack(alignment: .leading, spacing: 18) {
-//                        Text("Rankings").font(.scoutSectionHeader)
-//
-//                        Text("Win Rate: 72%")
-//                            .font(.scoutBody)
-//
-//                        Text("Bio: “Here for good games and good vibes.”")
-//                            .font(.scoutBody)
-//
-//                        Text("Availability")
-//                            .font(.scoutSectionHeader)
-//
-//                        // Placeholder grid
-//                        AvailabilityGridDemo(accent: accent)
-//
-//                        Text("Home Court")
-//                            .font(.scoutSectionHeader)
-//
-//                        Text("Deering Oaks Courts • 3.2 mi")
-//                            .font(.scoutBody)
-//                            .foregroundStyle(.secondary)
-//                        }
-//                        .padding(20)
-//                        .background(.ultraThinMaterial) // or Color(.systemBackground)
-//                        .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
-//                        .padding(.top, -36) // pulls content up into the triangle a bit (nice continuity)
-//                        .padding(.horizontal, 16)
-//                        .padding(.bottom, 24)

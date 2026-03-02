@@ -9,7 +9,6 @@ import SwiftUI
 
 struct PlayerHeroHeaderView: View {
     
-    
     let model: HeroHeaderViewModel
 
     var body: some View {

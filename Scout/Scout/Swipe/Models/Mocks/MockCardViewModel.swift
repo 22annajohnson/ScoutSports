@@ -20,7 +20,8 @@ func randomMockCardViewModel() -> CardViewModel {
         name: getRandomName(),
         sports: getRandomSports(),
         heroImageURL: URL(string:"https://picsum.photos/400/800")!,
-        stats: getRandomStats()
+        stats: getRandomStats(),
+        didLike: Bool.random()
     )
 }
 

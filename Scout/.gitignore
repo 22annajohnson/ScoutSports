@@ -1,0 +1,14 @@
+# Xcode user state
+*.xcuserstate
+xcuserdata/
+
+# Swift Package Manager
+.build/
+DerivedData/
+
+# xcconfig (do not commit secrets)
+Scout/Debug.xcconfig
+Scout/Release.xcconfig
+
+# macOS
+.DS_Store
