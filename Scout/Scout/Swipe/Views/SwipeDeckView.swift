@@ -14,6 +14,7 @@ struct SwipeDeckView: View {
     @State private var isDismissing = false
     @State private var showMatch = false
     @State private var matchedModel: CardViewModel? = nil
+    @State private var showProfileBuilder = false
     @EnvironmentObject private var session: SessionStore
 
     let models: [CardViewModel]
@@ -103,15 +104,28 @@ struct SwipeDeckView: View {
         }
         .overlay(alignment: .topLeading) {
             #if DEBUG
-            Button {
-                Task { try? await session.signOut() }
-            } label: {
-                Label("Sign out", systemImage: "rectangle.portrait.and.arrow.right")
-                    .font(.subheadline.weight(.semibold))
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 10)
-                    .background(.ultraThinMaterial)
-                    .clipShape(Capsule())
+            VStack(alignment: .leading, spacing: 10) {
+                Button {
+                    Task { try? await session.signOut() }
+                } label: {
+                    Label("Sign out", systemImage: "rectangle.portrait.and.arrow.right")
+                        .font(.subheadline.weight(.semibold))
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 10)
+                        .background(.ultraThinMaterial)
+                        .clipShape(Capsule())
+                }
+
+                Button {
+                    showProfileBuilder = true
+                } label: {
+                    Label("Edit Profile", systemImage: "person.crop.circle")
+                        .font(.subheadline.weight(.semibold))
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 10)
+                        .background(.ultraThinMaterial)
+                        .clipShape(Capsule())
+                }
             }
             .padding(.top, 16)
             .padding(.leading, 16)
@@ -129,6 +143,27 @@ struct SwipeDeckView: View {
                     onSendMessage: {}
                 )
             }
+        }
+        .fullScreenCover(isPresented: $showProfileBuilder) {
+            let env = AppEnvironment.shared
+            let supabase = env.supabase
+
+            let repo = ProfileRepository(supabase: supabase)
+            let upload = ImageUploadService(
+                supabase: supabase,
+                projectURL: SupabaseConfig.url,
+                bucket: "profile-photos"
+            )
+
+            let vm = ProfileBuilderViewModel(
+                mode: .requiredForMatching,
+                profileRepository: repo,
+                imageUploadService: upload,
+                userIDProvider: { session.userID }
+            )
+
+            ProfileBuilderView(vm: vm)
+                .environmentObject(session)
         }
     }
 
