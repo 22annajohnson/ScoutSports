@@ -183,8 +183,8 @@ final class OnboardingViewModel: ObservableObject {
         form.selectedSport = sport
     }
 
-    func handlePhotoItemsChanged(_ newItems: [PhotosPickerItem]) {
-        Task { await loadSelectedPhotos(newItems) }
+    func handlePhotoItemsChanged(_ newItems: [PhotosPickerItem]) async {
+        await loadSelectedPhotos(newItems)
     }
 
     // MARK: Validation
@@ -212,8 +212,6 @@ final class OnboardingViewModel: ObservableObject {
             }
         }
 
-        await MainActor.run {
-            self.photos = loaded
-        }
+        photos = loaded
     }
 }

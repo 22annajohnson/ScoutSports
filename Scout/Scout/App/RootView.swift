@@ -41,6 +41,9 @@ struct RootView: View {
                 }
             }
         }
+        .task {
+            await session.loadInitialSessionIfNeeded()
+        }
     }
 }
 

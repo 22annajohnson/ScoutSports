@@ -5,8 +5,8 @@
 //  Created by Anna on 2/25/26.
 //
 
-import Foundation
 import Combine
+import Foundation
 
 @MainActor
 final class LoginViewModel: ObservableObject {
@@ -49,7 +49,7 @@ final class LoginViewModel: ObservableObject {
         !trimmedEmail.isEmpty && !password.isEmpty
     }
 
-    func login() {
+    func login() async {
         guard canSubmit else {
             alert = AlertItem(title: "Missing info", message: "Please enter both an email and password.")
             return
@@ -57,14 +57,12 @@ final class LoginViewModel: ObservableObject {
 
         submitState = .working
 
-        Task {
-            do {
-                try await session.signIn(email: trimmedEmail, password: password)
-                submitState = .idle
-            } catch {
-                submitState = .idle
-                alert = AlertItem(title: "Login failed", message: friendlyAuthErrorMessage(error))
-            }
+        do {
+            try await session.signIn(email: trimmedEmail, password: password)
+            submitState = .idle
+        } catch {
+            submitState = .idle
+            alert = AlertItem(title: "Login failed", message: friendlyAuthErrorMessage(error))
         }
     }
 

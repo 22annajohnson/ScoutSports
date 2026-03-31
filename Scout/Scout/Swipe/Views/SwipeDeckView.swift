@@ -15,6 +15,7 @@ struct SwipeDeckView: View {
     @State private var showMatch = false
     @State private var matchedModel: CardViewModel? = nil
     @State private var showProfileBuilder = false
+    @State private var dismissalTask: Task<Void, Never>?
     @EnvironmentObject private var session: SessionStore
 
     let models: [CardViewModel]
@@ -102,6 +103,9 @@ struct SwipeDeckView: View {
                 }
             }
         }
+        .onDisappear {
+            dismissalTask?.cancel()
+        }
         .overlay(alignment: .topLeading) {
             #if DEBUG
             VStack(alignment: .leading, spacing: 10) {
@@ -167,6 +171,7 @@ struct SwipeDeckView: View {
         }
     }
 
+    @MainActor
     private func finishSwipe(dx: CGFloat, geo: GeometryProxy) {
         let shouldDismiss = abs(dx) > threshold
         let direction: CGFloat = dx >= 0 ? 1 : -1
@@ -182,8 +187,11 @@ struct SwipeDeckView: View {
                 drag = CGSize(width: direction * (geo.size.width + 160), height: 0)
             }
 
-            // Swap to next card after the off-screen animation completes
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.23) {
+            dismissalTask?.cancel()
+            dismissalTask = Task {
+                try? await Task.sleep(for: .milliseconds(230))
+                guard !Task.isCancelled else { return }
+
                 // Swap & reset with animations disabled to avoid flashing the previous card
                 var transaction = Transaction()
                 transaction.disablesAnimations = true

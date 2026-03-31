@@ -46,7 +46,9 @@ struct SignupView: View {
                 .padding(.top, 8)
 
                 Button {
-                    vm.signUp()
+                    Task {
+                        await vm.signUp()
+                    }
                 } label: {
                     HStack {
                         Spacer()

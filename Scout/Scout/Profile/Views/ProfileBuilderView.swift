@@ -8,7 +8,6 @@
 
 import SwiftUI
 import PhotosUI
-import Supabase
 
 // MARK: - Profile Builder View
 
@@ -66,11 +65,11 @@ struct ProfileBuilderView: View {
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
                 .animation(.easeInOut, value: vm.step)
-                .onChange(of: vm.actionShotItem) { _ in
-                    vm.onActionShotItemChanged()
+                .task(id: vm.actionShotItem) {
+                    await vm.loadActionShotIfNeeded()
                 }
-                .onChange(of: vm.headshotItem) { _ in
-                    vm.onHeadshotItemChanged()
+                .task(id: vm.headshotItem) {
+                    await vm.loadHeadshotIfNeeded()
                 }
 
                 Divider()
@@ -466,7 +465,7 @@ private struct ReviewStep: View {
         mode: .requiredForMatching,
         profileRepository: repo,
         imageUploadService: uploadService,
-        userIDProvider: { supabase.auth.currentUser?.id }
+        userIDProvider: { nil }
     )
 
     ProfileBuilderView(vm: vm)
@@ -478,4 +477,3 @@ private struct ReviewStep: View {
             )
         )
 }
-

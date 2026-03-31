@@ -20,6 +20,8 @@ final class SessionStore: ObservableObject {
     @Published var profile: Profile?
     @Published var isLoading = true
     
+    private var hasLoadedInitialSession = false
+    
     init(
         supabase: SupabaseClient,
         auth: AuthProviding? = nil,
@@ -28,10 +30,6 @@ final class SessionStore: ObservableObject {
         self.supabase = supabase
         self.auth = auth ?? AuthService(supabase: supabase)
         self.profiles = profiles ?? ProfileRepository(supabase: supabase)
-
-        Task {
-            await loadInitialSession()
-        }
     }
     
     private func updateSessionFromCurrentUser() {
@@ -44,6 +42,12 @@ final class SessionStore: ObservableObject {
         }
     }
     
+    func loadInitialSessionIfNeeded() async {
+        guard !hasLoadedInitialSession else { return }
+        hasLoadedInitialSession = true
+        await loadInitialSession()
+    }
+
     func loadInitialSession() async {
         updateSessionFromCurrentUser()
         if sessionUser != nil {

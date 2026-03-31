@@ -54,8 +54,8 @@ struct OnboardingView: View {
                 dismissButton: .cancel(Text("OK"))
             )
         }
-        .onChange(of: vm.photoItems) { _, newItems in
-            vm.handlePhotoItemsChanged(newItems)
+        .task(id: vm.photoItems) {
+            await vm.handlePhotoItemsChanged(vm.photoItems)
         }
     }
 

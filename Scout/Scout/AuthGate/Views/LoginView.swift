@@ -45,7 +45,9 @@ struct LoginView: View {
                 .padding(.top, 8)
 
                 Button {
-                    vm.login()
+                    Task {
+                        await vm.login()
+                    }
                 } label: {
                     HStack {
                         Spacer()

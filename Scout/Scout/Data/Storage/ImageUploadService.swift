@@ -13,13 +13,32 @@ import Supabase
 import UIKit
 #endif
 
+protocol ImageUploadProviding {
+    #if canImport(UIKit)
+    func uploadActionShot(image: UIImage, compressionQuality: CGFloat) async throws -> String
+    func uploadHeadshot(image: UIImage, compressionQuality: CGFloat) async throws -> String
+    #endif
+}
+
+#if canImport(UIKit)
+extension ImageUploadProviding {
+    func uploadActionShot(image: UIImage) async throws -> String {
+        try await uploadActionShot(image: image, compressionQuality: 0.85)
+    }
+
+    func uploadHeadshot(image: UIImage) async throws -> String {
+        try await uploadHeadshot(image: image, compressionQuality: 0.85)
+    }
+}
+#endif
+
 /// Handles uploading profile images to Supabase Storage.
 ///
 /// V1 notes:
 /// - Bucket is public (`profile-photos`). We store *paths* in Postgres and build public URLs when needed.
 /// - Action/headshot uploads use deterministic paths and `upsert: true`.
 /// - Gallery uploads use a generated photo id and `upsert: false`.
-final class ImageUploadService {
+final class ImageUploadService: ImageUploadProviding {
 
     enum PhotoType: String {
         case action
@@ -64,7 +83,6 @@ final class ImageUploadService {
 
     private func currentUserID() throws -> UUID {
         guard let userID = supabase.auth.currentUser?.id else {
-            print("ImageUploadService supabase.auth.currentUser:", supabase.auth.currentUser as Any)
             throw UploadError.notAuthenticated
         }
         return userID
@@ -75,12 +93,8 @@ final class ImageUploadService {
     /// Uploads/overwrites the user's action shot.
     /// - Returns: Storage object path to persist in `profile_photos.path`.
     func uploadActionShot(jpegData: Data) async throws -> String {
-        let userID = try currentUserID()
         let userFolder = try normalizedUserFolder()
         let path = "\(userFolder)/action.jpg"
-        print("ImageUploadService currentUserID:", userID.uuidString)
-        print("ImageUploadService upload path:", path)
-        print("ImageUploadService currentUser object:", supabase.auth.currentUser as Any)
         try await upload(
             path: path,
             data: jpegData,
@@ -95,8 +109,6 @@ final class ImageUploadService {
     func uploadHeadshot(jpegData: Data) async throws -> String {
         let userFolder = try normalizedUserFolder()
         let path = "\(userFolder)/headshot.jpg"
-        print("Storage current user:", supabase.auth.currentUser?.id as Any)
-        print("Uploading path:", path)
         try await upload(
             path: path,
             data: jpegData,

@@ -116,7 +116,7 @@ final class ProfileRepository: ProfileProviding {
     // MARK: - Profile Photos
 
     /// Fetches all photos for the current user.
-    func fetchMyPhotos() async throws -> [ProfilePhotoRow] {
+    func fetchCurrentUserPhotos() async throws -> [ProfilePhotoRow] {
         guard let user = supabase.auth.currentUser else { throw DataError.notAuthenticated }
 
         let rows: [ProfilePhotoRow] = try await supabase
@@ -133,7 +133,7 @@ final class ProfileRepository: ProfileProviding {
 
     /// For action/headshot we keep only one row per user.
     /// Implementation: delete existing row(s) for that type, then insert a new row.
-    func setMySinglePhoto(type: ProfilePhotoType, path: String, blurhash: String? = nil) async throws {
+    func setCurrentUserSinglePhoto(type: ProfilePhotoType, path: String, blurhash: String? = nil) async throws {
         guard let user = supabase.auth.currentUser else { throw DataError.notAuthenticated }
 
         // Delete any existing rows for this type
@@ -178,7 +178,7 @@ final class ProfileRepository: ProfileProviding {
     }
 
     /// Inserts a gallery photo row. (Storage upload happens separately.)
-    func addMyGalleryPhoto(id: UUID, path: String, position: Int16, isPrimary: Bool = false, blurhash: String? = nil) async throws {
+    func addCurrentUserGalleryPhoto(id: UUID, path: String, position: Int16, isPrimary: Bool = false, blurhash: String? = nil) async throws {
         guard let user = supabase.auth.currentUser else { throw DataError.notAuthenticated }
 
         struct GalleryPhotoInsert: Encodable {
@@ -218,7 +218,7 @@ final class ProfileRepository: ProfileProviding {
     }
 
     /// Deletes a photo row by id (does not delete from Storage).
-    func deleteMyPhotoRow(id: UUID) async throws {
+    func deleteCurrentUserPhotoRow(id: UUID) async throws {
         guard let user = supabase.auth.currentUser else { throw DataError.notAuthenticated }
 
         _ = try await supabase
@@ -232,7 +232,7 @@ final class ProfileRepository: ProfileProviding {
     // MARK: - Profile Builder updates
 
     /// Updates the current user's profile fields. Only non-nil fields are written.
-    func updateMyProfile(_ input: ProfileUpdateInput) async throws {
+    func updateCurrentUserProfile(_ input: ProfileUpdateInput) async throws {
         guard let user = supabase.auth.currentUser else { throw DataError.notAuthenticated }
 
         struct ProfileUpdatePatch: Encodable {

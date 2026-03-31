@@ -6,13 +6,6 @@
 //
 
 
-//
-//  ProfileBuilderViewModel.swift
-//  Scout
-//
-//  Created by Anna on 3/2/26.
-//
-
 import Combine
 import Foundation
 import PhotosUI
@@ -133,8 +126,8 @@ final class ProfileBuilderViewModel: ObservableObject {
     // MARK: - Dependencies
 
     private let mode: Mode
-    private let profileRepository: ProfileRepository
-    private let imageUploadService: ImageUploadService
+    private let profileRepository: ProfileProviding
+    private let imageUploadService: ImageUploadProviding
     private let userIDProvider: () -> UUID?
 
     // MARK: - Published state
@@ -157,8 +150,8 @@ final class ProfileBuilderViewModel: ObservableObject {
 
     init(
         mode: Mode = .requiredForMatching,
-        profileRepository: ProfileRepository,
-        imageUploadService: ImageUploadService,
+        profileRepository: ProfileProviding,
+        imageUploadService: ImageUploadProviding,
         userIDProvider: @escaping () -> UUID?
     ) {
         self.mode = mode
@@ -223,16 +216,11 @@ final class ProfileBuilderViewModel: ObservableObject {
 
     // MARK: - Picker loading
 
-    func onActionShotItemChanged() {
-        Task { await loadActionShotIfNeeded() }
-    }
-
-    func onHeadshotItemChanged() {
-        Task { await loadHeadshotIfNeeded() }
-    }
-
-    private func loadActionShotIfNeeded() async {
-        guard let actionShotItem else { return }
+    func loadActionShotIfNeeded() async {
+        guard let actionShotItem else {
+            actionShotImage = nil
+            return
+        }
         do {
             if let data = try await actionShotItem.loadTransferable(type: Data.self),
                let uiImage = UIImage(data: data) {
@@ -243,8 +231,11 @@ final class ProfileBuilderViewModel: ObservableObject {
         }
     }
 
-    private func loadHeadshotIfNeeded() async {
-        guard let headshotItem else { return }
+    func loadHeadshotIfNeeded() async {
+        guard let headshotItem else {
+            headshotImage = nil
+            return
+        }
         do {
             if let data = try await headshotItem.loadTransferable(type: Data.self),
                let uiImage = UIImage(data: data) {
@@ -263,7 +254,7 @@ final class ProfileBuilderViewModel: ObservableObject {
             return
         }
 
-        guard let userID = userIDProvider() else {
+        guard userIDProvider() != nil else {
             showAlert(title: "Not Signed In", message: "Please sign in again.")
             return
         }
@@ -279,12 +270,12 @@ final class ProfileBuilderViewModel: ObservableObject {
         do {
             // 1) Upload required action shot
             let actionPath = try await imageUploadService.uploadActionShot(image: actionShotImage)
-            try await profileRepository.setMySinglePhoto(type: .action, path: actionPath)
+            try await profileRepository.setCurrentUserSinglePhoto(type: .action, path: actionPath, blurhash: nil)
 
             // 2) Upload optional headshot
             if let headshotImage {
                 let headshotPath = try await imageUploadService.uploadHeadshot(image: headshotImage)
-                try await profileRepository.setMySinglePhoto(type: .headshot, path: headshotPath)
+                try await profileRepository.setCurrentUserSinglePhoto(type: .headshot, path: headshotPath, blurhash: nil)
             }
 
             // 3) Update profile fields
@@ -301,7 +292,7 @@ final class ProfileBuilderViewModel: ObservableObject {
             let bioTrimmed = form.bio.trimmingCharacters(in: .whitespacesAndNewlines)
             input.bio = bioTrimmed.isEmpty ? nil : bioTrimmed
 
-            try await profileRepository.updateMyProfile(input)
+            try await profileRepository.updateCurrentUserProfile(input)
 
             // 4) Clubs: keep simple for now (you have a separate table). We'll add after this method compiles.
             // Next step will be to upsert rows in `profile_clubs`.
@@ -322,5 +313,3 @@ final class ProfileBuilderViewModel: ObservableObject {
         isShowingAlert = true
     }
 }
-
-
