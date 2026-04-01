@@ -7,6 +7,8 @@
 
 import Foundation
 
+/// Editable profile repository boundary.
+/// Keep user-owned profile writes here; future feedback and derived metrics should use separate seams.
 protocol ProfileProviding {
     func fetchMyProfile() async throws -> Profile
     func updateDisplayName(_ newName: String) async throws
@@ -15,3 +17,11 @@ protocol ProfileProviding {
     func updateCurrentUserProfile(_ input: ProfileUpdateInput) async throws
     func markProfileCompletedIfReady() async throws
 }
+
+/// Future boundary for player-to-player feedback submitted after a match or session.
+/// Raw feedback should remain separate from editable profile state.
+protocol MatchFeedbackProviding { }
+
+/// Future boundary for system-owned aggregates derived from feedback and behavior.
+/// Swipe ordering and matching should consume these values without storing them in `profiles`.
+protocol PlayerMetricsProviding { }
