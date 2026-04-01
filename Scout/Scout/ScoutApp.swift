@@ -10,7 +10,6 @@ import UIKit
 
 @main
 struct ScoutApp: App {
-    private let environment = AppEnvironment.shared
     @StateObject private var session: SessionStore
 
     init() {
@@ -18,8 +17,8 @@ struct ScoutApp: App {
         UIView.appearance().tintColor = UIColor(Color.scout)
         UINavigationBar.appearance().tintColor = UIColor(Color.scout)
 
-        let env = AppEnvironment.shared
-        _session = StateObject(wrappedValue: SessionStore(supabase: env.supabase))
+        let environment = AppEnvironment.shared
+        _session = StateObject(wrappedValue: environment.makeSessionStore())
     }
 
     var body: some Scene {

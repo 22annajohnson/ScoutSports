@@ -49,5 +49,5 @@ struct RootView: View {
 
 #Preview {
     RootView()
-        .environmentObject(SessionStore(supabase: AppEnvironment.shared.supabase))
+        .environmentObject(AppEnvironment.shared.makeSessionStore())
 }

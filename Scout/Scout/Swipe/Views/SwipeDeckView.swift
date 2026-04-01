@@ -149,24 +149,11 @@ struct SwipeDeckView: View {
             }
         }
         .fullScreenCover(isPresented: $showProfileBuilder) {
-            let env = AppEnvironment.shared
-            let supabase = env.supabase
-
-            let repo = ProfileRepository(supabase: supabase)
-            let upload = ImageUploadService(
-                supabase: supabase,
-                projectURL: SupabaseConfig.url,
-                bucket: "profile-photos"
+            ProfileBuilderView(
+                vm: AppEnvironment.shared.makeProfileBuilderViewModel(
+                    userIDProvider: { session.userID }
+                )
             )
-
-            let vm = ProfileBuilderViewModel(
-                mode: .requiredForMatching,
-                profileRepository: repo,
-                imageUploadService: upload,
-                userIDProvider: { session.userID }
-            )
-
-            ProfileBuilderView(vm: vm)
                 .environmentObject(session)
         }
     }

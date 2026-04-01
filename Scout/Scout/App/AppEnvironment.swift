@@ -12,6 +12,9 @@ final class AppEnvironment {
   static let shared = AppEnvironment()
 
   let supabase: SupabaseClient
+  let authService: AuthProviding
+  let profileRepository: ProfileProviding
+  let imageUploadService: ImageUploadProviding
 
   private init() {
       let options = SupabaseClientOptions(
@@ -23,6 +26,32 @@ final class AppEnvironment {
       supabaseURL: AppConfig.supabaseURL,
       supabaseKey: AppConfig.supabaseAnonKey,
       options: options
+    )
+
+    authService = AuthService(supabase: supabase)
+    profileRepository = ProfileRepository(supabase: supabase)
+    imageUploadService = ImageUploadService(
+      supabase: supabase,
+      projectURL: SupabaseConfig.url,
+      bucket: "profile-photos"
+    )
+  }
+
+  func makeSessionStore() -> SessionStore {
+    SessionStore(
+      supabase: supabase,
+      auth: authService,
+      profiles: profileRepository
+    )
+  }
+
+  @MainActor
+  func makeProfileBuilderViewModel(userIDProvider: @escaping () -> UUID?) -> ProfileBuilderViewModel {
+    ProfileBuilderViewModel(
+      mode: .requiredForMatching,
+      profileRepository: profileRepository,
+      imageUploadService: imageUploadService,
+      userIDProvider: userIDProvider
     )
   }
 }

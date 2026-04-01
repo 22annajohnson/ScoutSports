@@ -12,3 +12,6 @@ Scout/Release.xcconfig
 
 # macOS
 .DS_Store
+
+# Local planning
+Tasks.md

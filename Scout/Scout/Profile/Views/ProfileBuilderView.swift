@@ -141,6 +141,8 @@ private struct ActionShotStep: View {
     @Binding var item: PhotosPickerItem?
 
     var body: some View {
+        let pickerTitle = image == nil ? "Choose Photo" : "Change Photo"
+
         VStack(spacing: 16) {
             Spacer(minLength: 0)
 
@@ -184,7 +186,7 @@ private struct ActionShotStep: View {
             .padding(.horizontal, 16)
 
             PhotosPicker(selection: $item, matching: .images) {
-                Text(image == nil ? "Choose Photo" : "Change Photo")
+                Text(pickerTitle)
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.bordered)
@@ -202,6 +204,8 @@ private struct HeadshotStep: View {
     @Binding var item: PhotosPickerItem?
 
     var body: some View {
+        let pickerTitle = image == nil ? "Choose Photo" : "Change Photo"
+
         VStack(spacing: 16) {
             Spacer(minLength: 0)
 
@@ -236,7 +240,7 @@ private struct HeadshotStep: View {
             .frame(width: 220, height: 220)
 
             PhotosPicker(selection: $item, matching: .images) {
-                Text(image == nil ? "Choose Photo" : "Change Photo")
+                Text(pickerTitle)
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.bordered)
@@ -449,31 +453,7 @@ private struct ReviewStep: View {
 
 #Preview {
     let env = AppEnvironment.shared
-    let supabase = env.supabase
 
-    // Previews don't need a real project URL; this is only used to build public URLs.
-    // At runtime, pass your real Supabase project URL from AppConfig/AppEnvironment.
-    let uploadService = ImageUploadService(
-        supabase: supabase,
-        projectURL: URL(string: "https://example.supabase.co")!,
-        bucket: "profile-photos"
-    )
-
-    let repo = ProfileRepository(supabase: supabase)
-
-    let vm = ProfileBuilderViewModel(
-        mode: .requiredForMatching,
-        profileRepository: repo,
-        imageUploadService: uploadService,
-        userIDProvider: { nil }
-    )
-
-    ProfileBuilderView(vm: vm)
-        .environmentObject(
-            SessionStore(
-                supabase: supabase,
-                auth: AuthService(supabase: supabase),
-                profiles: repo
-            )
-        )
+    ProfileBuilderView(vm: env.makeProfileBuilderViewModel(userIDProvider: { nil }))
+        .environmentObject(env.makeSessionStore())
 }
