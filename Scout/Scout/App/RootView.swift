@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct RootView: View {
+    @Environment(\.appEnvironment) private var appEnvironment
     @Environment(SessionStore.self) private var session
     @AppStorage("scout_onboarded_user_id") private var onboardedUserId: String = ""
 
@@ -36,7 +37,9 @@ struct RootView: View {
                 if !didCompleteOnboarding.wrappedValue {
                     OnboardingView(didCompleteOnboarding: didCompleteOnboarding)
                 } else {
-                    SwipeDeckView(models: getMockCardViewModels())
+                    SwipeDeckScreen(
+                        vm: appEnvironment.makeSwipeDeckViewModel(session: session)
+                    )
                         .environment(session)
                 }
             }

@@ -16,6 +16,7 @@ final class AppEnvironment {
   let authService: AuthProviding
   let profileRepository: ProfileProviding
   let imageUploadService: ImageUploadProviding
+  let swipeCardProvider: SwipeCardProviding
 
   private init() {
       let options = SupabaseClientOptions(
@@ -36,6 +37,7 @@ final class AppEnvironment {
       projectURL: SupabaseConfig.url,
       bucket: "profile-photos"
     )
+    swipeCardProvider = MockSwipeCardProvider()
   }
 
   func makeSessionStore() -> SessionStore {
@@ -53,6 +55,14 @@ final class AppEnvironment {
       profileRepository: profileRepository,
       imageUploadService: imageUploadService,
       userIDProvider: userIDProvider
+    )
+  }
+
+  @MainActor
+  func makeSwipeDeckViewModel(session: SessionStore) -> SwipeDeckViewModel {
+    SwipeDeckViewModel(
+      cardProvider: swipeCardProvider,
+      session: session
     )
   }
 }

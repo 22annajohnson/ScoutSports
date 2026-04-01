@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct SwipeDeckView: View {
+    let vm: SwipeDeckViewModel
+
     @State private var index = 0
     @State private var drag: CGSize = .zero
     @State private var isSwipingHorizontally = false
@@ -19,9 +21,9 @@ struct SwipeDeckView: View {
     @Environment(\.appEnvironment) private var appEnvironment
     @Environment(SessionStore.self) private var session
 
-    let models: [CardViewModel]
-
     private let threshold: CGFloat = 140
+    
+    private var models: [CardViewModel] { vm.cards }
 
     var body: some View {
         GeometryReader { geo in
@@ -111,7 +113,7 @@ struct SwipeDeckView: View {
             #if DEBUG
             VStack(alignment: .leading, spacing: 10) {
                 Button {
-                    Task { try? await session.signOut() }
+                    Task { await vm.signOut() }
                 } label: {
                     Label("Sign out", systemImage: "rectangle.portrait.and.arrow.right")
                         .font(.subheadline.weight(.semibold))
