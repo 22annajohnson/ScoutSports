@@ -292,11 +292,8 @@ final class ProfileBuilderViewModel {
             input.bio = bioTrimmed.isEmpty ? nil : bioTrimmed
 
             try await profileRepository.updateCurrentUserProfile(input)
-
-            // 4) Clubs
-            try await profileRepository.replaceCurrentUserClubs(form.clubs)
-
-            // 5) Mark completion
+            
+            // 4) Mark completion
             try await profileRepository.markProfileCompletedIfReady()
 
         } catch {
