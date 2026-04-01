@@ -48,6 +48,9 @@ struct RootView: View {
 }
 
 #Preview {
+    let appEnvironment = AppEnvironment.preview
+
     RootView()
-        .environmentObject(AppEnvironment.shared.makeSessionStore())
+        .environment(\.appEnvironment, appEnvironment)
+        .environmentObject(appEnvironment.makeSessionStore())
 }

@@ -16,6 +16,7 @@ struct SwipeDeckView: View {
     @State private var matchedModel: CardViewModel? = nil
     @State private var showProfileBuilder = false
     @State private var dismissalTask: Task<Void, Never>?
+    @Environment(\.appEnvironment) private var appEnvironment
     @EnvironmentObject private var session: SessionStore
 
     let models: [CardViewModel]
@@ -150,7 +151,7 @@ struct SwipeDeckView: View {
         }
         .fullScreenCover(isPresented: $showProfileBuilder) {
             ProfileBuilderView(
-                vm: AppEnvironment.shared.makeProfileBuilderViewModel(
+                vm: appEnvironment.makeProfileBuilderViewModel(
                     userIDProvider: { session.userID }
                 )
             )

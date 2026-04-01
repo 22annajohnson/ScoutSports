@@ -7,6 +7,7 @@
 
 import Foundation
 import Supabase
+import SwiftUI
 
 final class AppEnvironment {
   static let shared = AppEnvironment()
@@ -53,5 +54,20 @@ final class AppEnvironment {
       imageUploadService: imageUploadService,
       userIDProvider: userIDProvider
     )
+  }
+}
+
+extension AppEnvironment {
+  static var preview: AppEnvironment { shared }
+}
+
+private struct AppEnvironmentKey: EnvironmentKey {
+  static let defaultValue = AppEnvironment.shared
+}
+
+extension EnvironmentValues {
+  var appEnvironment: AppEnvironment {
+    get { self[AppEnvironmentKey.self] }
+    set { self[AppEnvironmentKey.self] = newValue }
   }
 }

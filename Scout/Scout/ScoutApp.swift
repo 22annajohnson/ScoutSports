@@ -17,13 +17,16 @@ struct ScoutApp: App {
         UIView.appearance().tintColor = UIColor(Color.scout)
         UINavigationBar.appearance().tintColor = UIColor(Color.scout)
 
-        let environment = AppEnvironment.shared
-        _session = StateObject(wrappedValue: environment.makeSessionStore())
+        let appEnvironment = AppEnvironment.shared
+        _session = StateObject(wrappedValue: appEnvironment.makeSessionStore())
     }
 
     var body: some Scene {
         WindowGroup {
+            let appEnvironment = AppEnvironment.shared
+
             RootView()
+                .environment(\.appEnvironment, appEnvironment)
                 .environmentObject(session)
                 .tint(Color.scout)
         }

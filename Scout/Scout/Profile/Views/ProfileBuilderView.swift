@@ -452,8 +452,9 @@ private struct ReviewStep: View {
 // MARK: - Preview
 
 #Preview {
-    let env = AppEnvironment.shared
+    let env = AppEnvironment.preview
 
     ProfileBuilderView(vm: env.makeProfileBuilderViewModel(userIDProvider: { nil }))
+        .environment(\.appEnvironment, env)
         .environmentObject(env.makeSessionStore())
 }
