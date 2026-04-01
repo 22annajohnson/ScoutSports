@@ -17,7 +17,7 @@ struct SwipeDeckView: View {
     @State private var showProfileBuilder = false
     @State private var dismissalTask: Task<Void, Never>?
     @Environment(\.appEnvironment) private var appEnvironment
-    @EnvironmentObject private var session: SessionStore
+    @Environment(SessionStore.self) private var session
 
     let models: [CardViewModel]
 
@@ -155,7 +155,7 @@ struct SwipeDeckView: View {
                     userIDProvider: { session.userID }
                 )
             )
-                .environmentObject(session)
+                .environment(session)
         }
     }
 

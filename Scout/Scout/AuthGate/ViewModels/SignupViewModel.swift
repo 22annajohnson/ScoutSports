@@ -5,11 +5,12 @@
 //  Created by Anna on 2/26/26.
 //
 
-import Combine
 import Foundation
+import Observation
 
 @MainActor
-final class SignupViewModel: ObservableObject {
+@Observable
+final class SignupViewModel {
 
     // MARK: - Models
 
@@ -76,9 +77,9 @@ final class SignupViewModel: ObservableObject {
 
     // MARK: - Published State
 
-    @Published var form = Form()
-    @Published private(set) var submitState: SubmitState = .idle
-    @Published var alert: AlertItem?
+    var form = Form()
+    private(set) var submitState: SubmitState = .idle
+    var alert: AlertItem?
 
     // MARK: - Dependencies
 

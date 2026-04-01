@@ -14,14 +14,16 @@ import PhotosUI
 struct OnboardingView: View {
     @Binding var didCompleteOnboarding: Bool
 
-    @StateObject private var vm: OnboardingViewModel
+    @State private var vm: OnboardingViewModel
 
     init(didCompleteOnboarding: Binding<Bool>) {
         _didCompleteOnboarding = didCompleteOnboarding
-        _vm = StateObject(wrappedValue: OnboardingViewModel())
+        _vm = State(initialValue: OnboardingViewModel())
     }
 
     var body: some View {
+        @Bindable var vm = vm
+
         VStack(spacing: 0) {
             header
 

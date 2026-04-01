@@ -10,7 +10,7 @@ import UIKit
 
 @main
 struct ScoutApp: App {
-    @StateObject private var session: SessionStore
+    @State private var session: SessionStore
 
     init() {
         // UIKit-wide tint fallback for system controllers (e.g. PhotosPicker)
@@ -18,7 +18,7 @@ struct ScoutApp: App {
         UINavigationBar.appearance().tintColor = UIColor(Color.scout)
 
         let appEnvironment = AppEnvironment.shared
-        _session = StateObject(wrappedValue: appEnvironment.makeSessionStore())
+        _session = State(initialValue: appEnvironment.makeSessionStore())
     }
 
     var body: some Scene {
@@ -27,7 +27,7 @@ struct ScoutApp: App {
 
             RootView()
                 .environment(\.appEnvironment, appEnvironment)
-                .environmentObject(session)
+                .environment(session)
                 .tint(Color.scout)
         }
     }

@@ -13,16 +13,18 @@ import PhotosUI
 
 struct ProfileBuilderView: View {
 
-    @EnvironmentObject private var session: SessionStore
+    @Environment(SessionStore.self) private var session
     @Environment(\.dismiss) private var dismiss
 
-    @ObservedObject var vm: ProfileBuilderViewModel
+    let vm: ProfileBuilderViewModel
 
     init(vm: ProfileBuilderViewModel) {
         self.vm = vm
     }
 
     var body: some View {
+        @Bindable var vm = vm
+
         NavigationStack {
             VStack(spacing: 0) {
                 TabView(selection: $vm.step) {
@@ -456,5 +458,5 @@ private struct ReviewStep: View {
 
     ProfileBuilderView(vm: env.makeProfileBuilderViewModel(userIDProvider: { nil }))
         .environment(\.appEnvironment, env)
-        .environmentObject(env.makeSessionStore())
+        .environment(env.makeSessionStore())
 }

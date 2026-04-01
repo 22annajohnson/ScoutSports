@@ -5,15 +5,16 @@
 //  Created by Anna on 2/26/26.
 //
 
-import Combine
 import CoreLocation
 import Foundation
+import Observation
 import PhotosUI
 import SwiftUI
 
 
 @MainActor
-final class OnboardingViewModel: ObservableObject {
+@Observable
+final class OnboardingViewModel {
 
     // MARK: Models
 
@@ -102,16 +103,16 @@ final class OnboardingViewModel: ObservableObject {
 
     // MARK: Published State
 
-    @Published var step: Step = .nameAge
-    @Published var form: Form = .init()
-    @Published var alert: AlertItem?
+    var step: Step = .nameAge
+    var form: Form = .init()
+    var alert: AlertItem?
 
     // Photos
-    @Published var photoItems: [PhotosPickerItem] = []
-    @Published private(set) var photos: [UIImage] = []
+    var photoItems: [PhotosPickerItem] = []
+    private(set) var photos: [UIImage] = []
 
     // Location
-    @Published private(set) var location = LocationPermissionManager()
+    private(set) var location = LocationPermissionManager()
 
     // MARK: Derived State
 

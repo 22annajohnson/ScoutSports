@@ -8,14 +8,16 @@
 import SwiftUI
 
 struct SignupView: View {
-    @StateObject private var vm: SignupViewModel
+    @State private var vm: SignupViewModel
     @Environment(\.dismiss) private var dismiss
 
     init(vm: SignupViewModel) {
-        _vm = StateObject(wrappedValue: vm)
+        _vm = State(initialValue: vm)
     }
 
     var body: some View {
+        @Bindable var vm = vm
+
         NavigationStack {
             VStack(alignment: .leading, spacing: 16) {
                 Spacer().frame(height: 24)

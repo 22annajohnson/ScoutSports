@@ -5,9 +5,8 @@
 //  Created by Anna on 3/2/26.
 //
 
-
-import Combine
 import Foundation
+import Observation
 import PhotosUI
 import SwiftUI
 
@@ -16,7 +15,8 @@ import UIKit
 #endif
 
 @MainActor
-final class ProfileBuilderViewModel: ObservableObject {
+@Observable
+final class ProfileBuilderViewModel {
 
     // MARK: - Mode
 
@@ -132,21 +132,21 @@ final class ProfileBuilderViewModel: ObservableObject {
 
     // MARK: - Published state
 
-    @Published var step: Step = .actionShot
-    @Published var form: Form = .init()
+    var step: Step = .actionShot
+    var form: Form = .init()
 
-    @Published var actionShotItem: PhotosPickerItem?
-    @Published var headshotItem: PhotosPickerItem?
+    var actionShotItem: PhotosPickerItem?
+    var headshotItem: PhotosPickerItem?
 
-    @Published var actionShotImage: UIImage?
-    @Published var headshotImage: UIImage?
+    var actionShotImage: UIImage?
+    var headshotImage: UIImage?
 
-    @Published var isSaving: Bool = false
+    var isSaving: Bool = false
 
     // Alerts
-    @Published var isShowingAlert: Bool = false
-    @Published var alertTitle: String = ""
-    @Published var alertMessage: String = ""
+    var isShowingAlert: Bool = false
+    var alertTitle: String = ""
+    var alertMessage: String = ""
 
     init(
         mode: Mode = .requiredForMatching,

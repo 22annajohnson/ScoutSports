@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct RootView: View {
-    @EnvironmentObject var session: SessionStore
+    @Environment(SessionStore.self) private var session
     @AppStorage("scout_onboarded_user_id") private var onboardedUserId: String = ""
 
     var body: some View {
@@ -37,7 +37,7 @@ struct RootView: View {
                     OnboardingView(didCompleteOnboarding: didCompleteOnboarding)
                 } else {
                     SwipeDeckView(models: getMockCardViewModels())
-                        .environmentObject(session)
+                        .environment(session)
                 }
             }
         }
@@ -52,5 +52,5 @@ struct RootView: View {
 
     RootView()
         .environment(\.appEnvironment, appEnvironment)
-        .environmentObject(appEnvironment.makeSessionStore())
+        .environment(appEnvironment.makeSessionStore())
 }

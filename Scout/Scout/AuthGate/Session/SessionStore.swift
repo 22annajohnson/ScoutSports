@@ -5,20 +5,21 @@
 //  Created by Anna on 2/25/26.
 //
 
-import Combine
 import Foundation
+import Observation
 import Supabase
 
 @MainActor
-final class SessionStore: ObservableObject {
+@Observable
+final class SessionStore {
     private let supabase: SupabaseClient
     private let auth: AuthProviding
     private let profiles: ProfileProviding
     
-    @Published private(set) var sessionUser: SessionUser?
-    @Published private(set) var userID: UUID?
-    @Published var profile: Profile?
-    @Published var isLoading = true
+    private(set) var sessionUser: SessionUser?
+    private(set) var userID: UUID?
+    var profile: Profile?
+    var isLoading = true
     
     private var hasLoadedInitialSession = false
     

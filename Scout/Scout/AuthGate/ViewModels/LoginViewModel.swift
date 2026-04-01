@@ -5,11 +5,12 @@
 //  Created by Anna on 2/25/26.
 //
 
-import Combine
 import Foundation
+import Observation
 
 @MainActor
-final class LoginViewModel: ObservableObject {
+@Observable
+final class LoginViewModel {
 
     enum SubmitState: Equatable {
         case idle
@@ -28,12 +29,12 @@ final class LoginViewModel: ObservableObject {
     }
 
     // Inputs
-    @Published var email: String = ""
-    @Published var password: String = ""
+    var email: String = ""
+    var password: String = ""
 
     // Outputs/UI state
-    @Published private(set) var submitState: SubmitState = .idle
-    @Published var alert: AlertItem?
+    private(set) var submitState: SubmitState = .idle
+    var alert: AlertItem?
 
     private let session: SessionStore
 
