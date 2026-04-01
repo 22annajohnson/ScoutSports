@@ -28,6 +28,21 @@ struct PlayerPublicProfile: Identifiable, Equatable, Sendable {
     var playStyle: String?
 }
 
+/// Editable payload for the user-owned profile layer.
+/// This should mirror fields the player can set directly, not system-computed metrics.
+struct PlayerPublicProfileUpdateInput: Equatable, Sendable {
+    var displayName: String? = nil
+    var birthdate: Date? = nil
+    var primarySport: String? = nil
+    var bio: String? = nil
+    var homeCourtID: UUID? = nil
+    var homeCourtName: String? = nil
+    var backgroundLevel: ProfileBackgroundLevel? = nil
+    var yearsPlaying: Int16? = nil
+    var skillLevel: Int16? = nil
+    var playStyle: ProfilePlayStyle? = nil
+}
+
 /// Structured inputs that help matching and ranking, but are still self-reported by the player.
 /// These should not be mixed with system-derived metrics in the editable profile payload.
 struct PlayerMatchSignals: Identifiable, Equatable, Sendable {

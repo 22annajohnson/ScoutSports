@@ -18,7 +18,7 @@ final class MockProfileRepository: ProfileProviding {
     private(set) var updateDisplayNameCalls: [String] = []
     private(set) var setMySinglePhotoCalls: [(type: ProfilePhotoType, path: String, blurhash: String?)] = []
     private(set) var addGalleryPhotoCalls: [(id: UUID, path: String, position: Int16, isPrimary: Bool, blurhash: String?)] = []
-    private(set) var updateMyProfileCalls: [ProfileUpdateInput] = []
+    private(set) var updateMyProfileCalls: [PlayerPublicProfileUpdateInput] = []
     private(set) var markProfileCompletedCallCount: Int = 0
 
     // MARK: - Configurable behavior
@@ -41,7 +41,7 @@ final class MockProfileRepository: ProfileProviding {
     var onUpdateDisplayName: ((String) -> Void)?
     var onSetMySinglePhoto: ((ProfilePhotoType, String, String?) -> Void)?
     var onAddGalleryPhoto: ((UUID, String, Int16, Bool, String?) -> Void)?
-    var onUpdateMyProfile: ((ProfileUpdateInput) -> Void)?
+    var onUpdateMyProfile: ((PlayerPublicProfileUpdateInput) -> Void)?
     var onMarkProfileCompleted: (() -> Void)?
 
     // MARK: - ProfileProviding
@@ -74,7 +74,21 @@ final class MockProfileRepository: ProfileProviding {
         if let addGalleryPhotoError { throw addGalleryPhotoError }
     }
 
-    func updateCurrentUserProfile(_ input: ProfileUpdateInput) async throws {
+    func fetchCurrentUserPublicProfile() async throws -> PlayerPublicProfile {
+        PlayerPublicProfile(
+            id: fetchMyProfileResult.id,
+            displayName: fetchMyProfileResult.displayName,
+            birthdate: nil,
+            primarySport: nil,
+            bio: nil,
+            homeCourtName: nil,
+            clubNames: [],
+            skillLevel: nil,
+            playStyle: nil
+        )
+    }
+
+    func updateCurrentUserProfile(_ input: PlayerPublicProfileUpdateInput) async throws {
         updateMyProfileCalls.append(input)
         onUpdateMyProfile?(input)
         if let updateMyProfileError { throw updateMyProfileError }

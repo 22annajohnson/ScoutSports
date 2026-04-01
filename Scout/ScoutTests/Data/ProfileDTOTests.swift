@@ -43,4 +43,48 @@ final class ProfileDTOTests: XCTestCase {
         XCTAssertEqual(id, "user-abc")
         XCTAssertEqual(displayName, "Noah")
     }
+
+    func test_publicProfileDTO_toDomain_mapsEditableProfileFields() async {
+        let birthdate = ISO8601DateFormatter().date(from: "2000-01-02T00:00:00Z")
+
+        let domain = await MainActor.run { () -> PlayerPublicProfile in
+            let dto = PlayerPublicProfileDTO(
+                id: "user-public",
+                displayName: "Anna",
+                birthdate: birthdate,
+                primarySport: "pickleball",
+                bio: "Loves pickup games",
+                homeCourtName: "Central Park Courts",
+                backgroundLevel: "club",
+                yearsPlaying: 4,
+                skillLevel: 3,
+                playStyle: "doubles"
+            )
+            return dto.toDomain()
+        }
+
+        let values = await MainActor.run {
+            (
+                domain.id,
+                domain.displayName,
+                domain.birthdate,
+                domain.primarySport,
+                domain.bio,
+                domain.homeCourtName,
+                domain.clubNames,
+                domain.skillLevel,
+                domain.playStyle
+            )
+        }
+
+        XCTAssertEqual(values.0, "user-public")
+        XCTAssertEqual(values.1, "Anna")
+        XCTAssertEqual(values.2, birthdate)
+        XCTAssertEqual(values.3, "pickleball")
+        XCTAssertEqual(values.4, "Loves pickup games")
+        XCTAssertEqual(values.5, "Central Park Courts")
+        XCTAssertEqual(values.6, [])
+        XCTAssertEqual(values.7, 3)
+        XCTAssertEqual(values.8, "doubles")
+    }
 }

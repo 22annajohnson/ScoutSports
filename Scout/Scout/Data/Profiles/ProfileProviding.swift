@@ -11,10 +11,11 @@ import Foundation
 /// Keep user-owned profile writes here; future feedback and derived metrics should use separate seams.
 protocol ProfileProviding {
     func fetchMyProfile() async throws -> Profile
+    func fetchCurrentUserPublicProfile() async throws -> PlayerPublicProfile
     func updateDisplayName(_ newName: String) async throws
     func setCurrentUserSinglePhoto(type: ProfilePhotoType, path: String, blurhash: String?) async throws
     func addCurrentUserGalleryPhoto(id: UUID, path: String, position: Int16, isPrimary: Bool, blurhash: String?) async throws
-    func updateCurrentUserProfile(_ input: ProfileUpdateInput) async throws
+    func updateCurrentUserProfile(_ input: PlayerPublicProfileUpdateInput) async throws
     func markProfileCompletedIfReady() async throws
 }
 

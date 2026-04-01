@@ -279,7 +279,7 @@ final class ProfileBuilderViewModel {
             }
 
             // 3) Update profile fields
-            var input = ProfileUpdateInput()
+            var input = PlayerPublicProfileUpdateInput()
 
             let homeCourtTrimmed = form.homeCourtName.trimmingCharacters(in: .whitespacesAndNewlines)
             if homeCourtTrimmed.isEmpty {

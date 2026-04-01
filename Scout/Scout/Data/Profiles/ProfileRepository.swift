@@ -45,7 +45,7 @@ struct ProfilePhotoRow: Decodable, Equatable {
 
 // MARK: - Profile Builder fields
 
-enum ProfileBackgroundLevel: String, Codable, CaseIterable {
+enum ProfileBackgroundLevel: String, Codable, CaseIterable, Sendable {
     case beginner
     case club
     case high_school
@@ -53,26 +53,12 @@ enum ProfileBackgroundLevel: String, Codable, CaseIterable {
     case professional
 }
 
-enum ProfilePlayStyle: String, Codable, CaseIterable {
+enum ProfilePlayStyle: String, Codable, CaseIterable, Sendable {
     case casual
     case competitive
     case drills
     case doubles
     case singles
-}
-
-struct ProfileUpdateInput: Equatable {
-    var displayName: String? = nil
-    var birthdate: Date? = nil
-    var primarySport: String? = nil
-    var bio: String? = nil
-    var homeCourtID: UUID? = nil
-    var homeCourtName: String? = nil
-
-    var backgroundLevel: ProfileBackgroundLevel? = nil
-    var yearsPlaying: Int16? = nil
-    var skillLevel: Int16? = nil
-    var playStyle: ProfilePlayStyle? = nil
 }
 
 final class ProfileRepository: ProfileProviding {
@@ -88,6 +74,20 @@ final class ProfileRepository: ProfileProviding {
         let dto: ProfileDTO = try await supabase
             .from("profiles")
             .select("id, display_name")
+            .eq("id", value: user.id)
+            .single()
+            .execute()
+            .value
+
+        return dto.toDomain()
+    }
+
+    func fetchCurrentUserPublicProfile() async throws -> PlayerPublicProfile {
+        guard let user = supabase.auth.currentUser else { throw DataError.notAuthenticated }
+
+        let dto: PlayerPublicProfileDTO = try await supabase
+            .from("profiles")
+            .select("id, display_name, birthdate, primary_sport, bio, home_court_name, background_level, years_playing, skill_level, play_style")
             .eq("id", value: user.id)
             .single()
             .execute()
@@ -232,7 +232,7 @@ final class ProfileRepository: ProfileProviding {
     // MARK: - Profile Builder updates
 
     /// Updates the current user's profile fields. Only non-nil fields are written.
-    func updateCurrentUserProfile(_ input: ProfileUpdateInput) async throws {
+    func updateCurrentUserProfile(_ input: PlayerPublicProfileUpdateInput) async throws {
         guard let user = supabase.auth.currentUser else { throw DataError.notAuthenticated }
 
         struct ProfileUpdatePatch: Encodable {
