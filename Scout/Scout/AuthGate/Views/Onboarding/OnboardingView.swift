@@ -16,9 +16,9 @@ struct OnboardingView: View {
 
     @State private var vm: OnboardingViewModel
 
-    init(didCompleteOnboarding: Binding<Bool>) {
+    init(didCompleteOnboarding: Binding<Bool>, vm: OnboardingViewModel) {
         _didCompleteOnboarding = didCompleteOnboarding
-        _vm = State(initialValue: OnboardingViewModel())
+        _vm = State(initialValue: vm)
     }
 
     var body: some View {
@@ -93,16 +93,27 @@ struct OnboardingView: View {
 
             Spacer()
 
-            Button(vm.step == .photos ? "Finish" : "Next") {
+            Button {
                 if vm.step == .photos {
-                    vm.finish()
-                    didCompleteOnboarding = true
+                    Task {
+                        if await vm.finish() {
+                            didCompleteOnboarding = true
+                        }
+                    }
                 } else {
                     vm.goNext()
                 }
             }
+            label: {
+                if vm.step == .photos && vm.isSaving {
+                    ProgressView()
+                        .frame(minWidth: 72)
+                } else {
+                    Text(vm.step == .photos ? "Finish" : "Next")
+                }
+            }
             .buttonStyle(.borderedProminent)
-            .disabled(!vm.canAdvance)
+            .disabled(!vm.canAdvance || vm.isSaving)
         }
         .padding()
     }
@@ -258,5 +269,10 @@ struct OnboardingView: View {
 
 
 #Preview {
-    OnboardingView(didCompleteOnboarding: .constant(false))
+    let appEnvironment = AppEnvironment.preview
+
+    OnboardingView(
+        didCompleteOnboarding: .constant(false),
+        vm: appEnvironment.makeOnboardingViewModel()
+    )
 }

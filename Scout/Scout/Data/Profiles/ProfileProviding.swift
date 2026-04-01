@@ -11,6 +11,7 @@ protocol ProfileProviding {
     func fetchMyProfile() async throws -> Profile
     func updateDisplayName(_ newName: String) async throws
     func setCurrentUserSinglePhoto(type: ProfilePhotoType, path: String, blurhash: String?) async throws
+    func addCurrentUserGalleryPhoto(id: UUID, path: String, position: Int16, isPrimary: Bool, blurhash: String?) async throws
     func updateCurrentUserProfile(_ input: ProfileUpdateInput) async throws
     func markProfileCompletedIfReady() async throws
 }

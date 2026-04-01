@@ -13,10 +13,16 @@ import Supabase
 import UIKit
 #endif
 
+struct UploadedImage {
+    let id: UUID
+    let path: String
+}
+
 protocol ImageUploadProviding {
     #if canImport(UIKit)
     func uploadActionShot(image: UIImage, compressionQuality: CGFloat) async throws -> String
     func uploadHeadshot(image: UIImage, compressionQuality: CGFloat) async throws -> String
+    func uploadGalleryPhoto(photoID: UUID, image: UIImage, compressionQuality: CGFloat) async throws -> UploadedImage
     #endif
 }
 
@@ -28,6 +34,10 @@ extension ImageUploadProviding {
 
     func uploadHeadshot(image: UIImage) async throws -> String {
         try await uploadHeadshot(image: image, compressionQuality: 0.85)
+    }
+
+    func uploadGalleryPhoto(photoID: UUID = UUID(), image: UIImage) async throws -> UploadedImage {
+        try await uploadGalleryPhoto(photoID: photoID, image: image, compressionQuality: 0.85)
     }
 }
 #endif
@@ -44,12 +54,6 @@ final class ImageUploadService: ImageUploadProviding {
         case action
         case headshot
         case gallery
-    }
-
-    struct UploadedPhoto {
-        let id: UUID
-        let path: String
-        let type: PhotoType
     }
 
     enum UploadError: Error, LocalizedError {
@@ -120,7 +124,7 @@ final class ImageUploadService: ImageUploadProviding {
 
     /// Uploads a new gallery photo.
     /// - Returns: id + path you can insert into `profile_photos`.
-    func uploadGalleryPhoto(photoID: UUID = UUID(), jpegData: Data) async throws -> UploadedPhoto {
+    func uploadGalleryPhoto(photoID: UUID = UUID(), jpegData: Data) async throws -> UploadedImage {
         let userFolder = try normalizedUserFolder()
         let normalizedPhotoID = photoID.uuidString.lowercased()
         let path = "\(userFolder)/gallery/\(normalizedPhotoID).jpg"
@@ -130,7 +134,7 @@ final class ImageUploadService: ImageUploadProviding {
             contentType: "image/jpeg",
             upsert: false
         )
-        return UploadedPhoto(id: photoID, path: path, type: .gallery)
+        return UploadedImage(id: photoID, path: path)
     }
 
     // MARK: - Convenience APIs (UIImage)
@@ -153,7 +157,7 @@ final class ImageUploadService: ImageUploadProviding {
     }
 
     /// Convenience: converts UIImage to JPEG data and uploads as gallery photo.
-    func uploadGalleryPhoto(photoID: UUID = UUID(), image: UIImage, compressionQuality: CGFloat = 0.85) async throws -> UploadedPhoto {
+    func uploadGalleryPhoto(photoID: UUID = UUID(), image: UIImage, compressionQuality: CGFloat = 0.85) async throws -> UploadedImage {
         guard let data = image.jpegData(compressionQuality: compressionQuality) else {
             throw UploadError.invalidImageData
         }

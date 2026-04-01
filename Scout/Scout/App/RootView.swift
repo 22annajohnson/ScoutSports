@@ -35,7 +35,10 @@ struct RootView: View {
                 )
 
                 if !didCompleteOnboarding.wrappedValue {
-                    OnboardingView(didCompleteOnboarding: didCompleteOnboarding)
+                    OnboardingView(
+                        didCompleteOnboarding: didCompleteOnboarding,
+                        vm: appEnvironment.makeOnboardingViewModel()
+                    )
                 } else {
                     SwipeDeckScreen(
                         vm: appEnvironment.makeSwipeDeckViewModel(session: session)

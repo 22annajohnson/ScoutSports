@@ -49,6 +49,14 @@ final class AppEnvironment {
   }
 
   @MainActor
+  func makeOnboardingViewModel() -> OnboardingViewModel {
+    OnboardingViewModel(
+      profileRepository: profileRepository,
+      imageUploadService: imageUploadService
+    )
+  }
+
+  @MainActor
   func makeProfileBuilderViewModel(userIDProvider: @escaping () -> UUID?) -> ProfileBuilderViewModel {
     ProfileBuilderViewModel(
       mode: .requiredForMatching,
