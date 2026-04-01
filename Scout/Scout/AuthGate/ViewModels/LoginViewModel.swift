@@ -6,10 +6,11 @@
 //
 
 import Foundation
-import Combine
+import Observation
 
 @MainActor
-final class LoginViewModel: ObservableObject {
+@Observable
+final class LoginViewModel {
 
     enum SubmitState: Equatable {
         case idle
@@ -28,12 +29,12 @@ final class LoginViewModel: ObservableObject {
     }
 
     // Inputs
-    @Published var email: String = ""
-    @Published var password: String = ""
+    var email: String = ""
+    var password: String = ""
 
     // Outputs/UI state
-    @Published private(set) var submitState: SubmitState = .idle
-    @Published var alert: AlertItem?
+    private(set) var submitState: SubmitState = .idle
+    var alert: AlertItem?
 
     private let session: SessionStore
 
@@ -49,7 +50,7 @@ final class LoginViewModel: ObservableObject {
         !trimmedEmail.isEmpty && !password.isEmpty
     }
 
-    func login() {
+    func login() async {
         guard canSubmit else {
             alert = AlertItem(title: "Missing info", message: "Please enter both an email and password.")
             return
@@ -57,14 +58,12 @@ final class LoginViewModel: ObservableObject {
 
         submitState = .working
 
-        Task {
-            do {
-                try await session.signIn(email: trimmedEmail, password: password)
-                submitState = .idle
-            } catch {
-                submitState = .idle
-                alert = AlertItem(title: "Login failed", message: friendlyAuthErrorMessage(error))
-            }
+        do {
+            try await session.signIn(email: trimmedEmail, password: password)
+            submitState = .idle
+        } catch {
+            submitState = .idle
+            alert = AlertItem(title: "Login failed", message: friendlyAuthErrorMessage(error))
         }
     }
 

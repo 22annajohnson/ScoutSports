@@ -5,11 +5,12 @@
 //  Created by Anna on 2/26/26.
 //
 
-import Combine
 import Foundation
+import Observation
 
 @MainActor
-final class SignupViewModel: ObservableObject {
+@Observable
+final class SignupViewModel {
 
     // MARK: - Models
 
@@ -76,9 +77,9 @@ final class SignupViewModel: ObservableObject {
 
     // MARK: - Published State
 
-    @Published var form = Form()
-    @Published private(set) var submitState: SubmitState = .idle
-    @Published var alert: AlertItem?
+    var form = Form()
+    private(set) var submitState: SubmitState = .idle
+    var alert: AlertItem?
 
     // MARK: - Dependencies
 
@@ -90,7 +91,7 @@ final class SignupViewModel: ObservableObject {
 
     // MARK: - Business Logic
 
-    func signUp() {
+    func signUp() async {
         if let error = validate(form) {
             alert = error.alert
             return
@@ -98,14 +99,12 @@ final class SignupViewModel: ObservableObject {
 
         submitState = .working
 
-        Task {
-            do {
-                try await session.signUp(email: form.trimmedEmail, password: form.password)
-                submitState = .idle
-            } catch {
-                submitState = .idle
-                alert = .failure(friendlyAuthErrorMessage(error))
-            }
+        do {
+            try await session.signUp(email: form.trimmedEmail, password: form.password)
+            submitState = .idle
+        } catch {
+            submitState = .idle
+            alert = .failure(friendlyAuthErrorMessage(error))
         }
     }
 

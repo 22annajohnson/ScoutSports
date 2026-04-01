@@ -8,17 +8,22 @@
 import SwiftUI
 
 struct SwipeDeckView: View {
+    let vm: SwipeDeckViewModel
+
     @State private var index = 0
     @State private var drag: CGSize = .zero
     @State private var isSwipingHorizontally = false
     @State private var isDismissing = false
     @State private var showMatch = false
     @State private var matchedModel: CardViewModel? = nil
-    @EnvironmentObject private var session: SessionStore
-
-    let models: [CardViewModel]
+    @State private var showProfileBuilder = false
+    @State private var dismissalTask: Task<Void, Never>?
+    @Environment(\.appEnvironment) private var appEnvironment
+    @Environment(SessionStore.self) private var session
 
     private let threshold: CGFloat = 140
+    
+    private var models: [CardViewModel] { vm.cards }
 
     var body: some View {
         GeometryReader { geo in
@@ -101,17 +106,37 @@ struct SwipeDeckView: View {
                 }
             }
         }
+        .onDisappear {
+            dismissalTask?.cancel()
+            dismissalTask = nil
+            drag = .zero
+            isSwipingHorizontally = false
+            isDismissing = false
+        }
         .overlay(alignment: .topLeading) {
             #if DEBUG
-            Button {
-                Task { try? await session.signOut() }
-            } label: {
-                Label("Sign out", systemImage: "rectangle.portrait.and.arrow.right")
-                    .font(.subheadline.weight(.semibold))
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 10)
-                    .background(.ultraThinMaterial)
-                    .clipShape(Capsule())
+            VStack(alignment: .leading, spacing: 10) {
+                Button {
+                    Task { await vm.signOut() }
+                } label: {
+                    Label("Sign out", systemImage: "rectangle.portrait.and.arrow.right")
+                        .font(.subheadline.weight(.semibold))
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 10)
+                        .background(.ultraThinMaterial)
+                        .clipShape(Capsule())
+                }
+
+                Button {
+                    showProfileBuilder = true
+                } label: {
+                    Label("Edit Profile", systemImage: "person.crop.circle")
+                        .font(.subheadline.weight(.semibold))
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 10)
+                        .background(.ultraThinMaterial)
+                        .clipShape(Capsule())
+                }
             }
             .padding(.top, 16)
             .padding(.leading, 16)
@@ -130,8 +155,17 @@ struct SwipeDeckView: View {
                 )
             }
         }
+        .fullScreenCover(isPresented: $showProfileBuilder) {
+            ProfileBuilderView(
+                vm: appEnvironment.makeProfileBuilderViewModel(
+                    userIDProvider: { session.userID }
+                )
+            )
+                .environment(session)
+        }
     }
 
+    @MainActor
     private func finishSwipe(dx: CGFloat, geo: GeometryProxy) {
         let shouldDismiss = abs(dx) > threshold
         let direction: CGFloat = dx >= 0 ? 1 : -1
@@ -147,8 +181,11 @@ struct SwipeDeckView: View {
                 drag = CGSize(width: direction * (geo.size.width + 160), height: 0)
             }
 
-            // Swap to next card after the off-screen animation completes
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.23) {
+            dismissalTask?.cancel()
+            dismissalTask = Task {
+                try? await Task.sleep(for: .milliseconds(230))
+                guard !Task.isCancelled else { return }
+
                 // Swap & reset with animations disabled to avoid flashing the previous card
                 var transaction = Transaction()
                 transaction.disablesAnimations = true

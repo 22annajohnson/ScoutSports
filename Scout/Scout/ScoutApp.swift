@@ -10,22 +10,24 @@ import UIKit
 
 @main
 struct ScoutApp: App {
-    private let environment = AppEnvironment.shared
-    @StateObject private var session: SessionStore
+    @State private var session: SessionStore
 
     init() {
         // UIKit-wide tint fallback for system controllers (e.g. PhotosPicker)
         UIView.appearance().tintColor = UIColor(Color.scout)
         UINavigationBar.appearance().tintColor = UIColor(Color.scout)
 
-        let env = AppEnvironment.shared
-        _session = StateObject(wrappedValue: SessionStore(supabase: env.supabase))
+        let appEnvironment = AppEnvironment.shared
+        _session = State(initialValue: appEnvironment.makeSessionStore())
     }
 
     var body: some Scene {
         WindowGroup {
+            let appEnvironment = AppEnvironment.shared
+
             RootView()
-                .environmentObject(session)
+                .environment(\.appEnvironment, appEnvironment)
+                .environment(session)
                 .tint(Color.scout)
         }
     }

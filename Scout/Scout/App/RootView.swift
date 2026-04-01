@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct RootView: View {
-    @EnvironmentObject var session: SessionStore
+    @Environment(\.appEnvironment) private var appEnvironment
+    @Environment(SessionStore.self) private var session
     @AppStorage("scout_onboarded_user_id") private var onboardedUserId: String = ""
 
     var body: some View {
@@ -34,17 +35,28 @@ struct RootView: View {
                 )
 
                 if !didCompleteOnboarding.wrappedValue {
-                    OnboardingView(didCompleteOnboarding: didCompleteOnboarding)
+                    OnboardingView(
+                        didCompleteOnboarding: didCompleteOnboarding,
+                        vm: appEnvironment.makeOnboardingViewModel()
+                    )
                 } else {
-                    SwipeDeckView(models: getMockCardViewModels())
-                        .environmentObject(session)
+                    SwipeDeckScreen(
+                        vm: appEnvironment.makeSwipeDeckViewModel(session: session)
+                    )
+                        .environment(session)
                 }
             }
+        }
+        .task {
+            await session.loadInitialSessionIfNeeded()
         }
     }
 }
 
 #Preview {
+    let appEnvironment = AppEnvironment.preview
+
     RootView()
-        .environmentObject(SessionStore(supabase: AppEnvironment.shared.supabase))
+        .environment(\.appEnvironment, appEnvironment)
+        .environment(appEnvironment.makeSessionStore())
 }

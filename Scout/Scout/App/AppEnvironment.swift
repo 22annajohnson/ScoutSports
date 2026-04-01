@@ -7,11 +7,16 @@
 
 import Foundation
 import Supabase
+import SwiftUI
 
 final class AppEnvironment {
   static let shared = AppEnvironment()
 
   let supabase: SupabaseClient
+  let authService: AuthProviding
+  let profileRepository: ProfileProviding
+  let imageUploadService: ImageUploadProviding
+  let swipeCardProvider: SwipeCardProviding
 
   private init() {
       let options = SupabaseClientOptions(
@@ -24,5 +29,63 @@ final class AppEnvironment {
       supabaseKey: AppConfig.supabaseAnonKey,
       options: options
     )
+
+    authService = AuthService(supabase: supabase)
+    profileRepository = ProfileRepository(supabase: supabase)
+    imageUploadService = ImageUploadService(
+      supabase: supabase,
+      projectURL: SupabaseConfig.url,
+      bucket: "profile-photos"
+    )
+    swipeCardProvider = MockSwipeCardProvider()
+  }
+
+  func makeSessionStore() -> SessionStore {
+    SessionStore(
+      supabase: supabase,
+      auth: authService,
+      profiles: profileRepository
+    )
+  }
+
+  @MainActor
+  func makeOnboardingViewModel() -> OnboardingViewModel {
+    OnboardingViewModel(
+      profileRepository: profileRepository,
+      imageUploadService: imageUploadService
+    )
+  }
+
+  @MainActor
+  func makeProfileBuilderViewModel(userIDProvider: @escaping () -> UUID?) -> ProfileBuilderViewModel {
+    ProfileBuilderViewModel(
+      mode: .requiredForMatching,
+      profileRepository: profileRepository,
+      imageUploadService: imageUploadService,
+      userIDProvider: userIDProvider
+    )
+  }
+
+  @MainActor
+  func makeSwipeDeckViewModel(session: SessionStore) -> SwipeDeckViewModel {
+    SwipeDeckViewModel(
+      cardProvider: swipeCardProvider,
+      session: session
+    )
+  }
+}
+
+extension AppEnvironment {
+  static var preview: AppEnvironment { shared }
+}
+
+private struct AppEnvironmentKey: EnvironmentKey {
+  static let defaultValue = AppEnvironment.shared
+}
+
+extension EnvironmentValues {
+  var appEnvironment: AppEnvironment {
+    get { self[AppEnvironmentKey.self] }
+    set { self[AppEnvironmentKey.self] = newValue }
   }
 }

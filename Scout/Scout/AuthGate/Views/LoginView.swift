@@ -10,15 +10,17 @@ import SwiftUI
 
 struct LoginView: View {
     private let session: SessionStore
-    @StateObject private var vm: LoginViewModel
+    @State private var vm: LoginViewModel
     @State private var showSignup: Bool = false
 
     init(session: SessionStore) {
         self.session = session
-        _vm = StateObject(wrappedValue: LoginViewModel(session: session))
+        _vm = State(initialValue: LoginViewModel(session: session))
     }
 
     var body: some View {
+        @Bindable var vm = vm
+
         NavigationStack {
             VStack(alignment: .leading, spacing: 16) {
                 Spacer().frame(height: 24)
@@ -45,7 +47,9 @@ struct LoginView: View {
                 .padding(.top, 8)
 
                 Button {
-                    vm.login()
+                    Task {
+                        await vm.login()
+                    }
                 } label: {
                     HStack {
                         Spacer()

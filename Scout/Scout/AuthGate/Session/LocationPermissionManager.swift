@@ -5,14 +5,14 @@
 //  Created by Anna on 2/26/26.
 //
 
-// MARK: - Location
-import Combine
 import CoreLocation
+import Observation
 import SwiftUI
 
 @MainActor
-final class LocationPermissionManager: NSObject, ObservableObject, CLLocationManagerDelegate {
-    @Published var status: CLAuthorizationStatus = .notDetermined
+@Observable
+final class LocationPermissionManager: NSObject, CLLocationManagerDelegate {
+    var status: CLAuthorizationStatus = .notDetermined
 
     private let manager = CLLocationManager()
 
