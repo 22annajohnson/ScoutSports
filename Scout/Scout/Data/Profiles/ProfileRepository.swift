@@ -318,6 +318,39 @@ final class ProfileRepository: ProfileProviding {
             .execute()
     }
 
+    func replaceCurrentUserClubs(_ clubs: [String]) async throws {
+        guard let user = supabase.auth.currentUser else { throw DataError.notAuthenticated }
+
+        _ = try await supabase
+            .from("profile_clubs")
+            .delete()
+            .eq("user_id", value: user.id)
+            .execute()
+
+        guard !clubs.isEmpty else { return }
+
+        struct ClubInsert: Encodable {
+            let userID: UUID
+            let clubName: String
+            let position: Int16
+
+            enum CodingKeys: String, CodingKey {
+                case userID = "user_id"
+                case clubName = "club_name"
+                case position
+            }
+        }
+
+        let rows = clubs.enumerated().map { idx, club in
+            ClubInsert(userID: user.id, clubName: club, position: Int16(idx))
+        }
+
+        _ = try await supabase
+            .from("profile_clubs")
+            .insert(rows)
+            .execute()
+    }
+
     /// Marks profile as completed if required fields exist.
     /// V1 rule: must have an action photo + skill_level + background_level.
     func markProfileCompletedIfReady() async throws {

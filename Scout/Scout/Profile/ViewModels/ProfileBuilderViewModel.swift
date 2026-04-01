@@ -280,7 +280,6 @@ final class ProfileBuilderViewModel {
 
             // 3) Update profile fields
             var input = ProfileUpdateInput()
-            input.primarySport = "pickleball"
 
             let homeCourtTrimmed = form.homeCourtName.trimmingCharacters(in: .whitespacesAndNewlines)
             input.homeCourtName = homeCourtTrimmed.isEmpty ? nil : homeCourtTrimmed
@@ -294,8 +293,8 @@ final class ProfileBuilderViewModel {
 
             try await profileRepository.updateCurrentUserProfile(input)
 
-            // 4) Clubs: keep simple for now (you have a separate table). We'll add after this method compiles.
-            // Next step will be to upsert rows in `profile_clubs`.
+            // 4) Clubs
+            try await profileRepository.replaceCurrentUserClubs(form.clubs)
 
             // 5) Mark completion
             try await profileRepository.markProfileCompletedIfReady()

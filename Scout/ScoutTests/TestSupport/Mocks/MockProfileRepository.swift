@@ -19,6 +19,7 @@ final class MockProfileRepository: ProfileProviding {
     private(set) var setMySinglePhotoCalls: [(type: ProfilePhotoType, path: String, blurhash: String?)] = []
     private(set) var addGalleryPhotoCalls: [(id: UUID, path: String, position: Int16, isPrimary: Bool, blurhash: String?)] = []
     private(set) var updateMyProfileCalls: [ProfileUpdateInput] = []
+    private(set) var replaceMyClubsCalls: [[String]] = []
     private(set) var markProfileCompletedCallCount: Int = 0
 
     // MARK: - Configurable behavior
@@ -34,6 +35,7 @@ final class MockProfileRepository: ProfileProviding {
     var setMySinglePhotoError: Error?
     var addGalleryPhotoError: Error?
     var updateMyProfileError: Error?
+    var replaceMyClubsError: Error?
     var markProfileCompletedError: Error?
 
     /// Optional hooks if you want side effects.
@@ -42,6 +44,7 @@ final class MockProfileRepository: ProfileProviding {
     var onSetMySinglePhoto: ((ProfilePhotoType, String, String?) -> Void)?
     var onAddGalleryPhoto: ((UUID, String, Int16, Bool, String?) -> Void)?
     var onUpdateMyProfile: ((ProfileUpdateInput) -> Void)?
+    var onReplaceMyClubs: (([String]) -> Void)?
     var onMarkProfileCompleted: (() -> Void)?
 
     // MARK: - ProfileProviding
@@ -78,6 +81,12 @@ final class MockProfileRepository: ProfileProviding {
         updateMyProfileCalls.append(input)
         onUpdateMyProfile?(input)
         if let updateMyProfileError { throw updateMyProfileError }
+    }
+
+    func replaceCurrentUserClubs(_ clubs: [String]) async throws {
+        replaceMyClubsCalls.append(clubs)
+        onReplaceMyClubs?(clubs)
+        if let replaceMyClubsError { throw replaceMyClubsError }
     }
 
     func markProfileCompletedIfReady() async throws {

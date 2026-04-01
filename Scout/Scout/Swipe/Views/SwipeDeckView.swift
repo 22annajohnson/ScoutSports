@@ -108,6 +108,10 @@ struct SwipeDeckView: View {
         }
         .onDisappear {
             dismissalTask?.cancel()
+            dismissalTask = nil
+            drag = .zero
+            isSwipingHorizontally = false
+            isDismissing = false
         }
         .overlay(alignment: .topLeading) {
             #if DEBUG
