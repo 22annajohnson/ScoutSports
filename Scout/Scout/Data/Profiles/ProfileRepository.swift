@@ -66,7 +66,7 @@ struct ProfileUpdateInput: Equatable {
     var birthdate: Date? = nil
     var primarySport: String? = nil
     var bio: String? = nil
-
+    var homeCourtID: UUID? = nil
     var homeCourtName: String? = nil
 
     var backgroundLevel: ProfileBackgroundLevel? = nil
@@ -240,6 +240,7 @@ final class ProfileRepository: ProfileProviding {
             var birthdate: String?
             var primarySport: String?
             var bio: String?
+            var homeCourtID: UUID?
             var homeCourtName: String?
             var backgroundLevel: String?
             var yearsPlaying: Int16?
@@ -251,6 +252,7 @@ final class ProfileRepository: ProfileProviding {
                 case birthdate
                 case primarySport = "primary_sport"
                 case bio
+                case homeCourtID = "home_court_id"
                 case homeCourtName = "home_court_name"
                 case backgroundLevel = "background_level"
                 case yearsPlaying = "years_playing"
@@ -282,6 +284,9 @@ final class ProfileRepository: ProfileProviding {
         if let bio = input.bio {
             patch.bio = bio
         }
+        if let homeCourtID = input.homeCourtID {
+            patch.homeCourtID = homeCourtID
+        }
         if let homeCourtName = input.homeCourtName {
             patch.homeCourtName = homeCourtName
         }
@@ -303,6 +308,7 @@ final class ProfileRepository: ProfileProviding {
             && patch.birthdate == nil
             && patch.primarySport == nil
             && patch.bio == nil
+            && patch.homeCourtID == nil
             && patch.homeCourtName == nil
             && patch.backgroundLevel == nil
             && patch.yearsPlaying == nil

@@ -282,7 +282,13 @@ final class ProfileBuilderViewModel {
             var input = ProfileUpdateInput()
 
             let homeCourtTrimmed = form.homeCourtName.trimmingCharacters(in: .whitespacesAndNewlines)
-            input.homeCourtName = homeCourtTrimmed.isEmpty ? nil : homeCourtTrimmed
+            if homeCourtTrimmed.isEmpty {
+                input.homeCourtID = nil
+                input.homeCourtName = nil
+            } else {
+                input.homeCourtID = UUID()
+                input.homeCourtName = homeCourtTrimmed
+            }
 
             input.backgroundLevel = form.background.toRepoValue()
             input.skillLevel = Int16(form.skill)
