@@ -20,6 +20,7 @@ final class SwipeDeckViewModel {
     private let cardProvider: SwipeCardProviding
     private let session: SessionStore
 
+    private(set) var rankingContext: SwipeRankingContext?
     private(set) var candidates: [SwipeCandidate] = []
     private(set) var cards: [CardViewModel] = []
     private(set) var isLoading = true
@@ -54,9 +55,12 @@ final class SwipeDeckViewModel {
         defer { isLoading = false }
 
         do {
-            candidates = try await cardProvider.fetchSwipeCandidates()
+            let batch = try await cardProvider.fetchSwipeCandidates()
+            rankingContext = batch.rankingContext
+            candidates = batch.candidates
             cards = candidates.map { $0.toCardViewModel() }
         } catch {
+            rankingContext = nil
             candidates = []
             cards = []
             alert = AlertItem(
