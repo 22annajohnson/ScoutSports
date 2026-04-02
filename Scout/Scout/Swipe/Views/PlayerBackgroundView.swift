@@ -10,10 +10,10 @@ import SwiftUI
 struct PlayerBackgroundView: View {
     let imageURL: URL
     let color: Color
+
     var body: some View {
         GeometryReader { geo in
-            ZStack(alignment: .bottomLeading) {
-
+            ZStack {
                 AsyncImage(url: imageURL) { phase in
                     switch phase {
                     case .success(let image):
@@ -22,47 +22,60 @@ struct PlayerBackgroundView: View {
                             .scaledToFill()
                             .frame(width: geo.size.width, height: geo.size.height)
                             .clipped()
-                            .saturation(0)
+                            .saturation(0.82)
+                            .overlay {
+                                LinearGradient(
+                                    colors: [
+                                        Color.black.opacity(0.10),
+                                        Color.clear,
+                                        Color.black.opacity(0.34)
+                                    ],
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                )
+                            }
 
                     case .empty:
                         ZStack {
-                            Color.blue.opacity(0.2)
+                            ScoutTheme.screenBackground
                             ProgressView()
                         }
                         .frame(width: geo.size.width, height: geo.size.height)
 
                     case .failure:
                         ZStack {
-                            Color.red.opacity(0.2)
+                            ScoutTheme.screenBackground
                             Text("Image failed to load")
+                                .font(.scoutBody)
+                                .foregroundStyle(Color.scoutTextSecondary)
                         }
                         .frame(width: geo.size.width, height: geo.size.height)
 
                     @unknown default:
-                        Color.gray.opacity(0.2)
+                        ScoutTheme.screenBackground
                             .frame(width: geo.size.width, height: geo.size.height)
                     }
                 }
 
                 LinearGradient(
-                    colors: [.black.opacity(0.45), .clear, color.opacity(0.45)],
+                    colors: [
+                        Color.black.opacity(0.18),
+                        Color.clear,
+                        color.opacity(0.30)
+                    ],
                     startPoint: .top,
                     endPoint: .bottom
                 )
                 .frame(width: geo.size.width, height: geo.size.height)
-
-                BottomTriangle()
-                    .fill(color)
-                    .frame(height: 300)
-                    .frame(maxWidth: .infinity)
             }
             .frame(width: geo.size.width, height: geo.size.height)
             .clipped()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(ScoutTheme.screenBackground)
     }
 }
 
 #Preview ("Background") {
-    PlayerBackgroundView(imageURL: getRandomHeroHeaderViewModel().imageURL, color: Color.scout)
+    PlayerBackgroundView(imageURL: getRandomHeroHeaderViewModel().imageURL, color: Color.scoutAccentStart)
 }
