@@ -7,22 +7,27 @@
 
 import Foundation
 
-func getMockCardViewModels() -> [CardViewModel] {
-    var models: [CardViewModel] = []
+func getMockSwipeCandidates() -> [SwipeCandidate] {
+    var models: [SwipeCandidate] = []
     for _ in 0..<10 {
-        models.append(randomMockCardViewModel())
+        models.append(randomMockSwipeCandidate())
     }
     return models
 }
 
-func randomMockCardViewModel() -> CardViewModel {
-    CardViewModel(
-        name: getRandomName(),
+func randomMockSwipeCandidate() -> SwipeCandidate {
+    SwipeCandidate(
+        id: UUID(),
+        displayName: getRandomName(),
         sports: getRandomSports(),
         heroImageURL: URL(string:"https://picsum.photos/400/800")!,
         stats: getRandomStats(),
         didLike: Bool.random()
     )
+}
+
+func randomMockCardViewModel() -> CardViewModel {
+    randomMockSwipeCandidate().toCardViewModel()
 }
 
 func getRandomName() -> String {
@@ -45,4 +50,3 @@ func getRandomStats() -> [StatsViewModel] {
     
     return stats
 }
-

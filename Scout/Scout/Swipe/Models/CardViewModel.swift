@@ -7,6 +7,15 @@
 
 import Foundation
 
+struct SwipeCandidate: Identifiable {
+    let id: UUID
+    var displayName: String
+    var sports: [String]
+    var heroImageURL: URL
+    var stats: [StatsViewModel]
+    var didLike: Bool
+}
+
 struct CardViewModel: Identifiable {
     let id: UUID = UUID()
     var name: String
@@ -28,4 +37,16 @@ struct ReviewViewModel {
     var username: String
     var rating: Int
     var comment: String
+}
+
+extension SwipeCandidate {
+    func toCardViewModel() -> CardViewModel {
+        CardViewModel(
+            name: displayName,
+            sports: sports,
+            heroImageURL: heroImageURL,
+            stats: stats,
+            didLike: didLike
+        )
+    }
 }

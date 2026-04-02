@@ -8,7 +8,7 @@
 import Foundation
 
 struct MockSwipeCardProvider: SwipeCardProviding {
-    func fetchCards() async throws -> [CardViewModel] {
-        getMockCardViewModels()
+    func fetchSwipeCandidates() async throws -> [SwipeCandidate] {
+        getMockSwipeCandidates()
     }
 }

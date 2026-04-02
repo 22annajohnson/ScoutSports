@@ -8,5 +8,5 @@
 import Foundation
 
 protocol SwipeCardProviding {
-    func fetchCards() async throws -> [CardViewModel]
+    func fetchSwipeCandidates() async throws -> [SwipeCandidate]
 }
