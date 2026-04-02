@@ -11,6 +11,7 @@ import Supabase
 
 enum DataError: Error {
     case notAuthenticated
+    case unauthorizedFeedbackAccess
 }
 
 // MARK: - Profile Photos (DB rows)
@@ -529,6 +530,9 @@ final class ProfileRepository: ProfileProviding, PlayerMatchSignalsProviding, Pl
     }
 
     func fetchPrivateFeedbackReceived(for reviewedUserID: UUID) async throws -> [MatchPlayerFeedback] {
+        guard let user = supabase.auth.currentUser else { throw DataError.notAuthenticated }
+        guard reviewedUserID == user.id else { throw DataError.unauthorizedFeedbackAccess }
+
         let rows: [MatchPlayerFeedbackRow] = try await supabase
             .from("match_player_feedback")
             .select("id, match_id, reviewer_user_id, reviewed_user_id, skill_rating, competitiveness_rating, friendliness_rating, vibes_rating, communication_rating, reliability_rating, would_play_again, private_note, created_at")
