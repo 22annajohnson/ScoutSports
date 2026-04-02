@@ -17,6 +17,12 @@ import UIKit
 @MainActor
 @Observable
 final class ProfileBuilderViewModel {
+    private enum MatchSignalField: Hashable {
+        case competitivenessRating
+        case friendlinessRating
+        case socialVibeRating
+        case preferredMatchIntensity
+    }
 
     // MARK: - Mode
 
@@ -153,7 +159,26 @@ final class ProfileBuilderViewModel {
     // MARK: - Published state
 
     var step: Step = .actionShot
-    var form: Form = .init()
+    var form: Form = .init() {
+        didSet {
+            if oldValue.clubsText != form.clubsText {
+                didEditClubs = true
+            }
+
+            if oldValue.competitivenessRating != form.competitivenessRating {
+                editedMatchSignalFields.insert(.competitivenessRating)
+            }
+            if oldValue.friendlinessRating != form.friendlinessRating {
+                editedMatchSignalFields.insert(.friendlinessRating)
+            }
+            if oldValue.socialVibeRating != form.socialVibeRating {
+                editedMatchSignalFields.insert(.socialVibeRating)
+            }
+            if oldValue.preferredMatchIntensity != form.preferredMatchIntensity {
+                editedMatchSignalFields.insert(.preferredMatchIntensity)
+            }
+        }
+    }
 
     var actionShotItem: PhotosPickerItem?
     var headshotItem: PhotosPickerItem?
@@ -162,6 +187,8 @@ final class ProfileBuilderViewModel {
     var headshotImage: UIImage?
 
     var isSaving: Bool = false
+    private var didEditClubs: Bool = false
+    private var editedMatchSignalFields: Set<MatchSignalField> = []
 
     // Alerts
     var isShowingAlert: Bool = false
@@ -307,10 +334,10 @@ final class ProfileBuilderViewModel {
 
             let homeCourtTrimmed = form.homeCourtName.trimmingCharacters(in: .whitespacesAndNewlines)
             if homeCourtTrimmed.isEmpty {
-                input.homeCourtID = nil
-                input.homeCourtName = nil
+                input.shouldClearHomeCourtID = true
+                input.shouldClearHomeCourtName = true
             } else {
-                input.homeCourtID = nil
+                input.shouldClearHomeCourtID = true
                 input.homeCourtName = homeCourtTrimmed
             }
 
@@ -323,18 +350,32 @@ final class ProfileBuilderViewModel {
 
             try await profileRepository.updateCurrentUserProfile(input)
 
-            var matchSignalsInput = PlayerMatchSignalsUpdateInput()
-            matchSignalsInput.competitivenessRating = form.competitivenessRating
-            matchSignalsInput.friendlinessRating = form.friendlinessRating
-            matchSignalsInput.socialVibeRating = form.socialVibeRating
-            matchSignalsInput.preferredMatchIntensity = form.preferredMatchIntensity.rawValue
+            if !editedMatchSignalFields.isEmpty {
+                var matchSignalsInput = PlayerMatchSignalsUpdateInput()
+                if editedMatchSignalFields.contains(.competitivenessRating) {
+                    matchSignalsInput.competitivenessRating = form.competitivenessRating
+                }
+                if editedMatchSignalFields.contains(.friendlinessRating) {
+                    matchSignalsInput.friendlinessRating = form.friendlinessRating
+                }
+                if editedMatchSignalFields.contains(.socialVibeRating) {
+                    matchSignalsInput.socialVibeRating = form.socialVibeRating
+                }
+                if editedMatchSignalFields.contains(.preferredMatchIntensity) {
+                    matchSignalsInput.preferredMatchIntensity = form.preferredMatchIntensity.rawValue
+                }
 
-            try await matchSignalsRepository.updateCurrentUserMatchSignals(matchSignalsInput)
+                try await matchSignalsRepository.updateCurrentUserMatchSignals(matchSignalsInput)
+            }
 
-            try await profileRelationshipsRepository.replaceCurrentUserClubMemberships(with: form.clubs)
+            if didEditClubs {
+                try await profileRelationshipsRepository.replaceCurrentUserClubMemberships(with: form.clubs)
+            }
             
             // 4) Mark completion
             try await profileRepository.markProfileCompletedIfReady()
+            editedMatchSignalFields.removeAll()
+            didEditClubs = false
 
         } catch {
             showAlert(title: "Save Failed", message: error.localizedDescription)

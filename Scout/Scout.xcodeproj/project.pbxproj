@@ -47,6 +47,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Data/ProfileDTOTests.swift,
+				Profile/ProfileBuilderViewModelTests.swift,
 				ScoutTests.swift,
 				Session/SessionStoreTests.swift,
 			);
@@ -56,6 +57,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Data/ProfileDTOTests.swift,
+				Profile/ProfileBuilderViewModelTests.swift,
 				ScoutTests.swift,
 				Session/SessionStoreTests.swift,
 			);

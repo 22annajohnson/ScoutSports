@@ -309,8 +309,8 @@ final class ProfileRepository: ProfileProviding, PlayerMatchSignalsProviding, Pl
             var birthdate: String?
             var primarySport: String?
             var bio: String?
-            var homeCourtID: UUID?
-            var homeCourtName: String?
+            var homeCourtID: UUID??
+            var homeCourtName: String??
             var backgroundLevel: String?
             var yearsPlaying: Int16?
             var skillLevel: Int16?
@@ -353,11 +353,15 @@ final class ProfileRepository: ProfileProviding, PlayerMatchSignalsProviding, Pl
         if let bio = input.bio {
             patch.bio = bio
         }
-        if let homeCourtID = input.homeCourtID {
-            patch.homeCourtID = homeCourtID
+        if input.shouldClearHomeCourtID {
+            patch.homeCourtID = .some(nil)
+        } else if let homeCourtID = input.homeCourtID {
+            patch.homeCourtID = .some(homeCourtID)
         }
-        if let homeCourtName = input.homeCourtName {
-            patch.homeCourtName = homeCourtName
+        if input.shouldClearHomeCourtName {
+            patch.homeCourtName = .some(nil)
+        } else if let homeCourtName = input.homeCourtName {
+            patch.homeCourtName = .some(homeCourtName)
         }
         if let backgroundLevel = input.backgroundLevel {
             patch.backgroundLevel = backgroundLevel.rawValue
@@ -533,20 +537,38 @@ final class ProfileRepository: ProfileProviding, PlayerMatchSignalsProviding, Pl
         guard let user = supabase.auth.currentUser else { throw DataError.notAuthenticated }
         guard reviewedUserID == user.id else { throw DataError.unauthorizedFeedbackAccess }
 
-        let rows: [MatchPlayerFeedbackRow] = try await supabase
-            .from("match_player_feedback")
-            .select("id, match_id, reviewer_user_id, reviewed_user_id, skill_rating, competitiveness_rating, friendliness_rating, vibes_rating, communication_rating, reliability_rating, would_play_again, private_note, created_at")
-            .eq("reviewed_user_id", value: reviewedUserID)
-            .order("created_at", ascending: false)
-            .execute()
-            .value
-
+        let rows = try await fetchFeedbackRows(for: reviewedUserID, includePrivateNote: true)
         return rows.map { $0.toDomain() }
     }
 
     func fetchDerivedMetrics(for userID: UUID) async throws -> PlayerDerivedMetrics {
-        let feedbackRows = try await fetchPrivateFeedbackReceived(for: userID)
+        let feedbackRows = try await fetchFeedbackRows(for: userID, includePrivateNote: false)
+        return deriveMetrics(for: userID, from: feedbackRows)
+    }
 
+    func fetchPublicMetricSummary(for userID: UUID) async throws -> PlayerPublicMetricSummary {
+        let feedbackRows = try await fetchFeedbackRows(for: userID, includePrivateNote: false)
+        let metrics = deriveMetrics(for: userID, from: feedbackRows)
+        return metrics.toPublicSummary(totalReviews: feedbackRows.count)
+    }
+
+    private func fetchFeedbackRows(for reviewedUserID: UUID, includePrivateNote: Bool) async throws -> [MatchPlayerFeedbackRow] {
+        guard supabase.auth.currentUser != nil else { throw DataError.notAuthenticated }
+
+        let selectColumns = includePrivateNote
+            ? "id, match_id, reviewer_user_id, reviewed_user_id, skill_rating, competitiveness_rating, friendliness_rating, vibes_rating, communication_rating, reliability_rating, would_play_again, private_note, created_at"
+            : "id, match_id, reviewer_user_id, reviewed_user_id, skill_rating, competitiveness_rating, friendliness_rating, vibes_rating, communication_rating, reliability_rating, would_play_again, created_at"
+
+        return try await supabase
+            .from("match_player_feedback")
+            .select(selectColumns)
+            .eq("reviewed_user_id", value: reviewedUserID)
+            .order("created_at", ascending: false)
+            .execute()
+            .value
+    }
+
+    private func deriveMetrics(for userID: UUID, from feedbackRows: [MatchPlayerFeedbackRow]) -> PlayerDerivedMetrics {
         func average(_ values: [Int?]) -> Double? {
             let resolved = values.compactMap { $0 }
             guard !resolved.isEmpty else { return nil }
@@ -576,12 +598,6 @@ final class ProfileRepository: ProfileProviding, PlayerMatchSignalsProviding, Pl
             skillConfidence: skillConfidence,
             repeatPlayRate: repeatPlayRate
         )
-    }
-
-    func fetchPublicMetricSummary(for userID: UUID) async throws -> PlayerPublicMetricSummary {
-        let feedbackRows = try await fetchPrivateFeedbackReceived(for: userID)
-        let metrics = try await fetchDerivedMetrics(for: userID)
-        return metrics.toPublicSummary(totalReviews: feedbackRows.count)
     }
 
     /// Marks profile as completed if required fields exist.
