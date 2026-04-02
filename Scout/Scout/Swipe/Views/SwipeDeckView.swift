@@ -50,7 +50,12 @@ struct SwipeDeckView: View {
                     }
 
                     // CURRENT card on top
-                    PlayerSwipeScrollView(model: models[index])
+                    PlayerSwipeScrollView(
+                        model: models[index],
+                        onPass: { triggerDockSwipe(.pass, geo: geo) },
+                        onBoost: { triggerDockSwipe(.like, geo: geo) },
+                        onLike: { triggerDockSwipe(.like, geo: geo) }
+                    )
                         .id(index)
                         .scrollDisabled(isSwipingHorizontally)
                         .offset(x: dx, y: 0)
@@ -163,6 +168,20 @@ struct SwipeDeckView: View {
             )
                 .environment(session)
         }
+    }
+
+    private enum DockSwipeAction {
+        case pass
+        case like
+    }
+
+    @MainActor
+    private func triggerDockSwipe(_ action: DockSwipeAction, geo: GeometryProxy) {
+        guard !isDismissing, index < models.count else { return }
+
+        let swipeDistance = threshold + 1
+        let dx: CGFloat = action == .like ? swipeDistance : -swipeDistance
+        finishSwipe(dx: dx, geo: geo)
     }
 
     @MainActor

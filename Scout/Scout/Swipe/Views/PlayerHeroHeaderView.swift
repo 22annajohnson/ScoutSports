@@ -8,54 +8,52 @@
 import SwiftUI
 
 struct PlayerHeroHeaderView: View {
-    
     let model: HeroHeaderViewModel
 
     var body: some View {
-        ZStack (alignment: .topLeading) {
-            VStack {
-                HStack {
-                    Spacer()
-                    nameView
-                        .padding(20)
-                    
+        VStack(alignment: .leading, spacing: ScoutSpacing.md) {
+            Text(model.name)
+                .font(.scoutDisplayCompact)
+                .foregroundStyle(Color.white)
+
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: ScoutSpacing.sm) {
+                    heroChips
                 }
-                .frame(alignment: .top)
-                
-                Spacer()
-                    .frame(maxHeight: .infinity)
-                HStack {
-                    Spacer()
-                    iconView
-                        .padding(20)
+
+                VStack(alignment: .leading, spacing: ScoutSpacing.sm) {
+                    HStack(spacing: ScoutSpacing.sm) {
+                        GlassChip(title: "\(model.score) Match", systemImage: "bolt.fill", style: .accent)
+                        GlassChip(title: "Competitive")
+                    }
+
+                    GlassChip(title: "Pickleball")
                 }
             }
-        }
 
+            if let bio = model.bio?.trimmingCharacters(in: .whitespacesAndNewlines), !bio.isEmpty {
+                Text(bio)
+                    .font(.scoutBody)
+                    .foregroundStyle(Color.white.opacity(0.84))
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
-    
-    private var nameView: some View {
-        Text(model.name.uppercased())
-            .font(.scoutHeroName)
-            .foregroundStyle(.contrastText)
-            .padding(.bottom, 10)
-    }
-    
-    private var iconView: some View {
-        Image(systemName: "tennis.racket")
-            .font(Font.system(size: 75, weight: .light, design: .default))
-            .foregroundStyle(Color.primaryText.opacity(1))
-            .shadow(color: Color.vibe.opacity(0.3), radius: 5, x: 10, y: 10)
-            
+
+    private var heroChips: some View {
+        Group {
+            GlassChip(title: "\(model.score) Match", systemImage: "bolt.fill", style: .accent)
+            GlassChip(title: "Competitive")
+            GlassChip(title: "Pickleball")
+        }
     }
 }
-
-
 
 #Preview ("Hero") {
     ZStack {
         PlayerHeroHeaderView(model: getRandomHeroHeaderViewModel())
-            .background(.secondaryAccent)
+            .padding()
+            .background(ScoutTheme.screenBackground)
     }
 }
-
