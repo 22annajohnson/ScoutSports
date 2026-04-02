@@ -10,7 +10,7 @@ import Foundation
 /// Test double for `ProfileProviding`.
 /// - Configurable return values for fetch/update
 /// - Tracks calls and captured inputs
-final class MockProfileRepository: ProfileProviding, PlayerMatchSignalsProviding, PlayerProfileRelationshipsProviding {
+final class MockProfileRepository: ProfileProviding, PlayerMatchSignalsProviding, PlayerProfileRelationshipsProviding, MatchFeedbackProviding {
 
     // MARK: - Captured inputs
 
@@ -21,6 +21,7 @@ final class MockProfileRepository: ProfileProviding, PlayerMatchSignalsProviding
     private(set) var updateMyProfileCalls: [PlayerPublicProfileUpdateInput] = []
     private(set) var updateMatchSignalsCalls: [PlayerMatchSignalsUpdateInput] = []
     private(set) var replaceClubMembershipCalls: [[String]] = []
+    private(set) var submittedMatchFeedbackCalls: [MatchPlayerFeedbackInput] = []
     private(set) var markProfileCompletedCallCount: Int = 0
 
     // MARK: - Configurable behavior
@@ -38,7 +39,9 @@ final class MockProfileRepository: ProfileProviding, PlayerMatchSignalsProviding
     var updateMyProfileError: Error?
     var updateMatchSignalsError: Error?
     var replaceClubMembershipError: Error?
+    var submitMatchFeedbackError: Error?
     var markProfileCompletedError: Error?
+    var feedbackReceivedResult: [MatchPlayerFeedback] = []
 
     /// Optional hooks if you want side effects.
     var onFetchMyProfile: (() -> Void)?
@@ -48,6 +51,7 @@ final class MockProfileRepository: ProfileProviding, PlayerMatchSignalsProviding
     var onUpdateMyProfile: ((PlayerPublicProfileUpdateInput) -> Void)?
     var onUpdateMatchSignals: ((PlayerMatchSignalsUpdateInput) -> Void)?
     var onReplaceClubMemberships: (([String]) -> Void)?
+    var onSubmitMatchFeedback: ((MatchPlayerFeedbackInput) -> Void)?
     var onMarkProfileCompleted: (() -> Void)?
 
     // MARK: - ProfileProviding
@@ -110,6 +114,16 @@ final class MockProfileRepository: ProfileProviding, PlayerMatchSignalsProviding
         replaceClubMembershipCalls.append(clubNames)
         onReplaceClubMemberships?(clubNames)
         if let replaceClubMembershipError { throw replaceClubMembershipError }
+    }
+
+    func submitCurrentUserMatchFeedback(_ input: MatchPlayerFeedbackInput) async throws {
+        submittedMatchFeedbackCalls.append(input)
+        onSubmitMatchFeedback?(input)
+        if let submitMatchFeedbackError { throw submitMatchFeedbackError }
+    }
+
+    func fetchFeedbackReceived(for reviewedUserID: UUID) async throws -> [MatchPlayerFeedback] {
+        feedbackReceivedResult.filter { $0.reviewedUserID == reviewedUserID }
     }
 
     func markProfileCompletedIfReady() async throws {

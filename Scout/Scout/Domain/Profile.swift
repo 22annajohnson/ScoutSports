@@ -76,3 +76,35 @@ struct PlayerDerivedMetrics: Identifiable, Equatable, Sendable {
     var skillConfidence: Double?
     var repeatPlayRate: Double?
 }
+
+/// Raw post-match feedback submitted by one player about another player.
+/// This is append-only interaction data and should remain separate from editable profile state.
+struct MatchPlayerFeedback: Identifiable, Equatable, Sendable {
+    let id: UUID
+    let matchID: UUID
+    let reviewerUserID: UUID
+    let reviewedUserID: UUID
+    var skillRating: Int?
+    var competitivenessRating: Int?
+    var friendlinessRating: Int?
+    var vibesRating: Int?
+    var communicationRating: Int?
+    var reliabilityRating: Int?
+    var wouldPlayAgain: Bool?
+    var privateNote: String?
+    let createdAt: Date
+}
+
+/// Write payload for raw post-match feedback rows.
+struct MatchPlayerFeedbackInput: Equatable, Sendable {
+    var matchID: UUID
+    var reviewedUserID: UUID
+    var skillRating: Int? = nil
+    var competitivenessRating: Int? = nil
+    var friendlinessRating: Int? = nil
+    var vibesRating: Int? = nil
+    var communicationRating: Int? = nil
+    var reliabilityRating: Int? = nil
+    var wouldPlayAgain: Bool? = nil
+    var privateNote: String? = nil
+}

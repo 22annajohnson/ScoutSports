@@ -87,4 +87,60 @@ final class ProfileDTOTests: XCTestCase {
         XCTAssertEqual(values.7, 3)
         XCTAssertEqual(values.8, "doubles")
     }
+
+    func test_matchPlayerFeedbackRow_toDomain_mapsFeedbackFields() async {
+        let createdAt = Date(timeIntervalSince1970: 123456)
+        let matchID = UUID()
+        let reviewerID = UUID()
+        let reviewedID = UUID()
+
+        let domain = await MainActor.run { () -> MatchPlayerFeedback in
+            let row = MatchPlayerFeedbackRow(
+                id: UUID(),
+                matchID: matchID,
+                reviewerUserID: reviewerID,
+                reviewedUserID: reviewedID,
+                skillRating: 4,
+                competitivenessRating: 5,
+                friendlinessRating: 3,
+                vibesRating: 4,
+                communicationRating: 5,
+                reliabilityRating: 4,
+                wouldPlayAgain: true,
+                privateNote: "Great games",
+                createdAt: createdAt
+            )
+            return row.toDomain()
+        }
+
+        let values = await MainActor.run {
+            (
+                domain.matchID,
+                domain.reviewerUserID,
+                domain.reviewedUserID,
+                domain.skillRating,
+                domain.competitivenessRating,
+                domain.friendlinessRating,
+                domain.vibesRating,
+                domain.communicationRating,
+                domain.reliabilityRating,
+                domain.wouldPlayAgain,
+                domain.privateNote,
+                domain.createdAt
+            )
+        }
+
+        XCTAssertEqual(values.0, matchID)
+        XCTAssertEqual(values.1, reviewerID)
+        XCTAssertEqual(values.2, reviewedID)
+        XCTAssertEqual(values.3, 4)
+        XCTAssertEqual(values.4, 5)
+        XCTAssertEqual(values.5, 3)
+        XCTAssertEqual(values.6, 4)
+        XCTAssertEqual(values.7, 5)
+        XCTAssertEqual(values.8, 4)
+        XCTAssertEqual(values.9, true)
+        XCTAssertEqual(values.10, "Great games")
+        XCTAssertEqual(values.11, createdAt)
+    }
 }

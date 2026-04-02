@@ -21,7 +21,10 @@ protocol ProfileProviding {
 
 /// Future boundary for player-to-player feedback submitted after a match or session.
 /// Raw feedback should remain separate from editable profile state.
-protocol MatchFeedbackProviding { }
+protocol MatchFeedbackProviding {
+    func submitCurrentUserMatchFeedback(_ input: MatchPlayerFeedbackInput) async throws
+    func fetchFeedbackReceived(for reviewedUserID: UUID) async throws -> [MatchPlayerFeedback]
+}
 
 /// Boundary for self-reported inputs used by matching and ranking.
 /// These are editable by the player, but should remain separate from public profile fields.
