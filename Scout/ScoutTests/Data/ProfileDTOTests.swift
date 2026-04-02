@@ -143,4 +143,33 @@ final class ProfileDTOTests: XCTestCase {
         XCTAssertEqual(values.10, "Great games")
         XCTAssertEqual(values.11, createdAt)
     }
+
+    func test_playerDerivedMetrics_toStatsViewModels_mapsRatingsForSwipeSurface() async {
+        let metrics = await MainActor.run {
+            PlayerDerivedMetrics(
+                id: "derived-user",
+                friendlinessScore: 4.2,
+                competitivenessScore: 3.4,
+                vibesScore: 4.6,
+                reliabilityScore: 2.7,
+                skillConfidence: 3.8,
+                repeatPlayRate: 5.0
+            )
+        }
+
+        let stats = await MainActor.run {
+            metrics.toStatsViewModels(totalReviews: 12)
+        }
+
+        XCTAssertEqual(stats.count, 4)
+        XCTAssertEqual(stats[0].statType, .vibe)
+        XCTAssertEqual(stats[0].rating, 5)
+        XCTAssertEqual(stats[1].statType, .intensity)
+        XCTAssertEqual(stats[1].rating, 3)
+        XCTAssertEqual(stats[2].statType, .consistency)
+        XCTAssertEqual(stats[2].rating, 3)
+        XCTAssertEqual(stats[3].statType, .skill)
+        XCTAssertEqual(stats[3].rating, 4)
+        XCTAssertTrue(stats.allSatisfy { $0.totalReviews == 12 })
+    }
 }

@@ -119,7 +119,7 @@ enum ProfilePlayStyle: String, Codable, CaseIterable, Sendable {
     case singles
 }
 
-final class ProfileRepository: ProfileProviding, PlayerMatchSignalsProviding, PlayerProfileRelationshipsProviding, MatchFeedbackProviding {
+final class ProfileRepository: ProfileProviding, PlayerMatchSignalsProviding, PlayerProfileRelationshipsProviding, MatchFeedbackProviding, PlayerMetricsProviding {
     private let supabase: SupabaseClient
 
     init(supabase: SupabaseClient) {
@@ -538,6 +538,40 @@ final class ProfileRepository: ProfileProviding, PlayerMatchSignalsProviding, Pl
             .value
 
         return rows.map { $0.toDomain() }
+    }
+
+    func fetchDerivedMetrics(for userID: UUID) async throws -> PlayerDerivedMetrics {
+        let feedbackRows = try await fetchFeedbackReceived(for: userID)
+
+        func average(_ values: [Int?]) -> Double? {
+            let resolved = values.compactMap { $0 }
+            guard !resolved.isEmpty else { return nil }
+            return Double(resolved.reduce(0, +)) / Double(resolved.count)
+        }
+
+        func ratio(_ values: [Bool?]) -> Double? {
+            let resolved = values.compactMap { $0 }
+            guard !resolved.isEmpty else { return nil }
+            let positiveCount = resolved.filter { $0 }.count
+            return (Double(positiveCount) / Double(resolved.count)) * 5.0
+        }
+
+        let friendlinessScore = average(feedbackRows.map(\.friendlinessRating))
+        let competitivenessScore = average(feedbackRows.map(\.competitivenessRating))
+        let vibesScore = average(feedbackRows.map(\.vibesRating))
+        let reliabilityScore = average(feedbackRows.map(\.reliabilityRating))
+        let skillConfidence = average(feedbackRows.map(\.skillRating))
+        let repeatPlayRate = ratio(feedbackRows.map(\.wouldPlayAgain))
+
+        return PlayerDerivedMetrics(
+            id: userID.uuidString,
+            friendlinessScore: friendlinessScore,
+            competitivenessScore: competitivenessScore,
+            vibesScore: vibesScore,
+            reliabilityScore: reliabilityScore,
+            skillConfidence: skillConfidence,
+            repeatPlayRate: repeatPlayRate
+        )
     }
 
     /// Marks profile as completed if required fields exist.

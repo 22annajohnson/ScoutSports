@@ -40,4 +40,6 @@ protocol PlayerProfileRelationshipsProviding {
 
 /// Future boundary for system-owned aggregates derived from feedback and behavior.
 /// Swipe ordering and matching should consume these values without storing them in `profiles`.
-protocol PlayerMetricsProviding { }
+protocol PlayerMetricsProviding {
+    func fetchDerivedMetrics(for userID: UUID) async throws -> PlayerDerivedMetrics
+}

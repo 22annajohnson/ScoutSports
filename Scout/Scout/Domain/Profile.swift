@@ -77,6 +77,31 @@ struct PlayerDerivedMetrics: Identifiable, Equatable, Sendable {
     var repeatPlayRate: Double?
 }
 
+extension PlayerDerivedMetrics {
+    func toStatsViewModels(totalReviews: Int) -> [StatsViewModel] {
+        [
+            makeStatViewModel(for: .vibe, score: vibesScore, totalReviews: totalReviews),
+            makeStatViewModel(for: .intensity, score: competitivenessScore, totalReviews: totalReviews),
+            makeStatViewModel(for: .consistency, score: reliabilityScore, totalReviews: totalReviews),
+            makeStatViewModel(for: .skill, score: skillConfidence, totalReviews: totalReviews),
+        ]
+    }
+
+    private func makeStatViewModel(for statType: StatType, score: Double?, totalReviews: Int) -> StatsViewModel {
+        StatsViewModel(
+            statType: statType,
+            rating: roundedStarRating(from: score),
+            totalReviews: totalReviews,
+            reviews: []
+        )
+    }
+
+    private func roundedStarRating(from score: Double?) -> Int {
+        guard let score else { return 0 }
+        return min(max(Int(score.rounded()), 0), 5)
+    }
+}
+
 /// Raw post-match feedback submitted by one player about another player.
 /// This is append-only interaction data and should remain separate from editable profile state.
 struct MatchPlayerFeedback: Identifiable, Equatable, Sendable {

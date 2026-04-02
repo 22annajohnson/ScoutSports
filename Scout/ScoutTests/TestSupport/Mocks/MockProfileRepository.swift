@@ -10,7 +10,7 @@ import Foundation
 /// Test double for `ProfileProviding`.
 /// - Configurable return values for fetch/update
 /// - Tracks calls and captured inputs
-final class MockProfileRepository: ProfileProviding, PlayerMatchSignalsProviding, PlayerProfileRelationshipsProviding, MatchFeedbackProviding {
+final class MockProfileRepository: ProfileProviding, PlayerMatchSignalsProviding, PlayerProfileRelationshipsProviding, MatchFeedbackProviding, PlayerMetricsProviding {
 
     // MARK: - Captured inputs
 
@@ -42,6 +42,15 @@ final class MockProfileRepository: ProfileProviding, PlayerMatchSignalsProviding
     var submitMatchFeedbackError: Error?
     var markProfileCompletedError: Error?
     var feedbackReceivedResult: [MatchPlayerFeedback] = []
+    var derivedMetricsResult = PlayerDerivedMetrics(
+        id: "test-user",
+        friendlinessScore: nil,
+        competitivenessScore: nil,
+        vibesScore: nil,
+        reliabilityScore: nil,
+        skillConfidence: nil,
+        repeatPlayRate: nil
+    )
 
     /// Optional hooks if you want side effects.
     var onFetchMyProfile: (() -> Void)?
@@ -124,6 +133,10 @@ final class MockProfileRepository: ProfileProviding, PlayerMatchSignalsProviding
 
     func fetchFeedbackReceived(for reviewedUserID: UUID) async throws -> [MatchPlayerFeedback] {
         feedbackReceivedResult.filter { $0.reviewedUserID == reviewedUserID }
+    }
+
+    func fetchDerivedMetrics(for userID: UUID) async throws -> PlayerDerivedMetrics {
+        derivedMetricsResult
     }
 
     func markProfileCompletedIfReady() async throws {
