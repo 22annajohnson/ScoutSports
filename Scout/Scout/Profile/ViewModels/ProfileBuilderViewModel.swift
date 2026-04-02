@@ -153,7 +153,20 @@ final class ProfileBuilderViewModel {
     // MARK: - Published state
 
     var step: Step = .actionShot
-    var form: Form = .init()
+    var form: Form = .init() {
+        didSet {
+            if oldValue.clubsText != form.clubsText {
+                didEditClubs = true
+            }
+
+            if oldValue.competitivenessRating != form.competitivenessRating
+                || oldValue.friendlinessRating != form.friendlinessRating
+                || oldValue.socialVibeRating != form.socialVibeRating
+                || oldValue.preferredMatchIntensity != form.preferredMatchIntensity {
+                didEditMatchSignals = true
+            }
+        }
+    }
 
     var actionShotItem: PhotosPickerItem?
     var headshotItem: PhotosPickerItem?
@@ -162,6 +175,8 @@ final class ProfileBuilderViewModel {
     var headshotImage: UIImage?
 
     var isSaving: Bool = false
+    private var didEditClubs: Bool = false
+    private var didEditMatchSignals: Bool = false
 
     // Alerts
     var isShowingAlert: Bool = false
@@ -323,18 +338,24 @@ final class ProfileBuilderViewModel {
 
             try await profileRepository.updateCurrentUserProfile(input)
 
-            var matchSignalsInput = PlayerMatchSignalsUpdateInput()
-            matchSignalsInput.competitivenessRating = form.competitivenessRating
-            matchSignalsInput.friendlinessRating = form.friendlinessRating
-            matchSignalsInput.socialVibeRating = form.socialVibeRating
-            matchSignalsInput.preferredMatchIntensity = form.preferredMatchIntensity.rawValue
+            if didEditMatchSignals {
+                var matchSignalsInput = PlayerMatchSignalsUpdateInput()
+                matchSignalsInput.competitivenessRating = form.competitivenessRating
+                matchSignalsInput.friendlinessRating = form.friendlinessRating
+                matchSignalsInput.socialVibeRating = form.socialVibeRating
+                matchSignalsInput.preferredMatchIntensity = form.preferredMatchIntensity.rawValue
 
-            try await matchSignalsRepository.updateCurrentUserMatchSignals(matchSignalsInput)
+                try await matchSignalsRepository.updateCurrentUserMatchSignals(matchSignalsInput)
+            }
 
-            try await profileRelationshipsRepository.replaceCurrentUserClubMemberships(with: form.clubs)
+            if didEditClubs {
+                try await profileRelationshipsRepository.replaceCurrentUserClubMemberships(with: form.clubs)
+            }
             
             // 4) Mark completion
             try await profileRepository.markProfileCompletedIfReady()
+            didEditMatchSignals = false
+            didEditClubs = false
 
         } catch {
             showAlert(title: "Save Failed", message: error.localizedDescription)
