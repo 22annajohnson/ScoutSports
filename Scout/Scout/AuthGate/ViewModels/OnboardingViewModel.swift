@@ -200,7 +200,7 @@ final class OnboardingViewModel {
 
         do {
             try await profileRepository.updateCurrentUserProfile(
-                ProfileUpdateInput(
+                PlayerPublicProfileUpdateInput(
                     displayName: form.trimmedName,
                     birthdate: birthdate(forAge: form.age),
                     primarySport: selectedSport.rawValue

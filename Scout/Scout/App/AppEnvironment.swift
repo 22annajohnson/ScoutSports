@@ -15,6 +15,8 @@ final class AppEnvironment {
   let supabase: SupabaseClient
   let authService: AuthProviding
   let profileRepository: ProfileProviding
+  let matchSignalsRepository: PlayerMatchSignalsProviding
+  let profileRelationshipsRepository: PlayerProfileRelationshipsProviding
   let imageUploadService: ImageUploadProviding
   let swipeCardProvider: SwipeCardProviding
 
@@ -31,7 +33,10 @@ final class AppEnvironment {
     )
 
     authService = AuthService(supabase: supabase)
-    profileRepository = ProfileRepository(supabase: supabase)
+    let profileRepository = ProfileRepository(supabase: supabase)
+    self.profileRepository = profileRepository
+    self.matchSignalsRepository = profileRepository
+    self.profileRelationshipsRepository = profileRepository
     imageUploadService = ImageUploadService(
       supabase: supabase,
       projectURL: SupabaseConfig.url,
@@ -61,6 +66,8 @@ final class AppEnvironment {
     ProfileBuilderViewModel(
       mode: .requiredForMatching,
       profileRepository: profileRepository,
+      matchSignalsRepository: matchSignalsRepository,
+      profileRelationshipsRepository: profileRelationshipsRepository,
       imageUploadService: imageUploadService,
       userIDProvider: userIDProvider
     )

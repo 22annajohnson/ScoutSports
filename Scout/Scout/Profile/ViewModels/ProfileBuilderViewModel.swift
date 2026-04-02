@@ -107,12 +107,30 @@ final class ProfileBuilderViewModel {
         }
     }
 
+    enum MatchIntensity: String, CaseIterable, Hashable {
+        case casual
+        case balanced
+        case competitive
+
+        var displayName: String {
+            switch self {
+            case .casual: return "Casual"
+            case .balanced: return "Balanced"
+            case .competitive: return "Competitive"
+            }
+        }
+    }
+
     struct Form: Equatable {
         var clubsText: String = ""
         var homeCourtName: String = ""
         var background: Background = .beginner
         var skill: Int = 3
         var playStyle: PlayStyle = .casual
+        var competitivenessRating: Int = 3
+        var friendlinessRating: Int = 3
+        var socialVibeRating: Int = 3
+        var preferredMatchIntensity: MatchIntensity = .balanced
         var bio: String = ""
 
         var clubs: [String] {
@@ -127,6 +145,8 @@ final class ProfileBuilderViewModel {
 
     private let mode: Mode
     private let profileRepository: ProfileProviding
+    private let matchSignalsRepository: PlayerMatchSignalsProviding
+    private let profileRelationshipsRepository: PlayerProfileRelationshipsProviding
     private let imageUploadService: ImageUploadProviding
     private let userIDProvider: () -> UUID?
 
@@ -151,11 +171,15 @@ final class ProfileBuilderViewModel {
     init(
         mode: Mode = .requiredForMatching,
         profileRepository: ProfileProviding,
+        matchSignalsRepository: PlayerMatchSignalsProviding,
+        profileRelationshipsRepository: PlayerProfileRelationshipsProviding,
         imageUploadService: ImageUploadProviding,
         userIDProvider: @escaping () -> UUID?
     ) {
         self.mode = mode
         self.profileRepository = profileRepository
+        self.matchSignalsRepository = matchSignalsRepository
+        self.profileRelationshipsRepository = profileRelationshipsRepository
         self.imageUploadService = imageUploadService
         self.userIDProvider = userIDProvider
     }
@@ -279,14 +303,14 @@ final class ProfileBuilderViewModel {
             }
 
             // 3) Update profile fields
-            var input = ProfileUpdateInput()
+            var input = PlayerPublicProfileUpdateInput()
 
             let homeCourtTrimmed = form.homeCourtName.trimmingCharacters(in: .whitespacesAndNewlines)
             if homeCourtTrimmed.isEmpty {
                 input.homeCourtID = nil
                 input.homeCourtName = nil
             } else {
-                input.homeCourtID = UUID()
+                input.homeCourtID = nil
                 input.homeCourtName = homeCourtTrimmed
             }
 
@@ -298,6 +322,16 @@ final class ProfileBuilderViewModel {
             input.bio = bioTrimmed.isEmpty ? nil : bioTrimmed
 
             try await profileRepository.updateCurrentUserProfile(input)
+
+            var matchSignalsInput = PlayerMatchSignalsUpdateInput()
+            matchSignalsInput.competitivenessRating = form.competitivenessRating
+            matchSignalsInput.friendlinessRating = form.friendlinessRating
+            matchSignalsInput.socialVibeRating = form.socialVibeRating
+            matchSignalsInput.preferredMatchIntensity = form.preferredMatchIntensity.rawValue
+
+            try await matchSignalsRepository.updateCurrentUserMatchSignals(matchSignalsInput)
+
+            try await profileRelationshipsRepository.replaceCurrentUserClubMemberships(with: form.clubs)
             
             // 4) Mark completion
             try await profileRepository.markProfileCompletedIfReady()

@@ -10,7 +10,7 @@ import Foundation
 /// Test double for `ProfileProviding`.
 /// - Configurable return values for fetch/update
 /// - Tracks calls and captured inputs
-final class MockProfileRepository: ProfileProviding {
+final class MockProfileRepository: ProfileProviding, PlayerMatchSignalsProviding, PlayerProfileRelationshipsProviding, MatchFeedbackProviding, InternalMatchFeedbackProviding, PlayerMetricsProviding {
 
     // MARK: - Captured inputs
 
@@ -18,7 +18,10 @@ final class MockProfileRepository: ProfileProviding {
     private(set) var updateDisplayNameCalls: [String] = []
     private(set) var setMySinglePhotoCalls: [(type: ProfilePhotoType, path: String, blurhash: String?)] = []
     private(set) var addGalleryPhotoCalls: [(id: UUID, path: String, position: Int16, isPrimary: Bool, blurhash: String?)] = []
-    private(set) var updateMyProfileCalls: [ProfileUpdateInput] = []
+    private(set) var updateMyProfileCalls: [PlayerPublicProfileUpdateInput] = []
+    private(set) var updateMatchSignalsCalls: [PlayerMatchSignalsUpdateInput] = []
+    private(set) var replaceClubMembershipCalls: [[String]] = []
+    private(set) var submittedMatchFeedbackCalls: [MatchPlayerFeedbackInput] = []
     private(set) var markProfileCompletedCallCount: Int = 0
 
     // MARK: - Configurable behavior
@@ -34,14 +37,35 @@ final class MockProfileRepository: ProfileProviding {
     var setMySinglePhotoError: Error?
     var addGalleryPhotoError: Error?
     var updateMyProfileError: Error?
+    var updateMatchSignalsError: Error?
+    var replaceClubMembershipError: Error?
+    var submitMatchFeedbackError: Error?
     var markProfileCompletedError: Error?
+    var feedbackReceivedResult: [MatchPlayerFeedback] = []
+    var derivedMetricsResult = PlayerDerivedMetrics(
+        id: "test-user",
+        friendlinessScore: nil,
+        competitivenessScore: nil,
+        vibesScore: nil,
+        reliabilityScore: nil,
+        skillConfidence: nil,
+        repeatPlayRate: nil
+    )
+    var publicMetricSummaryResult = PlayerPublicMetricSummary(
+        id: "test-user",
+        totalReviews: 0,
+        stats: []
+    )
 
     /// Optional hooks if you want side effects.
     var onFetchMyProfile: (() -> Void)?
     var onUpdateDisplayName: ((String) -> Void)?
     var onSetMySinglePhoto: ((ProfilePhotoType, String, String?) -> Void)?
     var onAddGalleryPhoto: ((UUID, String, Int16, Bool, String?) -> Void)?
-    var onUpdateMyProfile: ((ProfileUpdateInput) -> Void)?
+    var onUpdateMyProfile: ((PlayerPublicProfileUpdateInput) -> Void)?
+    var onUpdateMatchSignals: ((PlayerMatchSignalsUpdateInput) -> Void)?
+    var onReplaceClubMemberships: (([String]) -> Void)?
+    var onSubmitMatchFeedback: ((MatchPlayerFeedbackInput) -> Void)?
     var onMarkProfileCompleted: (() -> Void)?
 
     // MARK: - ProfileProviding
@@ -74,10 +98,54 @@ final class MockProfileRepository: ProfileProviding {
         if let addGalleryPhotoError { throw addGalleryPhotoError }
     }
 
-    func updateCurrentUserProfile(_ input: ProfileUpdateInput) async throws {
+    func fetchCurrentUserPublicProfile() async throws -> PlayerPublicProfile {
+        PlayerPublicProfile(
+            id: fetchMyProfileResult.id,
+            displayName: fetchMyProfileResult.displayName,
+            birthdate: nil,
+            primarySport: nil,
+            bio: nil,
+            homeCourtName: nil,
+            clubNames: replaceClubMembershipCalls.last ?? [],
+            skillLevel: nil,
+            playStyle: nil
+        )
+    }
+
+    func updateCurrentUserProfile(_ input: PlayerPublicProfileUpdateInput) async throws {
         updateMyProfileCalls.append(input)
         onUpdateMyProfile?(input)
         if let updateMyProfileError { throw updateMyProfileError }
+    }
+
+    func updateCurrentUserMatchSignals(_ input: PlayerMatchSignalsUpdateInput) async throws {
+        updateMatchSignalsCalls.append(input)
+        onUpdateMatchSignals?(input)
+        if let updateMatchSignalsError { throw updateMatchSignalsError }
+    }
+
+    func replaceCurrentUserClubMemberships(with clubNames: [String]) async throws {
+        replaceClubMembershipCalls.append(clubNames)
+        onReplaceClubMemberships?(clubNames)
+        if let replaceClubMembershipError { throw replaceClubMembershipError }
+    }
+
+    func submitCurrentUserMatchFeedback(_ input: MatchPlayerFeedbackInput) async throws {
+        submittedMatchFeedbackCalls.append(input)
+        onSubmitMatchFeedback?(input)
+        if let submitMatchFeedbackError { throw submitMatchFeedbackError }
+    }
+
+    func fetchPrivateFeedbackReceived(for reviewedUserID: UUID) async throws -> [MatchPlayerFeedback] {
+        feedbackReceivedResult.filter { $0.reviewedUserID == reviewedUserID }
+    }
+
+    func fetchDerivedMetrics(for userID: UUID) async throws -> PlayerDerivedMetrics {
+        derivedMetricsResult
+    }
+
+    func fetchPublicMetricSummary(for userID: UUID) async throws -> PlayerPublicMetricSummary {
+        publicMetricSummaryResult
     }
 
     func markProfileCompletedIfReady() async throws {
