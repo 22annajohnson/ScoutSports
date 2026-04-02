@@ -56,6 +56,15 @@ struct PlayerMatchSignals: Identifiable, Equatable, Sendable {
     var availabilitySummary: String?
 }
 
+/// Editable payload for self-reported matching inputs.
+/// These values are user-entered, but they are not the same as system-derived metrics.
+struct PlayerMatchSignalsUpdateInput: Equatable, Sendable {
+    var competitivenessRating: Int? = nil
+    var friendlinessRating: Int? = nil
+    var socialVibeRating: Int? = nil
+    var preferredMatchIntensity: String? = nil
+}
+
 /// System-owned outputs computed from feedback, interactions, and match history.
 /// Users should never edit these values directly from the profile builder.
 struct PlayerDerivedMetrics: Identifiable, Equatable, Sendable {

@@ -60,7 +60,7 @@ final class ProfileDTOTests: XCTestCase {
                 skillLevel: 3,
                 playStyle: "doubles"
             )
-            return dto.toDomain()
+            return dto.toDomain(clubNames: ["Docks PB Club", "Sanford Rec"])
         }
 
         let values = await MainActor.run {
@@ -83,7 +83,7 @@ final class ProfileDTOTests: XCTestCase {
         XCTAssertEqual(values.3, "pickleball")
         XCTAssertEqual(values.4, "Loves pickup games")
         XCTAssertEqual(values.5, "Central Park Courts")
-        XCTAssertEqual(values.6, [])
+        XCTAssertEqual(values.6, ["Docks PB Club", "Sanford Rec"])
         XCTAssertEqual(values.7, 3)
         XCTAssertEqual(values.8, "doubles")
     }

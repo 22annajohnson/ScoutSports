@@ -10,7 +10,7 @@ import Foundation
 /// Test double for `ProfileProviding`.
 /// - Configurable return values for fetch/update
 /// - Tracks calls and captured inputs
-final class MockProfileRepository: ProfileProviding {
+final class MockProfileRepository: ProfileProviding, PlayerMatchSignalsProviding, PlayerProfileRelationshipsProviding {
 
     // MARK: - Captured inputs
 
@@ -19,6 +19,8 @@ final class MockProfileRepository: ProfileProviding {
     private(set) var setMySinglePhotoCalls: [(type: ProfilePhotoType, path: String, blurhash: String?)] = []
     private(set) var addGalleryPhotoCalls: [(id: UUID, path: String, position: Int16, isPrimary: Bool, blurhash: String?)] = []
     private(set) var updateMyProfileCalls: [PlayerPublicProfileUpdateInput] = []
+    private(set) var updateMatchSignalsCalls: [PlayerMatchSignalsUpdateInput] = []
+    private(set) var replaceClubMembershipCalls: [[String]] = []
     private(set) var markProfileCompletedCallCount: Int = 0
 
     // MARK: - Configurable behavior
@@ -34,6 +36,8 @@ final class MockProfileRepository: ProfileProviding {
     var setMySinglePhotoError: Error?
     var addGalleryPhotoError: Error?
     var updateMyProfileError: Error?
+    var updateMatchSignalsError: Error?
+    var replaceClubMembershipError: Error?
     var markProfileCompletedError: Error?
 
     /// Optional hooks if you want side effects.
@@ -42,6 +46,8 @@ final class MockProfileRepository: ProfileProviding {
     var onSetMySinglePhoto: ((ProfilePhotoType, String, String?) -> Void)?
     var onAddGalleryPhoto: ((UUID, String, Int16, Bool, String?) -> Void)?
     var onUpdateMyProfile: ((PlayerPublicProfileUpdateInput) -> Void)?
+    var onUpdateMatchSignals: ((PlayerMatchSignalsUpdateInput) -> Void)?
+    var onReplaceClubMemberships: (([String]) -> Void)?
     var onMarkProfileCompleted: (() -> Void)?
 
     // MARK: - ProfileProviding
@@ -82,7 +88,7 @@ final class MockProfileRepository: ProfileProviding {
             primarySport: nil,
             bio: nil,
             homeCourtName: nil,
-            clubNames: [],
+            clubNames: replaceClubMembershipCalls.last ?? [],
             skillLevel: nil,
             playStyle: nil
         )
@@ -92,6 +98,18 @@ final class MockProfileRepository: ProfileProviding {
         updateMyProfileCalls.append(input)
         onUpdateMyProfile?(input)
         if let updateMyProfileError { throw updateMyProfileError }
+    }
+
+    func updateCurrentUserMatchSignals(_ input: PlayerMatchSignalsUpdateInput) async throws {
+        updateMatchSignalsCalls.append(input)
+        onUpdateMatchSignals?(input)
+        if let updateMatchSignalsError { throw updateMatchSignalsError }
+    }
+
+    func replaceCurrentUserClubMemberships(with clubNames: [String]) async throws {
+        replaceClubMembershipCalls.append(clubNames)
+        onReplaceClubMemberships?(clubNames)
+        if let replaceClubMembershipError { throw replaceClubMembershipError }
     }
 
     func markProfileCompletedIfReady() async throws {

@@ -43,6 +43,14 @@ struct ProfilePhotoRow: Decodable, Equatable {
     }
 }
 
+struct ProfileClubRow: Decodable, Equatable {
+    let clubName: String
+
+    enum CodingKeys: String, CodingKey {
+        case clubName = "club_name"
+    }
+}
+
 // MARK: - Profile Builder fields
 
 enum ProfileBackgroundLevel: String, Codable, CaseIterable, Sendable {
@@ -61,7 +69,7 @@ enum ProfilePlayStyle: String, Codable, CaseIterable, Sendable {
     case singles
 }
 
-final class ProfileRepository: ProfileProviding {
+final class ProfileRepository: ProfileProviding, PlayerMatchSignalsProviding, PlayerProfileRelationshipsProviding {
     private let supabase: SupabaseClient
 
     init(supabase: SupabaseClient) {
@@ -93,7 +101,17 @@ final class ProfileRepository: ProfileProviding {
             .execute()
             .value
 
-        return dto.toDomain()
+        let clubRows: [ProfileClubRow] = try await supabase
+            .from("profile_clubs")
+            .select("club_name")
+            .eq("user_id", value: user.id)
+            .order("club_name", ascending: true)
+            .execute()
+            .value
+
+        let clubNames = clubRows.map(\.clubName)
+
+        return dto.toDomain(clubNames: clubNames)
     }
 
     func updateDisplayName(_ newName: String) async throws {
@@ -321,6 +339,91 @@ final class ProfileRepository: ProfileProviding {
             .from("profiles")
             .update(patch)
             .eq("id", value: user.id)
+            .execute()
+    }
+
+    func updateCurrentUserMatchSignals(_ input: PlayerMatchSignalsUpdateInput) async throws {
+        guard let user = supabase.auth.currentUser else { throw DataError.notAuthenticated }
+
+        struct MatchSignalsPatch: Encodable {
+            var competitivenessRating: Int16?
+            var friendlinessRating: Int16?
+            var socialVibeRating: Int16?
+            var preferredMatchIntensity: String?
+
+            enum CodingKeys: String, CodingKey {
+                case competitivenessRating = "competitiveness_self_rating"
+                case friendlinessRating = "friendliness_self_rating"
+                case socialVibeRating = "social_vibe_self_rating"
+                case preferredMatchIntensity = "preferred_match_intensity"
+            }
+        }
+
+        var patch = MatchSignalsPatch()
+
+        if let competitivenessRating = input.competitivenessRating {
+            patch.competitivenessRating = Int16(competitivenessRating)
+        }
+        if let friendlinessRating = input.friendlinessRating {
+            patch.friendlinessRating = Int16(friendlinessRating)
+        }
+        if let socialVibeRating = input.socialVibeRating {
+            patch.socialVibeRating = Int16(socialVibeRating)
+        }
+        if let preferredMatchIntensity = input.preferredMatchIntensity {
+            patch.preferredMatchIntensity = preferredMatchIntensity
+        }
+
+        let isEmpty = patch.competitivenessRating == nil
+            && patch.friendlinessRating == nil
+            && patch.socialVibeRating == nil
+            && patch.preferredMatchIntensity == nil
+
+        guard !isEmpty else { return }
+
+        _ = try await supabase
+            .from("profiles")
+            .update(patch)
+            .eq("id", value: user.id)
+            .execute()
+    }
+
+    func replaceCurrentUserClubMemberships(with clubNames: [String]) async throws {
+        guard let user = supabase.auth.currentUser else { throw DataError.notAuthenticated }
+
+        let normalizedClubNames = Array(
+            NSOrderedSet(
+                array: clubNames
+                    .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+                    .filter { !$0.isEmpty }
+            )
+        ).compactMap { $0 as? String }
+
+        _ = try await supabase
+            .from("profile_clubs")
+            .delete()
+            .eq("user_id", value: user.id)
+            .execute()
+
+        guard !normalizedClubNames.isEmpty else { return }
+
+        struct ProfileClubInsert: Encodable {
+            let userID: UUID
+            let clubName: String
+
+            enum CodingKeys: String, CodingKey {
+                case userID = "user_id"
+                case clubName = "club_name"
+            }
+        }
+
+        let inserts = normalizedClubNames.map {
+            ProfileClubInsert(userID: user.id, clubName: $0)
+        }
+
+        _ = try await supabase
+            .from("profile_clubs")
+            .insert(inserts)
             .execute()
     }
 

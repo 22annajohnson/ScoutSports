@@ -46,7 +46,7 @@ struct PlayerPublicProfileDTO: Decodable {
         case playStyle = "play_style"
     }
 
-    func toDomain() -> PlayerPublicProfile {
+    func toDomain(clubNames: [String]) -> PlayerPublicProfile {
         PlayerPublicProfile(
             id: id,
             displayName: displayName,
@@ -54,7 +54,7 @@ struct PlayerPublicProfileDTO: Decodable {
             primarySport: primarySport,
             bio: bio,
             homeCourtName: homeCourtName,
-            clubNames: [],
+            clubNames: clubNames,
             skillLevel: skillLevel,
             playStyle: playStyle
         )

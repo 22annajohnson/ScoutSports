@@ -23,6 +23,18 @@ protocol ProfileProviding {
 /// Raw feedback should remain separate from editable profile state.
 protocol MatchFeedbackProviding { }
 
+/// Boundary for self-reported inputs used by matching and ranking.
+/// These are editable by the player, but should remain separate from public profile fields.
+protocol PlayerMatchSignalsProviding {
+    func updateCurrentUserMatchSignals(_ input: PlayerMatchSignalsUpdateInput) async throws
+}
+
+/// Boundary for profile relationships that should not be flattened into the main editable profile row.
+/// Clubs are the first v1 relationship here; courts can move behind a similar seam once lookup exists.
+protocol PlayerProfileRelationshipsProviding {
+    func replaceCurrentUserClubMemberships(with clubNames: [String]) async throws
+}
+
 /// Future boundary for system-owned aggregates derived from feedback and behavior.
 /// Swipe ordering and matching should consume these values without storing them in `profiles`.
 protocol PlayerMetricsProviding { }

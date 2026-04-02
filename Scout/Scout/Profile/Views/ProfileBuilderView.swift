@@ -51,7 +51,11 @@ struct ProfileBuilderView: View {
 
                     PlayStyleStep(
                         skill: $vm.form.skill,
-                        playStyle: $vm.form.playStyle
+                        playStyle: $vm.form.playStyle,
+                        competitivenessRating: $vm.form.competitivenessRating,
+                        friendlinessRating: $vm.form.friendlinessRating,
+                        socialVibeRating: $vm.form.socialVibeRating,
+                        preferredMatchIntensity: $vm.form.preferredMatchIntensity
                     )
                     .tag(ProfileBuilderViewModel.Step.playStyle)
 
@@ -314,6 +318,10 @@ private struct BackgroundStep: View {
 private struct PlayStyleStep: View {
     @Binding var skill: Int
     @Binding var playStyle: ProfileBuilderViewModel.PlayStyle
+    @Binding var competitivenessRating: Int
+    @Binding var friendlinessRating: Int
+    @Binding var socialVibeRating: Int
+    @Binding var preferredMatchIntensity: ProfileBuilderViewModel.MatchIntensity
 
     var body: some View {
         Form {
@@ -350,9 +358,44 @@ private struct PlayStyleStep: View {
             } footer: {
                 Text("We’ll use this to improve your matches.")
             }
+
+            Section {
+                ratingRow(title: "Competitiveness", value: $competitivenessRating)
+                ratingRow(title: "Friendliness", value: $friendlinessRating)
+                ratingRow(title: "Social vibe", value: $socialVibeRating)
+            } header: {
+                Text("Your Match Style")
+            } footer: {
+                Text("These are your self-reported starting points. Later, match feedback can help refine them.")
+            }
+
+            Section {
+                Picker("Preferred Intensity", selection: $preferredMatchIntensity) {
+                    ForEach(ProfileBuilderViewModel.MatchIntensity.allCases, id: \.self) { intensity in
+                        Text(intensity.displayName).tag(intensity)
+                    }
+                }
+                .pickerStyle(.segmented)
+            } header: {
+                Text("Preferred Match Intensity")
+            } footer: {
+                Text("Tell Scout whether you usually want a casual run, a balanced game, or a more competitive match.")
+            }
         }
         .scrollContentBackground(.hidden)
         .background(Color.clear)
+    }
+
+    private func ratingRow(title: String, value: Binding<Int>) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(title)
+            Picker(title, selection: value) {
+                ForEach(1...5, id: \.self) { rating in
+                    Text("\(rating)").tag(rating)
+                }
+            }
+            .pickerStyle(.segmented)
+        }
     }
 }
 
@@ -421,6 +464,10 @@ private struct ReviewStep: View {
                     summaryRow(title: "Background", value: form.background.displayName)
                     summaryRow(title: "Skill", value: "\(form.skill)/5")
                     summaryRow(title: "Play style", value: form.playStyle.displayName)
+                    summaryRow(title: "Competitive", value: "\(form.competitivenessRating)/5")
+                    summaryRow(title: "Friendly", value: "\(form.friendlinessRating)/5")
+                    summaryRow(title: "Vibe", value: "\(form.socialVibeRating)/5")
+                    summaryRow(title: "Intensity", value: form.preferredMatchIntensity.displayName)
                     summaryRow(title: "Bio", value: form.bio.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "—" : form.bio)
                 }
                 .padding(16)
