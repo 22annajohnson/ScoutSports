@@ -9,6 +9,21 @@ import SwiftUI
 
 struct PlayerSwipeScrollView: View {
     let model: CardViewModel
+    let onPass: () -> Void
+    let onBoost: () -> Void
+    let onLike: () -> Void
+
+    init(
+        model: CardViewModel,
+        onPass: @escaping () -> Void = {},
+        onBoost: @escaping () -> Void = {},
+        onLike: @escaping () -> Void = {}
+    ) {
+        self.model = model
+        self.onPass = onPass
+        self.onBoost = onBoost
+        self.onLike = onLike
+    }
 
     private let accent = Color.scoutAccentStart
 
@@ -36,7 +51,7 @@ struct PlayerSwipeScrollView: View {
 
                             RatingsView(stats: model.stats)
 
-                            ScoutActionDock()
+                            ScoutActionDock(onPass: onPass, onBoost: onBoost, onLike: onLike)
                         }
                         .padding(.horizontal, ScoutSpacing.lg)
                         .padding(.top, ScoutSpacing.xl)
