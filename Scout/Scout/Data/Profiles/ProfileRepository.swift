@@ -11,6 +11,7 @@ import Supabase
 
 enum DataError: Error {
     case notAuthenticated
+    case unauthorizedFeedbackAccess
 }
 
 // MARK: - Profile Photos (DB rows)
@@ -43,9 +44,67 @@ struct ProfilePhotoRow: Decodable, Equatable {
     }
 }
 
+struct ProfileClubRow: Decodable, Equatable {
+    let clubName: String
+
+    enum CodingKeys: String, CodingKey {
+        case clubName = "club_name"
+    }
+}
+
+struct MatchPlayerFeedbackRow: Decodable, Equatable {
+    let id: UUID
+    let matchID: UUID
+    let reviewerUserID: UUID
+    let reviewedUserID: UUID
+    let skillRating: Int?
+    let competitivenessRating: Int?
+    let friendlinessRating: Int?
+    let vibesRating: Int?
+    let communicationRating: Int?
+    let reliabilityRating: Int?
+    let wouldPlayAgain: Bool?
+    let privateNote: String?
+    let createdAt: Date
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case matchID = "match_id"
+        case reviewerUserID = "reviewer_user_id"
+        case reviewedUserID = "reviewed_user_id"
+        case skillRating = "skill_rating"
+        case competitivenessRating = "competitiveness_rating"
+        case friendlinessRating = "friendliness_rating"
+        case vibesRating = "vibes_rating"
+        case communicationRating = "communication_rating"
+        case reliabilityRating = "reliability_rating"
+        case wouldPlayAgain = "would_play_again"
+        case privateNote = "private_note"
+        case createdAt = "created_at"
+    }
+
+    func toDomain() -> MatchPlayerFeedback {
+        MatchPlayerFeedback(
+            id: id,
+            matchID: matchID,
+            reviewerUserID: reviewerUserID,
+            reviewedUserID: reviewedUserID,
+            skillRating: skillRating,
+            competitivenessRating: competitivenessRating,
+            friendlinessRating: friendlinessRating,
+            vibesRating: vibesRating,
+            communicationRating: communicationRating,
+            reliabilityRating: reliabilityRating,
+            wouldPlayAgain: wouldPlayAgain,
+            privateNote: privateNote,
+            createdAt: createdAt
+        )
+    }
+}
+
 // MARK: - Profile Builder fields
 
-enum ProfileBackgroundLevel: String, Codable, CaseIterable {
+enum ProfileBackgroundLevel: String, Codable, CaseIterable, Sendable {
     case beginner
     case club
     case high_school
@@ -53,7 +112,7 @@ enum ProfileBackgroundLevel: String, Codable, CaseIterable {
     case professional
 }
 
-enum ProfilePlayStyle: String, Codable, CaseIterable {
+enum ProfilePlayStyle: String, Codable, CaseIterable, Sendable {
     case casual
     case competitive
     case drills
@@ -61,21 +120,7 @@ enum ProfilePlayStyle: String, Codable, CaseIterable {
     case singles
 }
 
-struct ProfileUpdateInput: Equatable {
-    var displayName: String? = nil
-    var birthdate: Date? = nil
-    var primarySport: String? = nil
-    var bio: String? = nil
-
-    var homeCourtName: String? = nil
-
-    var backgroundLevel: ProfileBackgroundLevel? = nil
-    var yearsPlaying: Int16? = nil
-    var skillLevel: Int16? = nil
-    var playStyle: ProfilePlayStyle? = nil
-}
-
-final class ProfileRepository: ProfileProviding {
+final class ProfileRepository: ProfileProviding, PlayerMatchSignalsProviding, PlayerProfileRelationshipsProviding, MatchFeedbackProviding, InternalMatchFeedbackProviding, PlayerMetricsProviding {
     private let supabase: SupabaseClient
 
     init(supabase: SupabaseClient) {
@@ -94,6 +139,30 @@ final class ProfileRepository: ProfileProviding {
             .value
 
         return dto.toDomain()
+    }
+
+    func fetchCurrentUserPublicProfile() async throws -> PlayerPublicProfile {
+        guard let user = supabase.auth.currentUser else { throw DataError.notAuthenticated }
+
+        let dto: PlayerPublicProfileDTO = try await supabase
+            .from("profiles")
+            .select("id, display_name, birthdate, primary_sport, bio, home_court_name, background_level, years_playing, skill_level, play_style")
+            .eq("id", value: user.id)
+            .single()
+            .execute()
+            .value
+
+        let clubRows: [ProfileClubRow] = try await supabase
+            .from("profile_clubs")
+            .select("club_name")
+            .eq("user_id", value: user.id)
+            .order("club_name", ascending: true)
+            .execute()
+            .value
+
+        let clubNames = clubRows.map(\.clubName)
+
+        return dto.toDomain(clubNames: clubNames)
     }
 
     func updateDisplayName(_ newName: String) async throws {
@@ -232,7 +301,7 @@ final class ProfileRepository: ProfileProviding {
     // MARK: - Profile Builder updates
 
     /// Updates the current user's profile fields. Only non-nil fields are written.
-    func updateCurrentUserProfile(_ input: ProfileUpdateInput) async throws {
+    func updateCurrentUserProfile(_ input: PlayerPublicProfileUpdateInput) async throws {
         guard let user = supabase.auth.currentUser else { throw DataError.notAuthenticated }
 
         struct ProfileUpdatePatch: Encodable {
@@ -240,7 +309,8 @@ final class ProfileRepository: ProfileProviding {
             var birthdate: String?
             var primarySport: String?
             var bio: String?
-            var homeCourtName: String?
+            var homeCourtID: UUID??
+            var homeCourtName: String??
             var backgroundLevel: String?
             var yearsPlaying: Int16?
             var skillLevel: Int16?
@@ -251,6 +321,7 @@ final class ProfileRepository: ProfileProviding {
                 case birthdate
                 case primarySport = "primary_sport"
                 case bio
+                case homeCourtID = "home_court_id"
                 case homeCourtName = "home_court_name"
                 case backgroundLevel = "background_level"
                 case yearsPlaying = "years_playing"
@@ -282,8 +353,15 @@ final class ProfileRepository: ProfileProviding {
         if let bio = input.bio {
             patch.bio = bio
         }
-        if let homeCourtName = input.homeCourtName {
-            patch.homeCourtName = homeCourtName
+        if input.shouldClearHomeCourtID {
+            patch.homeCourtID = .some(nil)
+        } else if let homeCourtID = input.homeCourtID {
+            patch.homeCourtID = .some(homeCourtID)
+        }
+        if input.shouldClearHomeCourtName {
+            patch.homeCourtName = .some(nil)
+        } else if let homeCourtName = input.homeCourtName {
+            patch.homeCourtName = .some(homeCourtName)
         }
         if let backgroundLevel = input.backgroundLevel {
             patch.backgroundLevel = backgroundLevel.rawValue
@@ -303,6 +381,7 @@ final class ProfileRepository: ProfileProviding {
             && patch.birthdate == nil
             && patch.primarySport == nil
             && patch.bio == nil
+            && patch.homeCourtID == nil
             && patch.homeCourtName == nil
             && patch.backgroundLevel == nil
             && patch.yearsPlaying == nil
@@ -316,6 +395,209 @@ final class ProfileRepository: ProfileProviding {
             .update(patch)
             .eq("id", value: user.id)
             .execute()
+    }
+
+    func updateCurrentUserMatchSignals(_ input: PlayerMatchSignalsUpdateInput) async throws {
+        guard let user = supabase.auth.currentUser else { throw DataError.notAuthenticated }
+
+        struct MatchSignalsPatch: Encodable {
+            var competitivenessRating: Int16?
+            var friendlinessRating: Int16?
+            var socialVibeRating: Int16?
+            var preferredMatchIntensity: String?
+
+            enum CodingKeys: String, CodingKey {
+                case competitivenessRating = "competitiveness_self_rating"
+                case friendlinessRating = "friendliness_self_rating"
+                case socialVibeRating = "social_vibe_self_rating"
+                case preferredMatchIntensity = "preferred_match_intensity"
+            }
+        }
+
+        var patch = MatchSignalsPatch()
+
+        if let competitivenessRating = input.competitivenessRating {
+            patch.competitivenessRating = Int16(competitivenessRating)
+        }
+        if let friendlinessRating = input.friendlinessRating {
+            patch.friendlinessRating = Int16(friendlinessRating)
+        }
+        if let socialVibeRating = input.socialVibeRating {
+            patch.socialVibeRating = Int16(socialVibeRating)
+        }
+        if let preferredMatchIntensity = input.preferredMatchIntensity {
+            patch.preferredMatchIntensity = preferredMatchIntensity
+        }
+
+        let isEmpty = patch.competitivenessRating == nil
+            && patch.friendlinessRating == nil
+            && patch.socialVibeRating == nil
+            && patch.preferredMatchIntensity == nil
+
+        guard !isEmpty else { return }
+
+        _ = try await supabase
+            .from("profiles")
+            .update(patch)
+            .eq("id", value: user.id)
+            .execute()
+    }
+
+    func replaceCurrentUserClubMemberships(with clubNames: [String]) async throws {
+        guard let user = supabase.auth.currentUser else { throw DataError.notAuthenticated }
+
+        let normalizedClubNames = Array(
+            NSOrderedSet(
+                array: clubNames
+                    .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+                    .filter { !$0.isEmpty }
+            )
+        ).compactMap { $0 as? String }
+
+        _ = try await supabase
+            .from("profile_clubs")
+            .delete()
+            .eq("user_id", value: user.id)
+            .execute()
+
+        guard !normalizedClubNames.isEmpty else { return }
+
+        struct ProfileClubInsert: Encodable {
+            let userID: UUID
+            let clubName: String
+
+            enum CodingKeys: String, CodingKey {
+                case userID = "user_id"
+                case clubName = "club_name"
+            }
+        }
+
+        let inserts = normalizedClubNames.map {
+            ProfileClubInsert(userID: user.id, clubName: $0)
+        }
+
+        _ = try await supabase
+            .from("profile_clubs")
+            .insert(inserts)
+            .execute()
+    }
+
+    func submitCurrentUserMatchFeedback(_ input: MatchPlayerFeedbackInput) async throws {
+        guard let user = supabase.auth.currentUser else { throw DataError.notAuthenticated }
+
+        struct MatchPlayerFeedbackInsert: Encodable {
+            let matchID: UUID
+            let reviewerUserID: UUID
+            let reviewedUserID: UUID
+            let skillRating: Int16?
+            let competitivenessRating: Int16?
+            let friendlinessRating: Int16?
+            let vibesRating: Int16?
+            let communicationRating: Int16?
+            let reliabilityRating: Int16?
+            let wouldPlayAgain: Bool?
+            let privateNote: String?
+
+            enum CodingKeys: String, CodingKey {
+                case matchID = "match_id"
+                case reviewerUserID = "reviewer_user_id"
+                case reviewedUserID = "reviewed_user_id"
+                case skillRating = "skill_rating"
+                case competitivenessRating = "competitiveness_rating"
+                case friendlinessRating = "friendliness_rating"
+                case vibesRating = "vibes_rating"
+                case communicationRating = "communication_rating"
+                case reliabilityRating = "reliability_rating"
+                case wouldPlayAgain = "would_play_again"
+                case privateNote = "private_note"
+            }
+        }
+
+        let insert = MatchPlayerFeedbackInsert(
+            matchID: input.matchID,
+            reviewerUserID: user.id,
+            reviewedUserID: input.reviewedUserID,
+            skillRating: input.skillRating.map(Int16.init),
+            competitivenessRating: input.competitivenessRating.map(Int16.init),
+            friendlinessRating: input.friendlinessRating.map(Int16.init),
+            vibesRating: input.vibesRating.map(Int16.init),
+            communicationRating: input.communicationRating.map(Int16.init),
+            reliabilityRating: input.reliabilityRating.map(Int16.init),
+            wouldPlayAgain: input.wouldPlayAgain,
+            privateNote: input.privateNote,
+        )
+
+        _ = try await supabase
+            .from("match_player_feedback")
+            .insert(insert)
+            .execute()
+    }
+
+    func fetchPrivateFeedbackReceived(for reviewedUserID: UUID) async throws -> [MatchPlayerFeedback] {
+        guard let user = supabase.auth.currentUser else { throw DataError.notAuthenticated }
+        guard reviewedUserID == user.id else { throw DataError.unauthorizedFeedbackAccess }
+
+        let rows = try await fetchFeedbackRows(for: reviewedUserID, includePrivateNote: true)
+        return rows.map { $0.toDomain() }
+    }
+
+    func fetchDerivedMetrics(for userID: UUID) async throws -> PlayerDerivedMetrics {
+        let feedbackRows = try await fetchFeedbackRows(for: userID, includePrivateNote: false)
+        return deriveMetrics(for: userID, from: feedbackRows)
+    }
+
+    func fetchPublicMetricSummary(for userID: UUID) async throws -> PlayerPublicMetricSummary {
+        let feedbackRows = try await fetchFeedbackRows(for: userID, includePrivateNote: false)
+        let metrics = deriveMetrics(for: userID, from: feedbackRows)
+        return metrics.toPublicSummary(totalReviews: feedbackRows.count)
+    }
+
+    private func fetchFeedbackRows(for reviewedUserID: UUID, includePrivateNote: Bool) async throws -> [MatchPlayerFeedbackRow] {
+        guard supabase.auth.currentUser != nil else { throw DataError.notAuthenticated }
+
+        let selectColumns = includePrivateNote
+            ? "id, match_id, reviewer_user_id, reviewed_user_id, skill_rating, competitiveness_rating, friendliness_rating, vibes_rating, communication_rating, reliability_rating, would_play_again, private_note, created_at"
+            : "id, match_id, reviewer_user_id, reviewed_user_id, skill_rating, competitiveness_rating, friendliness_rating, vibes_rating, communication_rating, reliability_rating, would_play_again, created_at"
+
+        return try await supabase
+            .from("match_player_feedback")
+            .select(selectColumns)
+            .eq("reviewed_user_id", value: reviewedUserID)
+            .order("created_at", ascending: false)
+            .execute()
+            .value
+    }
+
+    private func deriveMetrics(for userID: UUID, from feedbackRows: [MatchPlayerFeedbackRow]) -> PlayerDerivedMetrics {
+        func average(_ values: [Int?]) -> Double? {
+            let resolved = values.compactMap { $0 }
+            guard !resolved.isEmpty else { return nil }
+            return Double(resolved.reduce(0, +)) / Double(resolved.count)
+        }
+
+        func ratio(_ values: [Bool?]) -> Double? {
+            let resolved = values.compactMap { $0 }
+            guard !resolved.isEmpty else { return nil }
+            let positiveCount = resolved.filter { $0 }.count
+            return (Double(positiveCount) / Double(resolved.count)) * 5.0
+        }
+
+        let friendlinessScore = average(feedbackRows.map(\.friendlinessRating))
+        let competitivenessScore = average(feedbackRows.map(\.competitivenessRating))
+        let vibesScore = average(feedbackRows.map(\.vibesRating))
+        let reliabilityScore = average(feedbackRows.map(\.reliabilityRating))
+        let skillConfidence = average(feedbackRows.map(\.skillRating))
+        let repeatPlayRate = ratio(feedbackRows.map(\.wouldPlayAgain))
+
+        return PlayerDerivedMetrics(
+            id: userID.uuidString,
+            friendlinessScore: friendlinessScore,
+            competitivenessScore: competitivenessScore,
+            vibesScore: vibesScore,
+            reliabilityScore: reliabilityScore,
+            skillConfidence: skillConfidence,
+            repeatPlayRate: repeatPlayRate
+        )
     }
 
     /// Marks profile as completed if required fields exist.

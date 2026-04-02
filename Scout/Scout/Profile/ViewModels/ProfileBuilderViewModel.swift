@@ -17,6 +17,12 @@ import UIKit
 @MainActor
 @Observable
 final class ProfileBuilderViewModel {
+    private enum MatchSignalField: Hashable {
+        case competitivenessRating
+        case friendlinessRating
+        case socialVibeRating
+        case preferredMatchIntensity
+    }
 
     // MARK: - Mode
 
@@ -107,12 +113,30 @@ final class ProfileBuilderViewModel {
         }
     }
 
+    enum MatchIntensity: String, CaseIterable, Hashable {
+        case casual
+        case balanced
+        case competitive
+
+        var displayName: String {
+            switch self {
+            case .casual: return "Casual"
+            case .balanced: return "Balanced"
+            case .competitive: return "Competitive"
+            }
+        }
+    }
+
     struct Form: Equatable {
         var clubsText: String = ""
         var homeCourtName: String = ""
         var background: Background = .beginner
         var skill: Int = 3
         var playStyle: PlayStyle = .casual
+        var competitivenessRating: Int = 3
+        var friendlinessRating: Int = 3
+        var socialVibeRating: Int = 3
+        var preferredMatchIntensity: MatchIntensity = .balanced
         var bio: String = ""
 
         var clubs: [String] {
@@ -127,13 +151,34 @@ final class ProfileBuilderViewModel {
 
     private let mode: Mode
     private let profileRepository: ProfileProviding
+    private let matchSignalsRepository: PlayerMatchSignalsProviding
+    private let profileRelationshipsRepository: PlayerProfileRelationshipsProviding
     private let imageUploadService: ImageUploadProviding
     private let userIDProvider: () -> UUID?
 
     // MARK: - Published state
 
     var step: Step = .actionShot
-    var form: Form = .init()
+    var form: Form = .init() {
+        didSet {
+            if oldValue.clubsText != form.clubsText {
+                didEditClubs = true
+            }
+
+            if oldValue.competitivenessRating != form.competitivenessRating {
+                editedMatchSignalFields.insert(.competitivenessRating)
+            }
+            if oldValue.friendlinessRating != form.friendlinessRating {
+                editedMatchSignalFields.insert(.friendlinessRating)
+            }
+            if oldValue.socialVibeRating != form.socialVibeRating {
+                editedMatchSignalFields.insert(.socialVibeRating)
+            }
+            if oldValue.preferredMatchIntensity != form.preferredMatchIntensity {
+                editedMatchSignalFields.insert(.preferredMatchIntensity)
+            }
+        }
+    }
 
     var actionShotItem: PhotosPickerItem?
     var headshotItem: PhotosPickerItem?
@@ -142,6 +187,8 @@ final class ProfileBuilderViewModel {
     var headshotImage: UIImage?
 
     var isSaving: Bool = false
+    private var didEditClubs: Bool = false
+    private var editedMatchSignalFields: Set<MatchSignalField> = []
 
     // Alerts
     var isShowingAlert: Bool = false
@@ -151,11 +198,15 @@ final class ProfileBuilderViewModel {
     init(
         mode: Mode = .requiredForMatching,
         profileRepository: ProfileProviding,
+        matchSignalsRepository: PlayerMatchSignalsProviding,
+        profileRelationshipsRepository: PlayerProfileRelationshipsProviding,
         imageUploadService: ImageUploadProviding,
         userIDProvider: @escaping () -> UUID?
     ) {
         self.mode = mode
         self.profileRepository = profileRepository
+        self.matchSignalsRepository = matchSignalsRepository
+        self.profileRelationshipsRepository = profileRelationshipsRepository
         self.imageUploadService = imageUploadService
         self.userIDProvider = userIDProvider
     }
@@ -279,10 +330,16 @@ final class ProfileBuilderViewModel {
             }
 
             // 3) Update profile fields
-            var input = ProfileUpdateInput()
+            var input = PlayerPublicProfileUpdateInput()
 
             let homeCourtTrimmed = form.homeCourtName.trimmingCharacters(in: .whitespacesAndNewlines)
-            input.homeCourtName = homeCourtTrimmed.isEmpty ? nil : homeCourtTrimmed
+            if homeCourtTrimmed.isEmpty {
+                input.shouldClearHomeCourtID = true
+                input.shouldClearHomeCourtName = true
+            } else {
+                input.shouldClearHomeCourtID = true
+                input.homeCourtName = homeCourtTrimmed
+            }
 
             input.backgroundLevel = form.background.toRepoValue()
             input.skillLevel = Int16(form.skill)
@@ -292,9 +349,33 @@ final class ProfileBuilderViewModel {
             input.bio = bioTrimmed.isEmpty ? nil : bioTrimmed
 
             try await profileRepository.updateCurrentUserProfile(input)
+
+            if !editedMatchSignalFields.isEmpty {
+                var matchSignalsInput = PlayerMatchSignalsUpdateInput()
+                if editedMatchSignalFields.contains(.competitivenessRating) {
+                    matchSignalsInput.competitivenessRating = form.competitivenessRating
+                }
+                if editedMatchSignalFields.contains(.friendlinessRating) {
+                    matchSignalsInput.friendlinessRating = form.friendlinessRating
+                }
+                if editedMatchSignalFields.contains(.socialVibeRating) {
+                    matchSignalsInput.socialVibeRating = form.socialVibeRating
+                }
+                if editedMatchSignalFields.contains(.preferredMatchIntensity) {
+                    matchSignalsInput.preferredMatchIntensity = form.preferredMatchIntensity.rawValue
+                }
+
+                try await matchSignalsRepository.updateCurrentUserMatchSignals(matchSignalsInput)
+            }
+
+            if didEditClubs {
+                try await profileRelationshipsRepository.replaceCurrentUserClubMemberships(with: form.clubs)
+            }
             
             // 4) Mark completion
             try await profileRepository.markProfileCompletedIfReady()
+            editedMatchSignalFields.removeAll()
+            didEditClubs = false
 
         } catch {
             showAlert(title: "Save Failed", message: error.localizedDescription)
