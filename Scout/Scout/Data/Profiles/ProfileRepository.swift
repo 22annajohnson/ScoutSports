@@ -309,8 +309,8 @@ final class ProfileRepository: ProfileProviding, PlayerMatchSignalsProviding, Pl
             var birthdate: String?
             var primarySport: String?
             var bio: String?
-            var homeCourtID: UUID?
-            var homeCourtName: String?
+            var homeCourtID: UUID??
+            var homeCourtName: String??
             var backgroundLevel: String?
             var yearsPlaying: Int16?
             var skillLevel: Int16?
@@ -353,11 +353,15 @@ final class ProfileRepository: ProfileProviding, PlayerMatchSignalsProviding, Pl
         if let bio = input.bio {
             patch.bio = bio
         }
-        if let homeCourtID = input.homeCourtID {
-            patch.homeCourtID = homeCourtID
+        if input.shouldClearHomeCourtID {
+            patch.homeCourtID = .some(nil)
+        } else if let homeCourtID = input.homeCourtID {
+            patch.homeCourtID = .some(homeCourtID)
         }
-        if let homeCourtName = input.homeCourtName {
-            patch.homeCourtName = homeCourtName
+        if input.shouldClearHomeCourtName {
+            patch.homeCourtName = .some(nil)
+        } else if let homeCourtName = input.homeCourtName {
+            patch.homeCourtName = .some(homeCourtName)
         }
         if let backgroundLevel = input.backgroundLevel {
             patch.backgroundLevel = backgroundLevel.rawValue

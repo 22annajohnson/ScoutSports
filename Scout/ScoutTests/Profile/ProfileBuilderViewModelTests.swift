@@ -61,6 +61,54 @@ final class ProfileBuilderViewModelTests: XCTestCase {
         XCTAssertEqual(profileRepository.replaceClubMembershipCalls.count, 1)
         XCTAssertEqual(profileRepository.replaceClubMembershipCalls.first, ["Club A", "Club B"])
     }
+
+    func test_saveProfile_whenOnlyOneMatchSignalEdited_onlyPatchesThatSignal() async {
+        let profileRepository = MockProfileRepository()
+        let imageUploadService = MockImageUploadService()
+        let userID = UUID()
+
+        let viewModel = ProfileBuilderViewModel(
+            profileRepository: profileRepository,
+            matchSignalsRepository: profileRepository,
+            profileRelationshipsRepository: profileRepository,
+            imageUploadService: imageUploadService,
+            userIDProvider: { userID }
+        )
+        viewModel.actionShotImage = UIImage()
+        viewModel.form.competitivenessRating = 5
+
+        await viewModel.saveProfile()
+
+        XCTAssertEqual(profileRepository.updateMatchSignalsCalls.count, 1)
+        let input = try XCTUnwrap(profileRepository.updateMatchSignalsCalls.first)
+        XCTAssertEqual(input.competitivenessRating, 5)
+        XCTAssertNil(input.friendlinessRating)
+        XCTAssertNil(input.socialVibeRating)
+        XCTAssertNil(input.preferredMatchIntensity)
+    }
+
+    func test_saveProfile_whenHomeCourtNameIsCleared_requestsNullHomeCourtWrites() async {
+        let profileRepository = MockProfileRepository()
+        let imageUploadService = MockImageUploadService()
+        let userID = UUID()
+
+        let viewModel = ProfileBuilderViewModel(
+            profileRepository: profileRepository,
+            matchSignalsRepository: profileRepository,
+            profileRelationshipsRepository: profileRepository,
+            imageUploadService: imageUploadService,
+            userIDProvider: { userID }
+        )
+        viewModel.actionShotImage = UIImage()
+        viewModel.form.homeCourtName = "   "
+
+        await viewModel.saveProfile()
+
+        XCTAssertEqual(profileRepository.updateMyProfileCalls.count, 1)
+        let input = try XCTUnwrap(profileRepository.updateMyProfileCalls.first)
+        XCTAssertTrue(input.shouldClearHomeCourtID)
+        XCTAssertTrue(input.shouldClearHomeCourtName)
+    }
 }
 
 private struct MockImageUploadService: ImageUploadProviding {

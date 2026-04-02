@@ -41,6 +41,8 @@ struct PlayerPublicProfileUpdateInput: Equatable, Sendable {
     var yearsPlaying: Int16? = nil
     var skillLevel: Int16? = nil
     var playStyle: ProfilePlayStyle? = nil
+    var shouldClearHomeCourtID: Bool = false
+    var shouldClearHomeCourtName: Bool = false
 }
 
 /// Structured inputs that help matching and ranking, but are still self-reported by the player.

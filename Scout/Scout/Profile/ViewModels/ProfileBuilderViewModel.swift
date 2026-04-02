@@ -17,6 +17,12 @@ import UIKit
 @MainActor
 @Observable
 final class ProfileBuilderViewModel {
+    private enum MatchSignalField: Hashable {
+        case competitivenessRating
+        case friendlinessRating
+        case socialVibeRating
+        case preferredMatchIntensity
+    }
 
     // MARK: - Mode
 
@@ -159,11 +165,17 @@ final class ProfileBuilderViewModel {
                 didEditClubs = true
             }
 
-            if oldValue.competitivenessRating != form.competitivenessRating
-                || oldValue.friendlinessRating != form.friendlinessRating
-                || oldValue.socialVibeRating != form.socialVibeRating
-                || oldValue.preferredMatchIntensity != form.preferredMatchIntensity {
-                didEditMatchSignals = true
+            if oldValue.competitivenessRating != form.competitivenessRating {
+                editedMatchSignalFields.insert(.competitivenessRating)
+            }
+            if oldValue.friendlinessRating != form.friendlinessRating {
+                editedMatchSignalFields.insert(.friendlinessRating)
+            }
+            if oldValue.socialVibeRating != form.socialVibeRating {
+                editedMatchSignalFields.insert(.socialVibeRating)
+            }
+            if oldValue.preferredMatchIntensity != form.preferredMatchIntensity {
+                editedMatchSignalFields.insert(.preferredMatchIntensity)
             }
         }
     }
@@ -176,7 +188,7 @@ final class ProfileBuilderViewModel {
 
     var isSaving: Bool = false
     private var didEditClubs: Bool = false
-    private var didEditMatchSignals: Bool = false
+    private var editedMatchSignalFields: Set<MatchSignalField> = []
 
     // Alerts
     var isShowingAlert: Bool = false
@@ -322,10 +334,10 @@ final class ProfileBuilderViewModel {
 
             let homeCourtTrimmed = form.homeCourtName.trimmingCharacters(in: .whitespacesAndNewlines)
             if homeCourtTrimmed.isEmpty {
-                input.homeCourtID = nil
-                input.homeCourtName = nil
+                input.shouldClearHomeCourtID = true
+                input.shouldClearHomeCourtName = true
             } else {
-                input.homeCourtID = nil
+                input.shouldClearHomeCourtID = true
                 input.homeCourtName = homeCourtTrimmed
             }
 
@@ -338,12 +350,20 @@ final class ProfileBuilderViewModel {
 
             try await profileRepository.updateCurrentUserProfile(input)
 
-            if didEditMatchSignals {
+            if !editedMatchSignalFields.isEmpty {
                 var matchSignalsInput = PlayerMatchSignalsUpdateInput()
-                matchSignalsInput.competitivenessRating = form.competitivenessRating
-                matchSignalsInput.friendlinessRating = form.friendlinessRating
-                matchSignalsInput.socialVibeRating = form.socialVibeRating
-                matchSignalsInput.preferredMatchIntensity = form.preferredMatchIntensity.rawValue
+                if editedMatchSignalFields.contains(.competitivenessRating) {
+                    matchSignalsInput.competitivenessRating = form.competitivenessRating
+                }
+                if editedMatchSignalFields.contains(.friendlinessRating) {
+                    matchSignalsInput.friendlinessRating = form.friendlinessRating
+                }
+                if editedMatchSignalFields.contains(.socialVibeRating) {
+                    matchSignalsInput.socialVibeRating = form.socialVibeRating
+                }
+                if editedMatchSignalFields.contains(.preferredMatchIntensity) {
+                    matchSignalsInput.preferredMatchIntensity = form.preferredMatchIntensity.rawValue
+                }
 
                 try await matchSignalsRepository.updateCurrentUserMatchSignals(matchSignalsInput)
             }
@@ -354,7 +374,7 @@ final class ProfileBuilderViewModel {
             
             // 4) Mark completion
             try await profileRepository.markProfileCompletedIfReady()
-            didEditMatchSignals = false
+            editedMatchSignalFields.removeAll()
             didEditClubs = false
 
         } catch {
