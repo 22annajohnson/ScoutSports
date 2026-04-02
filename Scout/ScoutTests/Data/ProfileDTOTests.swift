@@ -161,16 +161,31 @@ final class ProfileDTOTests: XCTestCase {
             metrics.toStatsViewModels(totalReviews: 12)
         }
 
-        XCTAssertEqual(stats.count, 4)
-        XCTAssertEqual(stats[0].statType, .vibe)
-        XCTAssertEqual(stats[0].rating, 5)
-        XCTAssertEqual(stats[1].statType, .intensity)
-        XCTAssertEqual(stats[1].rating, 3)
-        XCTAssertEqual(stats[2].statType, .consistency)
-        XCTAssertEqual(stats[2].rating, 3)
-        XCTAssertEqual(stats[3].statType, .skill)
-        XCTAssertEqual(stats[3].rating, 4)
-        XCTAssertTrue(stats.allSatisfy { $0.totalReviews == 12 })
+        let values = await MainActor.run {
+            (
+                stats.count,
+                stats[0].statType,
+                stats[0].rating,
+                stats[1].statType,
+                stats[1].rating,
+                stats[2].statType,
+                stats[2].rating,
+                stats[3].statType,
+                stats[3].rating,
+                stats.allSatisfy { $0.totalReviews == 12 }
+            )
+        }
+
+        XCTAssertEqual(values.0, 4)
+        XCTAssertEqual(values.1, .vibe)
+        XCTAssertEqual(values.2, 5)
+        XCTAssertEqual(values.3, .intensity)
+        XCTAssertEqual(values.4, 3)
+        XCTAssertEqual(values.5, .consistency)
+        XCTAssertEqual(values.6, 3)
+        XCTAssertEqual(values.7, .skill)
+        XCTAssertEqual(values.8, 4)
+        XCTAssertTrue(values.9)
     }
 
     func test_playerDerivedMetrics_toPublicSummary_excludesRawFeedbackAndCarriesDisplayStats() async {
@@ -190,9 +205,108 @@ final class ProfileDTOTests: XCTestCase {
             metrics.toPublicSummary(totalReviews: 8)
         }
 
-        XCTAssertEqual(summary.id, "derived-user")
-        XCTAssertEqual(summary.totalReviews, 8)
-        XCTAssertEqual(summary.stats.count, 4)
-        XCTAssertTrue(summary.stats.allSatisfy { $0.reviews.isEmpty })
+        let values = await MainActor.run {
+            (
+                summary.id,
+                summary.totalReviews,
+                summary.stats.count,
+                summary.stats.allSatisfy { $0.reviews.isEmpty }
+            )
+        }
+
+        XCTAssertEqual(values.0, "derived-user")
+        XCTAssertEqual(values.1, 8)
+        XCTAssertEqual(values.2, 4)
+        XCTAssertTrue(values.3)
+    }
+
+    func test_swipeCandidate_toCardViewModel_projectsCandidateIntoExistingCardShape() async {
+        let heroURL = URL(string: "https://example.com/player.png")!
+        let candidate = await MainActor.run {
+            SwipeCandidate(
+                id: UUID(),
+                displayName: "Anna",
+                sports: ["Pickleball"],
+                heroImageURL: heroURL,
+                stats: [
+                    StatsViewModel(statType: .vibe, rating: 4, totalReviews: 12, reviews: [])
+                ],
+                didLike: true
+            )
+        }
+
+        let card = await MainActor.run {
+            candidate.toCardViewModel()
+        }
+
+        let values = await MainActor.run {
+            (
+                card.name,
+                card.sports,
+                card.heroImageURL,
+                card.stats.count,
+                card.stats[0].statType,
+                card.stats[0].rating,
+                card.didLike
+            )
+        }
+
+        XCTAssertEqual(values.0, "Anna")
+        XCTAssertEqual(values.1, ["Pickleball"])
+        XCTAssertEqual(values.2, heroURL)
+        XCTAssertEqual(values.3, 1)
+        XCTAssertEqual(values.4, .vibe)
+        XCTAssertEqual(values.5, 4)
+        XCTAssertTrue(values.6)
+    }
+
+    func test_mockProfileRepository_tracks_newBoundaryCalls() async throws {
+        let repository = await MainActor.run { MockProfileRepository() }
+        let reviewedUserID = UUID()
+        let matchID = UUID()
+
+        try await repository.updateCurrentUserMatchSignals(
+            PlayerMatchSignalsUpdateInput(
+                competitivenessRating: 4,
+                friendlinessRating: 5,
+                socialVibeRating: 3,
+                preferredMatchIntensity: "balanced"
+            )
+        )
+
+        try await repository.replaceCurrentUserClubMemberships(with: ["Docks PB Club", "Sanford Rec"])
+
+        try await repository.submitCurrentUserMatchFeedback(
+            MatchPlayerFeedbackInput(
+                matchID: matchID,
+                reviewedUserID: reviewedUserID,
+                skillRating: 4,
+                competitivenessRating: 3,
+                friendlinessRating: 5,
+                vibesRating: 4,
+                communicationRating: 5,
+                reliabilityRating: 4,
+                wouldPlayAgain: true,
+                privateNote: "Great match"
+            )
+        )
+
+        let values = await MainActor.run {
+            (
+                repository.updateMatchSignalsCalls.count,
+                repository.updateMatchSignalsCalls.first?.competitivenessRating,
+                repository.replaceClubMembershipCalls,
+                repository.submittedMatchFeedbackCalls.count,
+                repository.submittedMatchFeedbackCalls.first?.matchID,
+                repository.submittedMatchFeedbackCalls.first?.reviewedUserID
+            )
+        }
+
+        XCTAssertEqual(values.0, 1)
+        XCTAssertEqual(values.1, 4)
+        XCTAssertEqual(values.2, [["Docks PB Club", "Sanford Rec"]])
+        XCTAssertEqual(values.3, 1)
+        XCTAssertEqual(values.4, matchID)
+        XCTAssertEqual(values.5, reviewedUserID)
     }
 }
