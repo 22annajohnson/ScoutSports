@@ -12,24 +12,36 @@ struct LocationStatusRow: View {
     let status: CLAuthorizationStatus
 
     var body: some View {
-        HStack(spacing: 10) {
+        HStack(spacing: ScoutSpacing.sm) {
             Image(systemName: icon)
+                .font(.system(size: 18, weight: .semibold))
                 .foregroundStyle(color)
+                .frame(width: 28, height: 28)
+                .background(
+                    Circle()
+                        .fill(Color.scoutSurfaceElevated)
+                )
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                    .font(.headline)
+                    .font(.scoutBodyEmphasis)
+                    .foregroundStyle(Color.scoutTextPrimary)
                 Text(subtitle)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .font(.scoutCaption)
+                    .foregroundStyle(Color.scoutTextSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
             }
 
             Spacer()
         }
-        .padding(12)
+        .padding(ScoutSpacing.md)
         .background(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(Color(.secondarySystemBackground))
+            RoundedRectangle(cornerRadius: ScoutRadius.md, style: .continuous)
+                .fill(Color.scoutSurfaceElevated)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: ScoutRadius.md, style: .continuous)
+                .stroke(Color.scoutGlassStroke, lineWidth: ScoutStroke.hairline)
         )
     }
 
@@ -49,13 +61,13 @@ struct LocationStatusRow: View {
     private var color: Color {
         switch status {
         case .authorizedAlways, .authorizedWhenInUse:
-            return .green
+            return .scoutSuccess
         case .denied, .restricted:
-            return .orange
+            return .scoutWarning
         case .notDetermined:
-            return .secondary
+            return .scoutTextSecondary
         @unknown default:
-            return .secondary
+            return .scoutTextSecondary
         }
     }
 

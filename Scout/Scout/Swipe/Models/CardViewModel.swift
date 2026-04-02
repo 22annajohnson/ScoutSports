@@ -10,6 +10,7 @@ import Foundation
 struct SwipeCandidate: Identifiable {
     let id: UUID
     var displayName: String
+    var bio: String?
     var sports: [String]
     var heroImageURL: URL
     var stats: [StatsViewModel]
@@ -19,6 +20,7 @@ struct SwipeCandidate: Identifiable {
 struct CardViewModel: Identifiable {
     let id: UUID = UUID()
     var name: String
+    var bio: String?
     var sports: [String]
     var heroImageURL: URL
     var stats: [StatsViewModel]
@@ -43,6 +45,7 @@ extension SwipeCandidate {
     func toCardViewModel() -> CardViewModel {
         CardViewModel(
             name: displayName,
+            bio: bio,
             sports: sports,
             heroImageURL: heroImageURL,
             stats: stats,
