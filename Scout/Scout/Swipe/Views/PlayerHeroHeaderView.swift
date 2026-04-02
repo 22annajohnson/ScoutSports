@@ -31,10 +31,12 @@ struct PlayerHeroHeaderView: View {
                 }
             }
 
-            Text("Aggressive at the net. Looking for competitive games and reliable weeknight runs.")
-                .font(.scoutBody)
-                .foregroundStyle(Color.white.opacity(0.84))
-                .fixedSize(horizontal: false, vertical: true)
+            if let bio = model.bio?.trimmingCharacters(in: .whitespacesAndNewlines), !bio.isEmpty {
+                Text(bio)
+                    .font(.scoutBody)
+                    .foregroundStyle(Color.white.opacity(0.84))
+                    .fixedSize(horizontal: false, vertical: true)
+            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }

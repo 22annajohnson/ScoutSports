@@ -25,6 +25,7 @@ struct PlayerSwipeScrollView: View {
                             model: HeroHeaderViewModel(
                                 imageURL: model.heroImageURL,
                                 name: model.name,
+                                bio: model.bio,
                                 score: matchupScore,
                                 accent: accent
                             )
