@@ -19,46 +19,40 @@ struct SportCard: View {
         Button {
             if isEnabled { onTap() }
         } label: {
-            ZStack {
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .fill(Color(.secondarySystemBackground))
+            ZStack(alignment: .topTrailing) {
+                RoundedRectangle(cornerRadius: ScoutRadius.lg, style: .continuous)
+                    .fill(isSelected ? Color.scoutSurfaceElevated : Color.scoutGlassFill)
+                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: ScoutRadius.lg, style: .continuous))
                     .overlay(
-                        RoundedRectangle(cornerRadius: 16, style: .continuous)
-                            .stroke(isSelected ? Color.scout : Color(.separator), lineWidth: isSelected ? 2 : 1)
+                        RoundedRectangle(cornerRadius: ScoutRadius.lg, style: .continuous)
+                            .stroke(isSelected ? Color.scoutAccentStart.opacity(0.55) : Color.scoutGlassStroke, lineWidth: isSelected ? ScoutStroke.emphasis : ScoutStroke.hairline)
                     )
 
-                VStack(spacing: 8) {
+                VStack(alignment: .leading, spacing: ScoutSpacing.sm) {
                     Text(title)
-                        .font(.title3)
-                        .bold()
+                        .font(.scoutSectionTitle)
+                        .foregroundStyle(Color.scoutTextPrimary)
 
                     if let subtitle {
                         Text(subtitle)
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                            .font(.scoutCaption)
+                            .foregroundStyle(Color.scoutTextSecondary)
                     }
-                }
-                .padding()
 
-                if !isEnabled {
-                    VStack {
-                        Spacer()
-                        Text("Coming soon")
-                            .font(.caption)
-                            .bold()
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 6)
-                            .background(
-                                Capsule().fill(Color(.systemBackground).opacity(0.9))
-                            )
-                            .overlay(
-                                Capsule().stroke(Color(.separator), lineWidth: 1)
-                            )
-                            .padding(.bottom, 10)
-                    }
+                    Spacer(minLength: 0)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(ScoutSpacing.lg)
+
+                if isSelected {
+                    GlassChip(title: "Selected", systemImage: "checkmark", style: .selected)
+                        .padding(ScoutSpacing.sm)
+                } else if !isEnabled {
+                    GlassChip(title: "Coming soon")
+                        .padding(ScoutSpacing.sm)
                 }
             }
-            .frame(height: 160)
+            .frame(maxWidth: .infinity, minHeight: 148)
             .opacity(isEnabled ? 1.0 : 0.7)
         }
         .buttonStyle(.plain)
