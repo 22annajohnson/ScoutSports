@@ -10,35 +10,42 @@ import SwiftUI
 struct PlayerSwipeScrollView: View {
     let model: CardViewModel
 
-    private let accent = Color(.secondaryAccent)
+    private let accent = Color.scoutAccentStart
 
     var body: some View {
         GeometryReader { geo in
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 0) {
-                    ZStack {
+                    ScoutHeroLayout {
                         PlayerBackgroundView(imageURL: model.heroImageURL, color: accent)
-
+                    } topBar: {
+                        topBar
+                    } overlay: {
                         PlayerHeroHeaderView(
                             model: HeroHeaderViewModel(
                                 imageURL: model.heroImageURL,
                                 name: model.name,
-                                score: 69,
+                                score: matchupScore,
                                 accent: accent
                             )
                         )
-                        .padding(.top, 50)
-                    }
-                    .frame(width: geo.size.width, height: geo.size.height - 100)
+                    } bottom: {
+                        VStack(spacing: ScoutSpacing.xl) {
+                            matchupSummary
 
-                    arrows
-                        .padding(20)
-                    
-                    RatingsView(stats: model.stats)
+                            RatingsView(stats: model.stats)
+
+                            ScoutActionDock()
+                        }
+                        .padding(.horizontal, ScoutSpacing.lg)
+                        .padding(.top, ScoutSpacing.xl)
+                        .padding(.bottom, ScoutSpacing.xl)
+                    }
+                    .frame(width: geo.size.width)
                 }
             }
             .ignoresSafeArea(.all)
-            .background(accent.ignoresSafeArea())
+            .background(ScoutTheme.screenBackground.ignoresSafeArea())
             .onAppear {
                 UIScrollView.appearance().bounces = false
             }
@@ -47,42 +54,96 @@ struct PlayerSwipeScrollView: View {
             }
         }
     }
-    
-    private var arrows: some View {
-        HStack(spacing: 0) {
-            ForEach(1...3, id: \.self) { i in
-                Image(systemName: "chevron.left")
-                    .font(.system(size: 24, weight: .bold))
-                    .foregroundColor(.primaryText.opacity(1.0/Double(i)))
-                    .padding(.top, 10)
-            }
-            
-            
-            overallScoreView
-            
-            ForEach(1...3, id: \.self) { i in
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 24, weight: .bold))
-                    .foregroundColor(.primaryText.opacity(1.0/Double(3-i)))
-                    .padding(.top, 10)
-            }
-            
+
+    private var topBar: some View {
+        HStack(spacing: ScoutSpacing.sm) {
+            GlassChip(title: "2.1 mi away")
+
+            Spacer()
+
+            GlassChip(title: "\(matchupScore) Match", style: .accent)
         }
     }
-    
-    private var overallScoreView: some View {
-        VStack {
-            Text("Your Matchup Rating:")
-            HStack(alignment: .firstTextBaseline, spacing: 4) {
-                Text("\(100)")
-                    .font(.scoutScore)
-                    .foregroundStyle(.primaryText)
+
+    private var matchupSummary: some View {
+        GlassCard {
+            VStack(alignment: .leading, spacing: ScoutSpacing.lg) {
+                ViewThatFits(in: .horizontal) {
+                    HStack(alignment: .firstTextBaseline, spacing: ScoutSpacing.md) {
+                        scoreBlock
+                        Spacer(minLength: ScoutSpacing.md)
+                        GlassChip(title: "Great fit", systemImage: "sparkles", style: .selected)
+                    }
+
+                    VStack(alignment: .leading, spacing: ScoutSpacing.md) {
+                        scoreBlock
+                        GlassChip(title: "Great fit", systemImage: "sparkles", style: .selected)
+                    }
+                }
+
+                LazyVGrid(
+                    columns: [GridItem(.adaptive(minimum: 132), spacing: ScoutSpacing.md)],
+                    alignment: .leading,
+                    spacing: ScoutSpacing.md
+                ) {
+                    summaryTile(title: "Sport", value: model.sports.first ?? "Pickleball")
+                    summaryTile(title: "Style", value: "Competitive")
+                    summaryTile(title: "Reliability", value: "High")
+                }
             }
-            .padding(.horizontal, 20)
         }
+    }
+
+    private var scoreBlock: some View {
+        VStack(alignment: .leading, spacing: ScoutSpacing.xs) {
+            Text("MATCHUP")
+                .font(.scoutLabelCaps)
+                .tracking(3)
+                .foregroundStyle(Color.scoutTextSecondary)
+
+            Text("\(matchupScore)")
+                .font(.scoutNumberXL)
+                .foregroundStyle(Color.scoutTextPrimary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+        }
+    }
+
+    private func summaryTile(title: String, value: String) -> some View {
+        VStack(alignment: .leading, spacing: ScoutSpacing.xxs) {
+            Text(title.uppercased())
+                .font(.scoutMicro)
+                .tracking(1.5)
+                .foregroundStyle(Color.scoutTextSecondary)
+                .lineLimit(2)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Text(value)
+                .font(.scoutCallout)
+                .foregroundStyle(Color.scoutTextPrimary)
+                .lineLimit(2)
+                .minimumScaleFactor(0.9)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity, minHeight: 84, alignment: .leading)
+        .padding(ScoutSpacing.md)
+        .background(
+            RoundedRectangle(cornerRadius: ScoutRadius.md, style: .continuous)
+                .fill(Color.scoutSurfaceElevated)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: ScoutRadius.md, style: .continuous)
+                .stroke(Color.scoutGlassStroke, lineWidth: ScoutStroke.hairline)
+        )
+    }
+
+    private var matchupScore: Int {
+        let cappedStars = model.stats.map { min(max($0.rating, 0), 5) }
+        guard !cappedStars.isEmpty else { return 82 }
+        let normalized = cappedStars.reduce(0, +) * 100 / (cappedStars.count * 5)
+        return max(72, normalized)
     }
 }
-
 
 #Preview {
     PlayerSwipeScrollView(model: randomMockCardViewModel())
