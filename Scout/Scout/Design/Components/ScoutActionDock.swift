@@ -8,11 +8,25 @@
 import SwiftUI
 
 struct ScoutActionDock: View {
+    let onPass: () -> Void
+    let onBoost: () -> Void
+    let onLike: () -> Void
+
+    init(
+        onPass: @escaping () -> Void = {},
+        onBoost: @escaping () -> Void = {},
+        onLike: @escaping () -> Void = {}
+    ) {
+        self.onPass = onPass
+        self.onBoost = onBoost
+        self.onLike = onLike
+    }
+
     var body: some View {
         HStack(spacing: ScoutSpacing.lg) {
-            actionButton(systemImage: "xmark", size: 58)
+            actionButton(systemImage: "xmark", size: 58, action: onPass)
 
-            Button {} label: {
+            Button(action: onBoost) {
                 Image(systemName: "bolt.fill")
                     .font(.system(size: 24, weight: .bold))
                     .foregroundStyle(Color.scoutTextOnAccent)
@@ -29,7 +43,7 @@ struct ScoutActionDock: View {
             }
             .buttonStyle(ScoutDockButtonStyle())
 
-            actionButton(systemImage: "heart", size: 58)
+            actionButton(systemImage: "heart", size: 58, action: onLike)
         }
         .padding(.horizontal, ScoutSpacing.xl)
         .padding(.vertical, ScoutSpacing.md)
@@ -44,8 +58,8 @@ struct ScoutActionDock: View {
         )
     }
 
-    private func actionButton(systemImage: String, size: CGFloat) -> some View {
-        Button {} label: {
+    private func actionButton(systemImage: String, size: CGFloat, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
             Image(systemName: systemImage)
                 .font(.system(size: 24, weight: .semibold))
                 .foregroundStyle(Color.scoutTextPrimary)

@@ -19,6 +19,7 @@ func randomMockSwipeCandidate() -> SwipeCandidate {
     SwipeCandidate(
         id: UUID(),
         displayName: getRandomName(),
+        bio: "Aggressive at the net. Looking for competitive games and reliable weeknight runs.",
         sports: getRandomSports(),
         heroImageURL: URL(string:"https://picsum.photos/400/800")!,
         stats: getRandomStats(),

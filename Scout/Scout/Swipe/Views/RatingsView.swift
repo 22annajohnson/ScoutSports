@@ -9,32 +9,59 @@ import SwiftUI
 
 struct RatingsView: View {
     @State var stats: [StatsViewModel]
-    
+
     var body: some View {
-        ZStack {
-            Color.secondaryAccent
-                .ignoresSafeArea(.all)
-            
-            VStack (alignment: .leading) {
-                Text("Ratings")
-                    .font(.scoutScreenTitle)
-                    .foregroundStyle(Color.primaryText)
-                
-                VStack(alignment: .trailing) {
-                    ForEach(stats) { stat in
-                        StarStatView(starCount: stat.rating, starType: stat.statType)
-                        Divider()
-                            .frame(height: 2)
-                            .overlay(Color.primaryText)
+        GlassCard {
+            ScoutSection(
+                eyebrow: "Ratings",
+                title: "Player snapshot",
+                subtitle: "A quick look at how this player tends to show up in matches."
+            ) {
+                VStack(spacing: ScoutSpacing.md) {
+                    ForEach(Array(stats.enumerated()), id: \.element.id) { index, stat in
+                        ratingRow(for: stat)
+
+                        if index < stats.count - 1 {
+                            Rectangle()
+                                .fill(Color.scoutDivider)
+                                .frame(height: 1)
+                        }
                     }
                 }
             }
-            .padding()
         }
-        
+    }
+
+    private func ratingRow(for stat: StatsViewModel) -> some View {
+        HStack(alignment: .center, spacing: ScoutSpacing.md) {
+            VStack(alignment: .leading, spacing: ScoutSpacing.xxs) {
+                Text(getStatTypeString(stat.statType).uppercased())
+                    .font(.scoutLabelCaps)
+                    .tracking(2.5)
+                    .foregroundStyle(Color.scoutTextSecondary)
+
+                Text("\(stat.totalReviews) reviews")
+                    .font(.scoutCaption)
+                    .foregroundStyle(Color.scoutTextSecondary)
+            }
+
+            Spacer()
+
+            HStack(spacing: ScoutSpacing.xxs) {
+                ForEach(0..<5, id: \.self) { index in
+                    Image(systemName: index < stat.rating ? "star.fill" : "star")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(index < stat.rating ? AnyShapeStyle(ScoutTheme.accentGradient) : AnyShapeStyle(Color.scoutGlassStroke))
+                }
+            }
+        }
     }
 }
 
 #Preview {
-    RatingsView(stats: getRandomStats())
+    ZStack {
+        ScoutTheme.screenBackground.ignoresSafeArea()
+        RatingsView(stats: getRandomStats())
+            .padding()
+    }
 }

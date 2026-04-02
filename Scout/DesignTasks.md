@@ -31,48 +31,48 @@
 ## Delivery Plan
 
 ### Phase 1: Foundation Tokens
-- [ ] Define semantic color tokens for app background, elevated surface, glass stroke, primary text, secondary text, positive state, destructive state, and accent gradient stops.
+- [x] Define semantic color tokens for app background, elevated surface, glass stroke, primary text, secondary text, positive state, destructive state, and accent gradient stops.
 - [ ] Replace direct color literals/usages with semantic `Color` accessors where practical in touched views.
-- [ ] Expand typography beyond `fonts.swift` into a more complete type scale with hero, title, body, label, number, and micro-label roles.
-- [ ] Define spacing, corner radius, stroke width, shadow, blur, and glow constants in one place.
-- [ ] Add a lightweight theme reference doc inside the code comments or preview area so contributors know which token to use.
+- [x] Expand typography beyond `fonts.swift` into a more complete type scale with hero, title, body, label, number, and micro-label roles.
+- [x] Define spacing, corner radius, stroke width, shadow, blur, and glow constants in one place.
+- [x] Add a lightweight theme reference doc inside the code comments or preview area so contributors know which token to use.
 
 ### Phase 2: Core Glass Primitives
-- [ ] Create a reusable glass surface container for cards and sheets.
-- [ ] Create a reusable glass pill/chip component for tags, filters, and top badges.
-- [ ] Create a primary gradient CTA style and a secondary glass CTA style.
-- [ ] Create reusable stat tile and metric row components.
-- [ ] Create a reusable selection row style for onboarding/profile options.
-- [ ] Create a bottom action dock treatment for swipe/profile flows.
+- [x] Create a reusable glass surface container for cards and sheets.
+- [x] Create a reusable glass pill/chip component for tags, filters, and top badges.
+- [x] Create a primary gradient CTA style and a secondary glass CTA style.
+- [x] Create reusable stat tile and metric row components.
+- [x] Create a reusable selection row style for onboarding/profile options.
+- [x] Create a bottom action dock treatment for swipe/profile flows.
 
 ### Phase 3: Screen Composition Rules
-- [ ] Define page-level layout patterns for full-bleed hero screens, form flows, and sheet/modal content.
-- [ ] Standardize navigation/header treatments including title, dismiss/back controls, and progress placement.
-- [ ] Standardize section spacing, label spacing, and safe-area behavior for long scrolling screens.
-- [ ] Document when to use full-bleed imagery, when to use elevated cards, and when to keep content flat.
+- [x] Define page-level layout patterns for full-bleed hero screens, form flows, and sheet/modal content.
+- [x] Standardize navigation/header treatments including title, dismiss/back controls, and progress placement.
+- [x] Standardize section spacing, label spacing, and safe-area behavior for long scrolling screens.
+- [x] Document when to use full-bleed imagery, when to use elevated cards, and when to keep content flat.
 
 ### Phase 4: Swipe Experience Restyle
-- [ ] Update the swipe deck/player card presentation to use the new glass chips, hero overlays, stat tiles, overlap chart card, and bottom action dock.
-- [ ] Convert current debug/profile actions to use the new chip/button language where appropriate.
-- [ ] Tune hierarchy so the player photo remains dominant and metadata reads clearly over imagery.
-- [ ] Keep swipe interaction mechanics unchanged in this phase unless styling work exposes a real UX issue.
+- [x] Update the swipe deck/player card presentation to use the new glass chips, hero overlays, stat tiles, overlap chart card, and bottom action dock.
+- [x] Convert current debug/profile actions to use the new chip/button language where appropriate.
+- [x] Tune hierarchy so the player photo remains dominant and metadata reads clearly over imagery.
+- [x] Keep swipe interaction mechanics unchanged in this phase unless styling work exposes a real UX issue.
 
 ### Phase 5: Onboarding Restyle
-- [ ] Restyle onboarding into a more premium multi-step flow using the shared header, card, selection row, and CTA components.
-- [ ] Introduce consistent step cards for skill/style/rating inputs instead of rebuilding styling per step.
-- [ ] Use glass surfaces and accent gradients to emphasize selection and progress, not as background noise.
-- [ ] Preserve all existing onboarding logic and validation behavior.
+- [x] Restyle onboarding into a more premium multi-step flow using the shared header, card, selection row, and CTA components.
+- [x] Introduce consistent step cards for skill/style/rating inputs instead of rebuilding styling per step.
+- [x] Use glass surfaces and accent gradients to emphasize selection and progress, not as background noise.
+- [x] Preserve all existing onboarding logic and validation behavior.
 
 ### Phase 6: Profile Builder Restyle
-- [ ] Restyle the profile builder shell, step cards, media pickers, sliders/rating controls, and footer actions with the new component system.
-- [ ] Unify photo placeholders, preview chrome, and review-step presentation with the swipe card visual language.
-- [ ] Ensure forms still feel efficient and editable, not over-decorated.
+- [x] Restyle the profile builder shell, step cards, media pickers, sliders/rating controls, and footer actions with the new component system.
+- [x] Unify photo placeholders, preview chrome, and review-step presentation with the swipe card visual language.
+- [x] Ensure forms still feel efficient and editable, not over-decorated.
 
 ### Phase 7: Motion, States, and Polish
-- [ ] Add shared animation guidance for press states, selection transitions, card entry, glass highlight shifts, and step changes.
-- [ ] Add loading, empty, disabled, and error state styling that matches the new theme.
-- [ ] Audit contrast/readability over image backgrounds and glass surfaces.
-- [ ] Validate dynamic type behavior and touch target sizing on core controls.
+- [x] Add shared animation guidance for press states, selection transitions, card entry, glass highlight shifts, and step changes.
+- [x] Add loading, empty, disabled, and error state styling that matches the new theme.
+- [x] Audit contrast/readability over image backgrounds and glass surfaces.
+- [x] Validate dynamic type behavior and touch target sizing on core controls.
 
 ### Phase 8: Package Extraction Prep
 - [ ] Audit which `Scout/Design` types are truly reusable versus still app-specific.
@@ -157,7 +157,7 @@
 - [ ] Semantic color and gradient palette.
 - [ ] Expanded typography roles and naming cleanup for `fonts.swift`.
 - [ ] `GlassCard`, `GlassChip`, `ScoutPrimaryButtonStyle`, and `ScoutStatTile`.
-- [ ] A small preview/gallery screen that shows the kit in one place before broad feature adoption.
+- [x] A small preview/gallery screen that shows the kit in one place before broad feature adoption.
 
 ## Review Checklist For Each PR
 - [ ] Business logic unchanged unless explicitly in scope.
