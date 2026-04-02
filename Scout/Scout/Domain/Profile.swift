@@ -77,6 +77,14 @@ struct PlayerDerivedMetrics: Identifiable, Equatable, Sendable {
     var repeatPlayRate: Double?
 }
 
+/// Public-safe aggregate metrics for display surfaces like swipe cards.
+/// This intentionally excludes raw feedback rows and any private notes.
+struct PlayerPublicMetricSummary: Identifiable, Sendable {
+    let id: String
+    var totalReviews: Int
+    var stats: [StatsViewModel]
+}
+
 extension PlayerDerivedMetrics {
     func toStatsViewModels(totalReviews: Int) -> [StatsViewModel] {
         [
@@ -99,6 +107,14 @@ extension PlayerDerivedMetrics {
     private func roundedStarRating(from score: Double?) -> Int {
         guard let score else { return 0 }
         return min(max(Int(score.rounded()), 0), 5)
+    }
+
+    func toPublicSummary(totalReviews: Int) -> PlayerPublicMetricSummary {
+        PlayerPublicMetricSummary(
+            id: id,
+            totalReviews: totalReviews,
+            stats: toStatsViewModels(totalReviews: totalReviews)
+        )
     }
 }
 

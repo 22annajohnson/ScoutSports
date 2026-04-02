@@ -119,7 +119,7 @@ enum ProfilePlayStyle: String, Codable, CaseIterable, Sendable {
     case singles
 }
 
-final class ProfileRepository: ProfileProviding, PlayerMatchSignalsProviding, PlayerProfileRelationshipsProviding, MatchFeedbackProviding, PlayerMetricsProviding {
+final class ProfileRepository: ProfileProviding, PlayerMatchSignalsProviding, PlayerProfileRelationshipsProviding, MatchFeedbackProviding, InternalMatchFeedbackProviding, PlayerMetricsProviding {
     private let supabase: SupabaseClient
 
     init(supabase: SupabaseClient) {
@@ -528,7 +528,7 @@ final class ProfileRepository: ProfileProviding, PlayerMatchSignalsProviding, Pl
             .execute()
     }
 
-    func fetchFeedbackReceived(for reviewedUserID: UUID) async throws -> [MatchPlayerFeedback] {
+    func fetchPrivateFeedbackReceived(for reviewedUserID: UUID) async throws -> [MatchPlayerFeedback] {
         let rows: [MatchPlayerFeedbackRow] = try await supabase
             .from("match_player_feedback")
             .select("id, match_id, reviewer_user_id, reviewed_user_id, skill_rating, competitiveness_rating, friendliness_rating, vibes_rating, communication_rating, reliability_rating, would_play_again, private_note, created_at")
@@ -541,7 +541,7 @@ final class ProfileRepository: ProfileProviding, PlayerMatchSignalsProviding, Pl
     }
 
     func fetchDerivedMetrics(for userID: UUID) async throws -> PlayerDerivedMetrics {
-        let feedbackRows = try await fetchFeedbackReceived(for: userID)
+        let feedbackRows = try await fetchPrivateFeedbackReceived(for: userID)
 
         func average(_ values: [Int?]) -> Double? {
             let resolved = values.compactMap { $0 }
@@ -572,6 +572,12 @@ final class ProfileRepository: ProfileProviding, PlayerMatchSignalsProviding, Pl
             skillConfidence: skillConfidence,
             repeatPlayRate: repeatPlayRate
         )
+    }
+
+    func fetchPublicMetricSummary(for userID: UUID) async throws -> PlayerPublicMetricSummary {
+        let feedbackRows = try await fetchPrivateFeedbackReceived(for: userID)
+        let metrics = try await fetchDerivedMetrics(for: userID)
+        return metrics.toPublicSummary(totalReviews: feedbackRows.count)
     }
 
     /// Marks profile as completed if required fields exist.

@@ -23,7 +23,12 @@ protocol ProfileProviding {
 /// Raw feedback should remain separate from editable profile state.
 protocol MatchFeedbackProviding {
     func submitCurrentUserMatchFeedback(_ input: MatchPlayerFeedbackInput) async throws
-    func fetchFeedbackReceived(for reviewedUserID: UUID) async throws -> [MatchPlayerFeedback]
+}
+
+/// Internal-only raw feedback access.
+/// This should be used for aggregation, moderation, or future owner/admin surfaces, not public profile display.
+protocol InternalMatchFeedbackProviding {
+    func fetchPrivateFeedbackReceived(for reviewedUserID: UUID) async throws -> [MatchPlayerFeedback]
 }
 
 /// Boundary for self-reported inputs used by matching and ranking.
@@ -42,4 +47,5 @@ protocol PlayerProfileRelationshipsProviding {
 /// Swipe ordering and matching should consume these values without storing them in `profiles`.
 protocol PlayerMetricsProviding {
     func fetchDerivedMetrics(for userID: UUID) async throws -> PlayerDerivedMetrics
+    func fetchPublicMetricSummary(for userID: UUID) async throws -> PlayerPublicMetricSummary
 }

@@ -172,4 +172,27 @@ final class ProfileDTOTests: XCTestCase {
         XCTAssertEqual(stats[3].rating, 4)
         XCTAssertTrue(stats.allSatisfy { $0.totalReviews == 12 })
     }
+
+    func test_playerDerivedMetrics_toPublicSummary_excludesRawFeedbackAndCarriesDisplayStats() async {
+        let metrics = await MainActor.run {
+            PlayerDerivedMetrics(
+                id: "derived-user",
+                friendlinessScore: 4.0,
+                competitivenessScore: 3.0,
+                vibesScore: 5.0,
+                reliabilityScore: 2.0,
+                skillConfidence: 4.0,
+                repeatPlayRate: 5.0
+            )
+        }
+
+        let summary = await MainActor.run {
+            metrics.toPublicSummary(totalReviews: 8)
+        }
+
+        XCTAssertEqual(summary.id, "derived-user")
+        XCTAssertEqual(summary.totalReviews, 8)
+        XCTAssertEqual(summary.stats.count, 4)
+        XCTAssertTrue(summary.stats.allSatisfy { $0.reviews.isEmpty })
+    }
 }

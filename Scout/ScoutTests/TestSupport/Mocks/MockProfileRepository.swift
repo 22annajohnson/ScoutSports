@@ -10,7 +10,7 @@ import Foundation
 /// Test double for `ProfileProviding`.
 /// - Configurable return values for fetch/update
 /// - Tracks calls and captured inputs
-final class MockProfileRepository: ProfileProviding, PlayerMatchSignalsProviding, PlayerProfileRelationshipsProviding, MatchFeedbackProviding, PlayerMetricsProviding {
+final class MockProfileRepository: ProfileProviding, PlayerMatchSignalsProviding, PlayerProfileRelationshipsProviding, MatchFeedbackProviding, InternalMatchFeedbackProviding, PlayerMetricsProviding {
 
     // MARK: - Captured inputs
 
@@ -50,6 +50,11 @@ final class MockProfileRepository: ProfileProviding, PlayerMatchSignalsProviding
         reliabilityScore: nil,
         skillConfidence: nil,
         repeatPlayRate: nil
+    )
+    var publicMetricSummaryResult = PlayerPublicMetricSummary(
+        id: "test-user",
+        totalReviews: 0,
+        stats: []
     )
 
     /// Optional hooks if you want side effects.
@@ -131,12 +136,16 @@ final class MockProfileRepository: ProfileProviding, PlayerMatchSignalsProviding
         if let submitMatchFeedbackError { throw submitMatchFeedbackError }
     }
 
-    func fetchFeedbackReceived(for reviewedUserID: UUID) async throws -> [MatchPlayerFeedback] {
+    func fetchPrivateFeedbackReceived(for reviewedUserID: UUID) async throws -> [MatchPlayerFeedback] {
         feedbackReceivedResult.filter { $0.reviewedUserID == reviewedUserID }
     }
 
     func fetchDerivedMetrics(for userID: UUID) async throws -> PlayerDerivedMetrics {
         derivedMetricsResult
+    }
+
+    func fetchPublicMetricSummary(for userID: UUID) async throws -> PlayerPublicMetricSummary {
+        publicMetricSummaryResult
     }
 
     func markProfileCompletedIfReady() async throws {
