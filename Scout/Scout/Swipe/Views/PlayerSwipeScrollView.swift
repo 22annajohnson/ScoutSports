@@ -28,46 +28,24 @@ struct PlayerSwipeScrollView: View {
     private let accent = Color.scoutAccentStart
 
     var body: some View {
-        GeometryReader { geo in
-            ScrollView(showsIndicators: false) {
-                VStack(spacing: 0) {
-                    ScoutHeroLayout {
-                        PlayerBackgroundView(imageURL: model.heroImageURL, color: accent)
-                    } topBar: {
-                        topBar
-                    } overlay: {
-                        PlayerHeroHeaderView(
-                            model: HeroHeaderViewModel(
-                                imageURL: model.heroImageURL,
-                                name: model.name,
-                                bio: model.bio,
-                                score: matchupScore,
-                                accent: accent
-                            )
-                        )
-                    } bottom: {
-                        VStack(spacing: ScoutSpacing.xl) {
-                            matchupSummary
-
-                            RatingsView(stats: model.stats)
-
-                            ScoutActionDock(onPass: onPass, onBoost: onBoost, onLike: onLike)
-                        }
-                        .padding(.horizontal, ScoutSpacing.lg)
-                        .padding(.top, ScoutSpacing.xl)
-                        .padding(.bottom, ScoutSpacing.xl)
-                    }
-                    .frame(width: geo.size.width)
-                }
+        SwipeCardOverlayScrollLayout {
+            PlayerBackgroundView(imageURL: model.heroImageURL, color: accent)
+        } topBar: {
+            topBar
+        } content: {
+            VStack(spacing: ScoutSpacing.lg) {
+                heroPanel
+                matchupSummary
+                RatingsView(stats: model.stats)
             }
-            .ignoresSafeArea(.all)
-            .background(ScoutTheme.screenBackground.ignoresSafeArea())
-            .onAppear {
-                UIScrollView.appearance().bounces = false
-            }
-            .onDisappear {
-                UIScrollView.appearance().bounces = true
-            }
+        } dock: {
+            ScoutActionDock(onPass: onPass, onBoost: onBoost, onLike: onLike)
+        }
+        .onAppear {
+            UIScrollView.appearance().bounces = false
+        }
+        .onDisappear {
+            UIScrollView.appearance().bounces = true
         }
     }
 
@@ -78,6 +56,20 @@ struct PlayerSwipeScrollView: View {
             Spacer()
 
             GlassChip(title: "\(matchupScore) Match", style: .accent)
+        }
+    }
+
+    private var heroPanel: some View {
+        GlassCard {
+            PlayerHeroHeaderView(
+                model: HeroHeaderViewModel(
+                    imageURL: model.heroImageURL,
+                    name: model.name,
+                    bio: model.bio,
+                    score: matchupScore,
+                    accent: accent
+                )
+            )
         }
     }
 
