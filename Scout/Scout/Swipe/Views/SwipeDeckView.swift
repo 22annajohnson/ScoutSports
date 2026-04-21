@@ -16,10 +16,7 @@ struct SwipeDeckView: View {
     @State private var isDismissing = false
     @State private var showMatch = false
     @State private var matchedModel: CardViewModel? = nil
-    @State private var showProfileBuilder = false
     @State private var dismissalTask: Task<Void, Never>?
-    @Environment(\.appEnvironment) private var appEnvironment
-    @Environment(SessionStore.self) private var session
 
     private let threshold: CGFloat = 140
     
@@ -118,35 +115,6 @@ struct SwipeDeckView: View {
             isSwipingHorizontally = false
             isDismissing = false
         }
-        .overlay(alignment: .topLeading) {
-            #if DEBUG
-            VStack(alignment: .leading, spacing: 10) {
-                Button {
-                    Task { await vm.signOut() }
-                } label: {
-                    Label("Sign out", systemImage: "rectangle.portrait.and.arrow.right")
-                        .font(.subheadline.weight(.semibold))
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 10)
-                        .background(.ultraThinMaterial)
-                        .clipShape(Capsule())
-                }
-
-                Button {
-                    showProfileBuilder = true
-                } label: {
-                    Label("Edit Profile", systemImage: "person.crop.circle")
-                        .font(.subheadline.weight(.semibold))
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 10)
-                        .background(.ultraThinMaterial)
-                        .clipShape(Capsule())
-                }
-            }
-            .padding(.top, 16)
-            .padding(.leading, 16)
-            #endif
-        }
         .fullScreenCover(isPresented: $showMatch) {
             if let matchedModel {
                 MatchView(
@@ -159,14 +127,6 @@ struct SwipeDeckView: View {
                     onSendMessage: {}
                 )
             }
-        }
-        .fullScreenCover(isPresented: $showProfileBuilder) {
-            ProfileBuilderView(
-                vm: appEnvironment.makeProfileBuilderViewModel(
-                    userIDProvider: { session.userID }
-                )
-            )
-                .environment(session)
         }
     }
 
