@@ -34,7 +34,7 @@ struct PlayerSwipeScrollView: View {
             topBar
         } content: {
             VStack(spacing: ScoutSpacing.lg) {
-                heroPanel
+                identityPanel
                 matchupSummary
                 RatingsView(stats: model.stats)
             }
@@ -59,18 +59,14 @@ struct PlayerSwipeScrollView: View {
         }
     }
 
-    private var heroPanel: some View {
-        GlassCard {
-            PlayerHeroHeaderView(
-                model: HeroHeaderViewModel(
-                    imageURL: model.heroImageURL,
-                    name: model.name,
-                    bio: model.bio,
-                    score: matchupScore,
-                    accent: accent
-                )
-            )
-        }
+    private var identityPanel: some View {
+        SwipeCardIdentitySection(
+            name: model.name,
+            age: displayAge,
+            summaryLines: identitySummaryLines,
+            intent: "Looking for competitive games",
+            score: matchupScore
+        )
     }
 
     private var matchupSummary: some View {
@@ -150,6 +146,28 @@ struct PlayerSwipeScrollView: View {
         guard !cappedStars.isEmpty else { return 82 }
         let normalized = cappedStars.reduce(0, +) * 100 / (cappedStars.count * 5)
         return max(72, normalized)
+    }
+
+    private var displayAge: Int? {
+        27
+    }
+
+    private var identitySummaryLines: [String] {
+        guard let bio = model.bio?.trimmingCharacters(in: .whitespacesAndNewlines), !bio.isEmpty else {
+            return [
+                "Aggressive at the net.",
+                "Loves fast doubles.",
+                "Usually free Tue/Thu nights."
+            ]
+        }
+
+        let sentences = bio
+            .split(separator: ".")
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+            .map { "\($0)." }
+
+        return Array(sentences.prefix(3))
     }
 }
 
