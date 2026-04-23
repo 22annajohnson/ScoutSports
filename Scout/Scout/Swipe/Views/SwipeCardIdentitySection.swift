@@ -117,7 +117,7 @@ struct SwipeCardIdentitySection: View {
 
     private var summary: some View {
         VStack(alignment: .leading, spacing: ScoutSpacing.md) {
-            ForEach(summaryLines.prefix(3), id: \.self) { line in
+            ForEach(Array(summaryLines.prefix(3).enumerated()), id: \.offset) { _, line in
                 Text(line)
                     .font(.scoutTitleCompact)
                     .foregroundStyle(Color.scoutTextPrimary.opacity(0.86))
