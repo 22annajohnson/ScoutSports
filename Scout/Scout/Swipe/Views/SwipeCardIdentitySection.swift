@@ -13,12 +13,17 @@ struct SwipeCardIdentitySection: View {
     let summaryLines: [String]
     let intent: String
     let score: Int
+    let tags: [SwipeCardTagItem]
 
     var body: some View {
         GlassCard(padding: ScoutSpacing.xl) {
-            VStack(alignment: .leading, spacing: ScoutSpacing.xl) {
+            VStack(alignment: .leading, spacing: ScoutSpacing.lg) {
                 header
                 summary
+
+                if !tags.isEmpty {
+                    SwipeCardTagCluster(tags: tags)
+                }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
@@ -143,7 +148,13 @@ struct SwipeCardIdentitySection: View {
                 "Usually free Tue/Thu nights."
             ],
             intent: "Looking for competitive games",
-            score: 88
+            score: 88,
+            tags: [
+                SwipeCardTagItem(title: "4.7 Competitive", style: .accent),
+                SwipeCardTagItem(title: "Reliable", style: .info),
+                SwipeCardTagItem(title: "Tue/Thu Nights"),
+                SwipeCardTagItem(title: "Pickleball")
+            ]
         )
         .padding()
     }

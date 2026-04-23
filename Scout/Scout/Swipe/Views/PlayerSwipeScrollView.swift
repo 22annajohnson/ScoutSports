@@ -67,7 +67,8 @@ struct PlayerSwipeScrollView: View {
             age: presentation.displayAge,
             summaryLines: presentation.identitySummaryLines,
             intent: presentation.intent,
-            score: presentation.matchupScore
+            score: presentation.matchupScore,
+            tags: presentation.identityTags
         )
     }
 
@@ -90,6 +91,7 @@ private struct SwipeCardPresentation {
     let intent: String
     let displayAge: Int?
     let identitySummaryLines: [String]
+    let identityTags: [SwipeCardTagItem]
     let matchupScore: Int
     let fitLabel: String
     let matchupTiles: [SwipeCardMatchupTile]
@@ -100,6 +102,12 @@ private struct SwipeCardPresentation {
         self.intent = "Looking for competitive games"
         self.displayAge = 27
         self.identitySummaryLines = Self.summaryLines(from: model.bio)
+        self.identityTags = [
+            SwipeCardTagItem(title: "4.7 Competitive", style: .accent),
+            SwipeCardTagItem(title: "Reliable", style: .info),
+            SwipeCardTagItem(title: "Tue/Thu Nights"),
+            SwipeCardTagItem(title: model.sports.first ?? "Pickleball")
+        ]
         self.matchupScore = Self.matchupScore(from: model.stats)
         self.fitLabel = "Great fit"
         self.matchupTiles = [
