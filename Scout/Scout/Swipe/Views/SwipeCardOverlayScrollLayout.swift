@@ -30,31 +30,35 @@ struct SwipeCardOverlayScrollLayout<Background: View, TopBar: View, Content: Vie
 
     var body: some View {
         GeometryReader { geo in
-            let safeTop = geo.safeAreaInsets.top
-            let safeBottom = max(geo.safeAreaInsets.bottom, ScoutSpacing.sm)
-            let heroStart = max(220, geo.size.height * heroStartRatio)
+            let metrics = LayoutMetrics(geometry: geo, heroStartRatio: heroStartRatio)
 
             ZStack(alignment: .top) {
+                fullScreenWash
+                    .frame(width: geo.size.width, height: metrics.backgroundHeight)
+                    .offset(y: -metrics.backgroundTopInset)
+                    .ignoresSafeArea()
+
                 background
-                    .frame(width: geo.size.width, height: geo.size.height)
+                    .frame(width: geo.size.width, height: metrics.backgroundHeight)
+                    .offset(y: -metrics.backgroundTopInset)
                     .ignoresSafeArea()
 
                 topBar
                     .padding(.horizontal, ScoutSpacing.md)
-                    .padding(.top, max(ScoutSpacing.xs, safeTop - ScoutSpacing.xs))
+                    .padding(.top, metrics.topBarTopInset)
                     .frame(maxWidth: .infinity, alignment: .top)
                     .zIndex(2)
 
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: ScoutSpacing.lg) {
                         Color.clear
-                            .frame(height: heroStart)
+                            .frame(height: metrics.heroStart)
 
                         content
                             .padding(.horizontal, ScoutSpacing.lg)
 
                         Color.clear
-                            .frame(height: 140 + safeBottom)
+                            .frame(height: metrics.scrollBottomClearance)
                     }
                     .frame(maxWidth: .infinity)
                 }
@@ -66,12 +70,48 @@ struct SwipeCardOverlayScrollLayout<Background: View, TopBar: View, Content: Vie
 
                     dock
                         .padding(.horizontal, ScoutSpacing.lg)
-                        .padding(.bottom, safeBottom)
+                        .padding(.bottom, metrics.dockBottomInset)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .zIndex(3)
             }
-            .background(ScoutTheme.screenBackground)
+            .background(fullScreenWash.ignoresSafeArea())
+            .ignoresSafeArea()
+        }
+        .ignoresSafeArea()
+    }
+
+    private var fullScreenWash: some View {
+        LinearGradient(
+            colors: [
+                Color.scoutBackground,
+                Color.scoutBackground,
+                Color.scoutAccentStart.opacity(0.26),
+                Color.scoutAccentEnd.opacity(0.32)
+            ],
+            startPoint: .top,
+            endPoint: .bottom
+        )
+    }
+
+    private struct LayoutMetrics {
+        let backgroundTopInset: CGFloat
+        let backgroundHeight: CGFloat
+        let heroStart: CGFloat
+        let topBarTopInset: CGFloat
+        let dockBottomInset: CGFloat
+        let scrollBottomClearance: CGFloat
+
+        init(geometry: GeometryProxy, heroStartRatio: CGFloat) {
+            let safeTop = geometry.safeAreaInsets.top
+            let safeBottom = max(geometry.safeAreaInsets.bottom, ScoutSpacing.sm)
+
+            self.backgroundTopInset = safeTop
+            self.backgroundHeight = geometry.size.height + safeTop + geometry.safeAreaInsets.bottom
+            self.heroStart = max(220, geometry.size.height * heroStartRatio)
+            self.topBarTopInset = safeTop + (ScoutSpacing.xxl * 2)
+            self.dockBottomInset = safeBottom + ScoutSpacing.lg
+            self.scrollBottomClearance = 140 + safeBottom
         }
     }
 }

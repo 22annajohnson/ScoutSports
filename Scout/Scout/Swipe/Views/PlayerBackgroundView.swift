@@ -73,6 +73,7 @@ struct PlayerBackgroundView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(ScoutTheme.screenBackground)
+        .ignoresSafeArea()
     }
 }
 
