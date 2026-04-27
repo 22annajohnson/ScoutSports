@@ -109,7 +109,7 @@ struct SwipeCardOverlayScrollLayout<Background: View, TopBar: View, Content: Vie
             self.backgroundTopInset = safeTop
             self.backgroundHeight = geometry.size.height + safeTop + geometry.safeAreaInsets.bottom
             self.heroStart = max(220, geometry.size.height * heroStartRatio)
-            self.topBarTopInset = safeTop + (ScoutSpacing.xxl * 2)
+            self.topBarTopInset = safeTop + (2 * ScoutSpacing.xxxl)
             self.dockBottomInset = safeBottom + ScoutSpacing.lg
             self.scrollBottomClearance = 140 + safeBottom
         }

@@ -8,56 +8,51 @@
 import SwiftUI
 
 struct SwipeCardIdentitySection: View {
-    let name: String
-    let age: Int?
-    let summaryLines: [String]
-    let intent: String
-    let score: Int
+    let model: Model
 
     var body: some View {
-        GlassCard(padding: ScoutSpacing.xl) {
-            VStack(alignment: .leading, spacing: ScoutSpacing.xl) {
+        GlassCard(padding: ScoutSpacing.lg) {
+            VStack(alignment: .leading, spacing: ScoutSpacing.md) {
                 header
-                summary
+                bodyCopy
+
+                if !model.tags.isEmpty {
+                    SwipeCardTagCluster(tags: model.tags)
+                }
+
+                if !model.highlights.isEmpty {
+                    compactHighlights
+                }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 
     private var header: some View {
-        ViewThatFits(in: .horizontal) {
-            HStack(alignment: .top, spacing: ScoutSpacing.lg) {
-                identityCopy
-
-                Spacer(minLength: ScoutSpacing.md)
-
-                scoreCapsule
+        HStack(alignment: .top, spacing: ScoutSpacing.lg) {
+            VStack(alignment: .leading, spacing: ScoutSpacing.md) {
+                intentChip
+                nameRow
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
 
-            VStack(alignment: .leading, spacing: ScoutSpacing.lg) {
-                identityCopy
-                scoreCapsule
-            }
+            scoreCapsule
         }
     }
 
-    private var identityCopy: some View {
-        VStack(alignment: .leading, spacing: ScoutSpacing.lg) {
-            intentChip
+    private var nameRow: some View {
+        HStack(alignment: .firstTextBaseline, spacing: ScoutSpacing.xs) {
+            Text(model.name)
+                .font(.scoutDisplayCompact)
+                .foregroundStyle(Color.white)
+                .lineLimit(1)
+                .minimumScaleFactor(0.72)
 
-            HStack(alignment: .firstTextBaseline, spacing: ScoutSpacing.sm) {
-                Text(name)
-                    .font(.scoutDisplayCompact)
-                    .foregroundStyle(Color.scoutTextPrimary)
+            if let age = model.age {
+                Text("\(age)")
+                    .font(.scoutNumberM)
+                    .foregroundStyle(Color.scoutAccentStart)
                     .lineLimit(1)
-                    .minimumScaleFactor(0.72)
-
-                if let age {
-                    Text("\(age)")
-                        .font(.scoutNumberL)
-                        .foregroundStyle(Color.scoutTextSecondary)
-                        .lineLimit(1)
-                }
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -69,22 +64,22 @@ struct SwipeCardIdentitySection: View {
                 .fill(Color.scoutAccentEnd)
                 .frame(width: 9, height: 9)
 
-            Text(intent)
+            Text(model.intent)
                 .font(.scoutCallout)
-                .foregroundStyle(Color.scoutAccentEnd)
+                .foregroundStyle(Color.scoutAccentStart)
                 .lineLimit(1)
                 .minimumScaleFactor(0.84)
         }
-        .padding(.horizontal, ScoutSpacing.lg)
-        .padding(.vertical, ScoutSpacing.sm)
+        .padding(.horizontal, ScoutSpacing.md)
+        .padding(.vertical, ScoutSpacing.xs)
         .background(
             Capsule()
-                .fill(Color.scoutAccentEnd.opacity(0.13))
+                .fill(Color.scoutAccentStart.opacity(0.12))
                 .background(.ultraThinMaterial, in: Capsule())
         )
         .overlay(
             Capsule()
-                .stroke(Color.scoutAccentEnd.opacity(0.28), lineWidth: ScoutStroke.hairline)
+                .stroke(Color.scoutAccentStart.opacity(0.24), lineWidth: ScoutStroke.hairline)
         )
     }
 
@@ -92,40 +87,100 @@ struct SwipeCardIdentitySection: View {
         VStack(spacing: ScoutSpacing.xs) {
             Text("OVERALL")
                 .font(.scoutMicro)
-                .tracking(5)
-                .foregroundStyle(Color.scoutTextSecondary)
+                .tracking(4)
+                .foregroundStyle(Color.scoutTextSecondary.opacity(0.9))
                 .lineLimit(1)
 
-            Text("\(score)")
+            Text("\(model.score)")
                 .font(.scoutNumberL)
-                .foregroundStyle(Color.scoutTextPrimary)
+                .foregroundStyle(Color.white)
                 .lineLimit(1)
                 .minimumScaleFactor(0.82)
         }
-        .frame(width: 132)
-        .frame(minHeight: 104)
+        .frame(width: 108)
+        .frame(minHeight: 88)
         .background(
-            RoundedRectangle(cornerRadius: ScoutRadius.xl, style: .continuous)
-                .fill(Color.scoutSurfaceElevated.opacity(0.74))
-                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: ScoutRadius.xl, style: .continuous))
+            RoundedRectangle(cornerRadius: ScoutRadius.lg, style: .continuous)
+                .fill(Color.black.opacity(0.24))
+                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: ScoutRadius.lg, style: .continuous))
         )
         .overlay(
-            RoundedRectangle(cornerRadius: ScoutRadius.xl, style: .continuous)
-                .stroke(Color.scoutGlassStroke, lineWidth: ScoutStroke.hairline)
+            RoundedRectangle(cornerRadius: ScoutRadius.lg, style: .continuous)
+                .stroke(Color.scoutAccentStart.opacity(0.24), lineWidth: ScoutStroke.hairline)
         )
     }
 
-    private var summary: some View {
-        VStack(alignment: .leading, spacing: ScoutSpacing.md) {
-            ForEach(Array(summaryLines.prefix(3).enumerated()), id: \.offset) { _, line in
+    private var bodyCopy: some View {
+        VStack(alignment: .leading, spacing: ScoutSpacing.xs) {
+            ForEach(Array(model.summaryLines.prefix(3).enumerated()), id: \.offset) { _, line in
                 Text(line)
-                    .font(.scoutTitleCompact)
-                    .foregroundStyle(Color.scoutTextPrimary.opacity(0.86))
+                    .font(.scoutBody)
+                    .foregroundStyle(Color.white.opacity(0.9))
                     .fixedSize(horizontal: false, vertical: true)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private var compactHighlights: some View {
+        HStack(alignment: .top, spacing: ScoutSpacing.sm) {
+            ForEach(model.highlights) { tile in
+                compactHighlightCard(tile)
+            }
+        }
+    }
+
+    private func compactHighlightCard(_ tile: SwipeHighlightTile) -> some View {
+        VStack(alignment: .leading, spacing: ScoutSpacing.md) {
+            Text(tile.title.uppercased())
+                .font(.scoutMicro)
+                .tracking(3)
+                .foregroundStyle(Color.scoutTextSecondary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+
+            Text(tile.value)
+                .font(.scoutNumberL)
+                .foregroundStyle(Color.white)
+                .lineLimit(1)
+                .minimumScaleFactor(0.72)
+
+            GeometryReader { geo in
+                Capsule()
+                    .fill(Color.white.opacity(0.10))
+                    .overlay(alignment: .leading) {
+                        Capsule()
+                            .fill(ScoutTheme.accentGradient)
+                            .frame(width: geo.size.width * tile.progress)
+                    }
+            }
+            .frame(height: 4)
+        }
+        .padding(ScoutSpacing.md)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .aspectRatio(1, contentMode: .fit)
+        .background(
+            RoundedRectangle(cornerRadius: ScoutRadius.lg, style: .continuous)
+                .fill(Color.black.opacity(0.22))
+                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: ScoutRadius.lg, style: .continuous))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: ScoutRadius.lg, style: .continuous)
+                .stroke(Color.white.opacity(0.12), lineWidth: ScoutStroke.hairline)
+        )
+    }
+}
+
+extension SwipeCardIdentitySection {
+    struct Model {
+        let name: String
+        let age: Int?
+        let summaryLines: [String]
+        let intent: String
+        let score: Int
+        let tags: [SwipeCardTagItem]
+        let highlights: [SwipeHighlightTile]
     }
 }
 
@@ -135,15 +190,28 @@ struct SwipeCardIdentitySection: View {
             .ignoresSafeArea()
 
         SwipeCardIdentitySection(
-            name: "Sophie",
-            age: 27,
-            summaryLines: [
-                "Aggressive at the net.",
-                "Loves fast doubles.",
-                "Usually free Tue/Thu nights."
-            ],
-            intent: "Looking for competitive games",
-            score: 88
+            model: .init(
+                name: "Sophie",
+                age: 27,
+                summaryLines: [
+                    "Aggressive at the net.",
+                    "Loves fast doubles.",
+                    "Usually free Tue/Thu nights."
+                ],
+                intent: "Competitive games",
+                score: 88,
+                tags: [
+                    SwipeCardTagItem(title: "4.7 Competitive", style: .accent),
+                    SwipeCardTagItem(title: "Reliable", style: .info),
+                    SwipeCardTagItem(title: "Tue/Thu Nights"),
+                    SwipeCardTagItem(title: "Pickleball")
+                ],
+                highlights: [
+                    SwipeHighlightTile(title: "Skill", value: "4.2", progress: 0.76),
+                    SwipeHighlightTile(title: "Matches", value: "38", progress: 0.64),
+                    SwipeHighlightTile(title: "Win Rate", value: "71%", progress: 0.81)
+                ]
+            )
         )
         .padding()
     }

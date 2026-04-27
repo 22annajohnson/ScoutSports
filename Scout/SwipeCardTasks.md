@@ -1,155 +1,129 @@
 # Swipe Card Redesign Tasks
 
 ## Goal
-- Move the swipe card toward a layered layout where the hero image remains large in the background.
-- Start the primary identity card around the midpoint of the screen so the player photo remains dominant.
-- Let the user scroll the glass widgets upward over the image rather than breaking the photo into separate stacked sections.
-- Roll the redesign out as a sequence of PRs where each PR adds one major card segment or one structural layout change.
+- Shift the swipe screen toward a richer editorial-matchmaking feel with a cinematic hero image, stronger top-of-screen framing, and denser glass surfaces.
+- Keep the card feeling like one immersive destination instead of a stack of disconnected panels.
+- Roll the redesign out in reviewable PRs where each PR adds one clear visual system or one major content band.
 
-## Target Interaction Model
-- The hero image should stay full-width and visually dominant at the top of the card.
-- The first content panel should begin around 45-55% down the viewport.
-- The content stack should scroll vertically over the background image.
-- The image should still feel present as content scrolls, not disappear immediately behind a flat section break.
-- The action dock should stay anchored and easy to reach.
+## Updated Target Vibe
+- A branded hero header lives over the image with `SCOUT`, a strong title, and location/match pills.
+- The identity card feels like a premium glass panel with intent, name/age, summary, and metadata chips grouped together.
+- A horizontal stat strip sits above the action dock and reads quickly.
+- A large best-overlap card anchors the lower portion of the experience.
+- The entire screen should feel darker, more atmospheric, and more intentional about spacing and hierarchy.
 
 ## Constraints
-- Keep current swipe mechanics unchanged while redesigning the card.
-- Reuse the existing design-system primitives where possible.
-- Prefer introducing new swipe-specific composition views over overloading generic design components too early.
-- Keep each PR reviewable and visually coherent on its own.
+- Keep existing swipe mechanics intact.
+- Reuse current glass/theme primitives where possible.
+- Prefer swipe-specific composition views over broad design-system churn.
+- Keep placeholder presentation logic local until the dedicated data-wiring pass.
 
-## Proposed Build Order
+## Current Status
+- Done: structural background-image + overlay scroll layout
+- Done: identity hero card
+- In progress: metadata chip cluster / vibe shift toward the new reference
 
-### PR 1: Structural Layout Shift
+## Revised Build Order
+
+### PR 3: Hero Framing + Metadata Cluster
 - Scope:
-  Change the swipe card architecture so the hero image is the persistent background and the content stack scrolls over it.
+  Push the current UI closer to the new reference by refining the hero framing and attaching metadata chips directly to the identity card.
 - Tasks:
-  - Create a swipe-specific layout container for background image + overlay scroll content.
-  - Position the first content card so it starts around mid-screen.
-  - Add safe top/bottom spacing so chips, identity content, and dock don’t collide with hardware insets.
-  - Preserve the current swipe gesture behavior and scroll handoff.
+  - Add the branded top header with title, location pill, distance pill, and matches pill.
+  - Add reusable swipe metadata chips with wrapped layout.
+  - Tune the identity card spacing so the summary and chips feel like one unit.
+  - Keep the screen readable over the image background.
 - Done when:
-  The image remains the background and the content stack visibly starts halfway down, then scrolls upward over the image.
+  The top portion of the screen immediately reads like the new reference and the metadata cluster no longer feels like a follow-on card.
 
-### PR 2: Identity Hero Segment
+### PR 4: Stat Highlights Band
 - Scope:
-  Replace the current top-of-card content with a new identity card.
+  Replace the generic mid-screen analytical block with the horizontal highlight cards shown in the new reference.
 - Tasks:
-  - Build the glass identity panel containing:
-    `Name + Age`
-    short profile summary lines
-    hero intent chip such as "Looking for competitive games"
-    overall score capsule
-  - Support multiline summary text without clipping.
-  - Tune the panel height so it feels compact but readable over the image.
+  - Build the three-card stat strip for `Skill`, `Matches`, and `Win Rate`.
+  - Add lightweight progress accents inside each tile.
+  - Tune card sizing so the strip works on smaller phones without clipping.
 - Done when:
-  The first visible segment matches the inspiration more closely and anchors the card visually.
+  The stat band reads as a quick-scan row above the dock and visually matches the new vibe.
 
-### PR 3: Tag Row Segment
+### PR 5: Best Overlap Feature Card
 - Scope:
-  Add the metadata chip cluster beneath the identity content.
+  Add the large lower feature card centered on best overlap.
 - Tasks:
-  - Add reusable swipe tags for style, reliability, schedule, and sport.
-  - Support wrapping to multiple rows when content is longer.
-  - Tune spacing so the tags feel attached to the identity card rather than like a separate unrelated section.
+  - Build the `Best Overlap` card with tags and a large score/value callout.
+  - Tune hierarchy so the value is the hero element and the chips support it.
+  - Keep the card visually anchored beneath the action row.
 - Done when:
-  The metadata chips read clearly and don’t clip on smaller devices.
+  The lower card feels like a destination panel rather than placeholder content.
 
-### PR 4: Scout Read Segment
+### PR 6: Action Dock Style Integration
 - Scope:
-  Add the first large analytical summary card under the hero section.
+  Restyle and place the dock so it belongs to the new screen composition.
 - Tasks:
-  - Create a `Scout Read` card with:
-    compatibility score
-    short summary text
-    best-fit capsule
-    three compact metric tiles
-    "Why Scout likes this match" explanation row
-  - Reuse existing stat tile patterns where practical, but tune them for this denser card.
+  - Move from the older dock treatment toward the lighter circular-control feel in the reference.
+  - Tune dock offset and spacing relative to the stat band and best-overlap card.
+  - Keep swipe interaction affordances obvious and comfortable.
 - Done when:
-  The swipe card has a meaningful second section that looks intentionally productized, not placeholder.
+  The dock feels intentionally designed with the rest of the card instead of overlaid afterward.
 
-### PR 5: Best Overlap Segment
+### PR 7: Analytical Story Card
 - Scope:
-  Add the availability/overlap visualization card.
+  Reintroduce a richer analytical card in the new visual language.
 - Tasks:
-  - Build the best-overlap card with title, fit badge, and weekly bar visualization.
-  - Make the chart bars visually consistent with the blue/violet accent system.
-  - Keep the component resilient to sparse or partial data.
+  - Bring back the `Scout Read` concept as a darker, denser product card.
+  - Include compact supporting reasoning, fit language, and small structured metrics.
+  - Ensure it complements rather than competes with the stat strip and best-overlap card.
 - Done when:
-  The overlap card can stand on its own as a reusable swipe subcomponent.
+  The swipe experience has one strong narrative/analysis section in the updated style.
 
-### PR 6: Preference Notes Segment
+### PR 8: Preference Notes + Lower Details
 - Scope:
-  Add the lower stack of short preference and vibe statements.
+  Add the smaller supporting notes and preference rows.
 - Tasks:
-  - Create stacked note rows for preferences like pace, timing, social style, or post-match vibe.
-  - Support missing data gracefully by omitting rows rather than rendering empty shells.
-  - Keep the rows scannable and lightweight so the bottom of the card does not feel overly dense.
+  - Add rows for social vibe, scheduling habits, pace, or post-match preferences.
+  - Omit missing content rather than rendering empty shells.
+  - Keep these rows visually lighter than the hero and feature cards.
 - Done when:
-  The lower content stack feels complete and informative without becoming visually noisy.
+  The lower screen feels complete without becoming visually crowded.
 
-### PR 7: Action Dock Integration
+### PR 9: Data Wiring and Content Quality Pass
 - Scope:
-  Rework the bottom action area to match the new card structure.
+  Replace placeholder numbers and phrases with realistic content.
 - Tasks:
-  - Tune the action dock placement relative to the scroll content and bottom safe area.
-  - Decide whether the dock remains visually pinned or scroll-adjacent.
-  - Ensure the dock still feels consistent with the swipe interaction model and does not obscure content.
+  - Wire real values for age, skill, matches, win rate, overlap tags, and summary copy where possible.
+  - Add small presentation helpers only where needed.
+  - Keep schema/backend changes out unless truly required.
 - Done when:
-  The action dock feels intentionally integrated with the new card, not tacked on afterward.
+  The redesigned screen is mostly driven by real profile/match data rather than mock values.
 
-### PR 8: Data Wiring and Content Quality Pass
+### PR 10: Motion, Polish, and Accessibility
 - Scope:
-  Replace placeholder copy and hardcoded labels with better swipe-card content wiring.
+  Final fit-and-finish pass for the new direction.
 - Tasks:
-  - Identify which existing fields can populate age, summary lines, tags, notes, and match reasoning.
-  - Add lightweight view-model shaping for swipe presentation if needed.
-  - Keep backend/schema changes out of scope unless truly required.
+  - Audit dynamic type, contrast, and text clipping.
+  - Tune scroll feel and spacing transitions between sections.
+  - Verify visual balance across smaller and larger phones.
+  - Check image readability in bright and dark backgrounds.
 - Done when:
-  The redesigned card is backed by realistic content instead of mostly mock phrasing.
-
-### PR 9: Polish and Accessibility
-- Scope:
-  Final motion, readability, and device-fit cleanup for the redesigned swipe card.
-- Tasks:
-  - Check dynamic type behavior for the new stacked layout.
-  - Audit contrast over images and glass surfaces.
-  - Tune scroll feel, panel spacing, and transitions between segments.
-  - Verify no clipping on smaller devices.
-- Done when:
-  The card feels stable and shippable across supported device sizes.
+  The redesigned swipe screen feels stable, intentional, and shippable.
 
 ## Suggested File Areas
 - `Scout/Swipe/Views/PlayerSwipeScrollView.swift`
-- `Scout/Swipe/Views/PlayerBackgroundView.swift`
-- `Scout/Swipe/Views/PlayerHeroHeaderView.swift`
-- New swipe-specific subviews under `Scout/Swipe/Views/` such as:
-  - `SwipeCardIdentitySection.swift`
-  - `SwipeCardScoutReadSection.swift`
-  - `SwipeCardBestOverlapSection.swift`
-  - `SwipeCardPreferenceNotesSection.swift`
+- `Scout/Swipe/Views/SwipeCardOverlayScrollLayout.swift`
+- `Scout/Swipe/Views/SwipeCardIdentitySection.swift`
+- `Scout/Swipe/Views/SwipeCardTagCluster.swift`
+- `Scout/Swipe/Views/SwipeStatHighlightsSection.swift`
+- `Scout/Swipe/Views/SwipeBestOverlapTeaser.swift`
+- Future swipe-specific views under `Scout/Swipe/Views/` for the later segments
 
 ## Implementation Notes
-- Prefer new swipe-specific composition views over forcing everything into one giant `PlayerSwipeScrollView`.
-- Keep the design-system components generic, but let the swipe card assemble them in feature-specific ways.
-- Avoid mixing layout restructuring and heavy data-model work in the same PR.
-- Use previews for every new segment as it lands.
+- Keep the hero image visually dominant; cards should feel translucent and float over it.
+- Prefer fewer, stronger sections instead of many small ones.
+- Use previews for every new swipe-specific section.
+- Let each PR own one obvious visual band or system.
 
 ## Testing Per PR
 - [ ] `make build`
-- [ ] Xcode preview for the newly added swipe segment
-- [ ] Small-device preview to catch clipping and early scroll issues
-- [ ] Manual simulator pass through the swipe screen if the layout structure changes
-
-## Recommended Starting Sequence
-1. PR 1: structural background-image + scroll-overlay layout
-2. PR 2: identity hero card
-3. PR 3: metadata tag cluster
-4. PR 4: scout-read analytics card
-5. PR 5: best-overlap card
-6. PR 6: preference note rows
-7. PR 7: action dock integration
-8. PR 8: content/data wiring
-9. PR 9: polish and accessibility
+- [ ] Xcode preview for the touched swipe section
+- [ ] Small-device preview for wrapping/clipping checks
+- [ ] Manual simulator pass when layout structure changes
