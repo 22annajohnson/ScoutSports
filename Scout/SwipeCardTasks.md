@@ -25,6 +25,37 @@
 
 ## Revised Build Order
 
+### Interstitial Task: Swipe Architecture + Presentation Cleanup
+- Scope:
+  Do a feature-level cleanup pass across swipe so views are mostly responsible for UI, presentation/business shaping lives in view models, and older one-off components stop drifting out of sync.
+- Tasks:
+  - Move swipe-deck interaction logic out of `SwipeDeckView` into a dedicated deck interaction view model or reducer-style state object.
+  - Consolidate swipe-card presentation shaping behind a single presentation builder so sections are assembled in one place instead of accumulating formatting helpers in multiple files.
+  - Group loose view parameters into section models wherever a view is still taking several parallel values.
+  - Replace raw state flags or tuple-based display state with small enums/models where the UI is really expressing a mode.
+  - Identify older swipe views that are now preview-only or superseded and either retire them or clearly quarantine them from the active screen path.
+  - Propose small services where they reduce coupling, especially for:
+    - swipe-card presentation building
+    - candidate scoring/ranking explanation formatting
+    - availability/overlap chart data shaping
+- Done when:
+  The active swipe screen reads as composition-only UI, business/presentation shaping is centralized, and there is a clear boundary between live production views and legacy/preview-only swipe components.
+- Specific hotspots to address:
+  - `Scout/Swipe/Views/SwipeDeckView.swift`
+    owns too much interaction state (`index`, `drag`, swipe direction/progress, dismissal timing, and match presentation).
+  - `Scout/Swipe/ViewModels/PlayerSwipeCardViewModel.swift`
+    is a good start, but it should become the single place for card presentation shaping rather than one of several formatting islands.
+  - `Scout/Swipe/Views/RatingsView.swift`
+    uses `@State` for injected data and should behave like a pure display view.
+  - `Scout/Swipe/Views/PlayerHeroHeaderView.swift`
+    and `Scout/Swipe/Models/HeroHeaderViewModel.swift`
+    look superseded by the new hero/top-bar path and should either be removed from the active architecture or repurposed intentionally.
+  - `Scout/Swipe/Views/SwipeCardMatchupSection.swift`
+    and `Scout/Swipe/Views/SwipeStatHighlightsSection.swift`
+    need a decision: active building blocks vs preview-only leftovers.
+  - `Scout/Swipe/Views/AvailabilityGridView.swift`
+    is moving in the right direction now that slot state is modeled, and it is a good pattern to continue elsewhere.
+
 ### PR 3: Hero Framing + Metadata Cluster
 - Scope:
   Push the current UI closer to the new reference by refining the hero framing and attaching metadata chips directly to the identity card.

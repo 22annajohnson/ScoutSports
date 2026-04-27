@@ -10,35 +10,31 @@ import SwiftUI
 struct SwipeDeckView: View {
     let vm: SwipeDeckViewModel
 
-    @State private var index = 0
-    @State private var drag: CGSize = .zero
-    @State private var isSwipingHorizontally = false
-    @State private var isDismissing = false
-    @State private var showMatch = false
-    @State private var matchedModel: CardViewModel? = nil
-    @State private var dismissalTask: Task<Void, Never>?
+    @State private var interaction = SwipeDeckInteractionViewModel()
 
-    private let threshold: CGFloat = 140
-    
     private var models: [CardViewModel] { vm.cards }
+    private var currentModel: CardViewModel? { interaction.currentCard(in: models) }
+    private var nextModel: CardViewModel? { interaction.nextCard(in: models) }
 
     var body: some View {
+        @Bindable var interaction = interaction
+
         GeometryReader { geo in
             ZStack {
-                if index < models.count {
-                    let dx = drag.width
-                    let progress = min(abs(dx) / threshold, 1)
-                    let side: SwipeArcShape.Side = dx < 0 ? .right : .left
+                if let currentModel {
+                    let dx = interaction.dragOffset.width
+                    let progress = interaction.swipeProgress
+                    let side = interaction.overlaySide
 
                     // NEXT card underneath (full-screen, becomes clear as progress -> 1)
-                    if index + 1 < models.count {
+                    if let nextModel {
                         // Ease so it stays blurrier early and clears as you commit
                         let eased = pow(progress, 0.9)
                         let blurRadius = max(0, 18 * (1 - eased))
                         let dimOpacity = 0.10 * (1 - eased)
 
-                        PlayerSwipeScrollView(model: models[index + 1])
-                            .id(index + 1)
+                        PlayerSwipeScrollView(model: nextModel)
+                            .id(nextModel.id)
                             .scrollDisabled(true)
                             .blur(radius: blurRadius)
                             .overlay(Color.black.opacity(dimOpacity).allowsHitTesting(false))
@@ -48,41 +44,24 @@ struct SwipeDeckView: View {
 
                     // CURRENT card on top
                     PlayerSwipeScrollView(
-                        model: models[index],
-                        onPass: { triggerDockSwipe(.pass, geo: geo) },
-                        onBoost: { triggerDockSwipe(.like, geo: geo) },
-                        onLike: { triggerDockSwipe(.like, geo: geo) }
+                        model: currentModel,
+                        onPass: { interaction.triggerDockSwipe(.pass, cardWidth: geo.size.width, currentCard: currentModel) },
+                        onBoost: { interaction.triggerDockSwipe(.like, cardWidth: geo.size.width, currentCard: currentModel) },
+                        onLike: { interaction.triggerDockSwipe(.like, cardWidth: geo.size.width, currentCard: currentModel) }
                     )
-                        .id(index)
-                        .scrollDisabled(isSwipingHorizontally)
+                        .id(currentModel.id)
+                        .scrollDisabled(interaction.isSwipingHorizontally)
                         .offset(x: dx, y: 0)
                         .rotationEffect(.degrees(Double(dx / 26)))
-                        .animation(.interactiveSpring(response: 0.28, dampingFraction: 0.86), value: drag)
+                        .animation(.interactiveSpring(response: 0.28, dampingFraction: 0.86), value: interaction.dragOffset)
                         .zIndex(1)
                         .simultaneousGesture(
                             DragGesture(minimumDistance: 10)
                                 .onChanged { value in
-                                    guard !isDismissing else { return }
-
-                                    let dx = value.translation.width
-                                    let dy = value.translation.height
-
-                                    // Only treat it as a swipe if it is clearly horizontal.
-                                    // Otherwise, let the inner ScrollView handle vertical scrolling.
-                                    if abs(dx) > abs(dy) {
-                                        isSwipingHorizontally = true
-                                        drag = CGSize(width: dx, height: 0)
-                                    }
+                                    interaction.beginDrag(translation: value.translation)
                                 }
                                 .onEnded { _ in
-                                    guard !isDismissing else { return }
-
-                                    if isSwipingHorizontally {
-                                        finishSwipe(dx: drag.width, geo: geo)
-                                    }
-
-                                    // Reset the horizontal swipe mode after the gesture ends.
-                                    isSwipingHorizontally = false
+                                    interaction.endDrag(cardWidth: geo.size.width, currentCard: currentModel)
                                 }
                         )
 
@@ -109,83 +88,15 @@ struct SwipeDeckView: View {
             }
         }
         .onDisappear {
-            dismissalTask?.cancel()
-            dismissalTask = nil
-            drag = .zero
-            isSwipingHorizontally = false
-            isDismissing = false
+            interaction.cleanupTransientState()
         }
-        .fullScreenCover(isPresented: $showMatch) {
-            if let matchedModel {
+        .fullScreenCover(item: $interaction.matchPresentation) { matchPresentation in
                 MatchView(
-                    currentUserName: "You",
-                    matchedUserName: matchedModel.name,
-                    currentUserImageURL: nil,
-                    matchedUserImageURL: matchedModel.heroImageURL,
+                    model: matchPresentation,
                     accent: Color.scout,
                     onProposeTime: {},
                     onSendMessage: {}
                 )
-            }
-        }
-    }
-
-    private enum DockSwipeAction {
-        case pass
-        case like
-    }
-
-    @MainActor
-    private func triggerDockSwipe(_ action: DockSwipeAction, geo: GeometryProxy) {
-        guard !isDismissing, index < models.count else { return }
-
-        let swipeDistance = threshold + 1
-        let dx: CGFloat = action == .like ? swipeDistance : -swipeDistance
-        finishSwipe(dx: dx, geo: geo)
-    }
-
-    @MainActor
-    private func finishSwipe(dx: CGFloat, geo: GeometryProxy) {
-        let shouldDismiss = abs(dx) > threshold
-        let direction: CGFloat = dx >= 0 ? 1 : -1
-        let isRightSwipe = dx > 0
-        let isMutualLike = isRightSwipe && index < models.count && models[index].didLike
-
-        if shouldDismiss {
-            isDismissing = true
-            isSwipingHorizontally = true
-
-            // Animate card off-screen
-            withAnimation(.easeInOut(duration: 0.22)) {
-                drag = CGSize(width: direction * (geo.size.width + 160), height: 0)
-            }
-
-            dismissalTask?.cancel()
-            dismissalTask = Task {
-                try? await Task.sleep(for: .milliseconds(230))
-                guard !Task.isCancelled else { return }
-
-                // Swap & reset with animations disabled to avoid flashing the previous card
-                var transaction = Transaction()
-                transaction.disablesAnimations = true
-
-                if isMutualLike {
-                    matchedModel = models[index]
-                    showMatch = true
-                }
-
-                withTransaction(transaction) {
-                    drag = .zero
-                    isSwipingHorizontally = false
-                    isDismissing = false
-                    index += 1
-                }
-            }
-        } else {
-            // Snap back with a nice spring
-            withAnimation(.spring(response: 0.35, dampingFraction: 0.86)) {
-                drag = .zero
-            }
         }
     }
 }

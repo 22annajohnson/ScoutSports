@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct RatingsView: View {
-    @State var stats: [StatsViewModel]
+    let stats: [StatsViewModel]
 
     var body: some View {
         GlassCard {

@@ -9,10 +9,7 @@ import SwiftUI
 
 struct MatchView: View {
     // MARK: - Inputs
-    let currentUserName: String
-    let matchedUserName: String
-    let currentUserImageURL: URL?
-    let matchedUserImageURL: URL?
+    let model: Model
 
     // Accent color for the modal (use your brand color)
     let accent: Color
@@ -42,7 +39,7 @@ struct MatchView: View {
                         .font(.system(size: 34, weight: .black, design: .rounded))
                         .foregroundStyle(.white)
 
-                    Text("You and \(matchedUserName) both swiped right.")
+                    Text("You and \(model.matchedUserName) both swiped right.")
                         .font(.system(size: 15, weight: .semibold))
                         .foregroundStyle(.white.opacity(0.85))
                         .multilineTextAlignment(.center)
@@ -52,8 +49,8 @@ struct MatchView: View {
                 // Avatars
                 HStack(spacing: 18) {
                     MatchAvatarView(
-                        imageURL: currentUserImageURL,
-                        fallbackInitials: initials(for: currentUserName),
+                        imageURL: model.currentUserImageURL,
+                        fallbackInitials: initials(for: model.currentUserName),
                         ringColor: accent
                     )
 
@@ -66,8 +63,8 @@ struct MatchView: View {
                         )
 
                     MatchAvatarView(
-                        imageURL: matchedUserImageURL,
-                        fallbackInitials: initials(for: matchedUserName),
+                        imageURL: model.matchedUserImageURL,
+                        fallbackInitials: initials(for: model.matchedUserName),
                         ringColor: accent
                     )
                 }
@@ -173,6 +170,16 @@ struct MatchView: View {
     }
 }
 
+extension MatchView {
+    struct Model: Identifiable {
+        let id = UUID()
+        let currentUserName: String
+        let matchedUserName: String
+        let currentUserImageURL: URL?
+        let matchedUserImageURL: URL?
+    }
+}
+
 private struct MatchAvatarView: View {
     let imageURL: URL?
     let fallbackInitials: String
@@ -220,10 +227,12 @@ private struct MatchAvatarView: View {
 
 #Preview {
     MatchView(
-        currentUserName: "Anna",
-        matchedUserName: "Noah",
-        currentUserImageURL: URL(string: "https://picsum.photos/id/1011/300/300"),
-        matchedUserImageURL: URL(string: "https://picsum.photos/id/1005/300/300"),
+        model: .init(
+            currentUserName: "Anna",
+            matchedUserName: "Noah",
+            currentUserImageURL: URL(string: "https://picsum.photos/id/1011/300/300"),
+            matchedUserImageURL: URL(string: "https://picsum.photos/id/1005/300/300")
+        ),
         accent: Color.scout,
         onProposeTime: {},
         onSendMessage: {}
