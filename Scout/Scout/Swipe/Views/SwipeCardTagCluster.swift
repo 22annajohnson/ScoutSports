@@ -12,7 +12,7 @@ struct SwipeCardTagCluster: View {
 
     var body: some View {
         LazyVGrid(
-            columns: [GridItem(.adaptive(minimum: 132), spacing: ScoutSpacing.sm)],
+            columns: [GridItem(.adaptive(minimum: 118), spacing: ScoutSpacing.sm)],
             alignment: .leading,
             spacing: ScoutSpacing.sm
         ) {
@@ -32,8 +32,8 @@ private struct SwipeCardTag: View {
             .foregroundStyle(foregroundColor)
             .lineLimit(1)
             .minimumScaleFactor(0.84)
-            .frame(maxWidth: .infinity, minHeight: 42)
-            .padding(.horizontal, ScoutSpacing.md)
+            .frame(maxWidth: .infinity, minHeight: 36)
+            .padding(.horizontal, ScoutSpacing.sm)
             .background(
                 Capsule()
                     .fill(backgroundFill)
@@ -48,7 +48,7 @@ private struct SwipeCardTag: View {
     private var foregroundColor: Color {
         switch item.style {
         case .neutral:
-            return .scoutTextPrimary
+            return .white.opacity(0.92)
         case .accent, .info:
             return .white.opacity(0.94)
         }
@@ -57,7 +57,7 @@ private struct SwipeCardTag: View {
     private var backgroundFill: some ShapeStyle {
         switch item.style {
         case .neutral:
-            return AnyShapeStyle(Color.scoutSurfaceElevated.opacity(0.82))
+            return AnyShapeStyle(Color.black.opacity(0.20))
         case .accent:
             return AnyShapeStyle(
                 LinearGradient(
@@ -86,7 +86,7 @@ private struct SwipeCardTag: View {
     private var borderColor: Color {
         switch item.style {
         case .neutral:
-            return .scoutGlassStroke
+            return Color.scoutAccentStart.opacity(0.18)
         case .accent:
             return Color.scoutAccentStart.opacity(0.34)
         case .info:

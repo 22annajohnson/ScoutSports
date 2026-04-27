@@ -10,32 +10,48 @@ import SwiftUI
 struct AvailabilityGridDemo: View {
     let accent: Color
 
-    let slots: [(String, Bool)] = [
-        ("Mon 6–8", false),
-        ("Tue 6–8", true),
-        ("Wed 6–8", false),
-        ("Thu 6–8", true),
-        ("Fri 6–8", false),
-        ("Sat AM", true),
-        ("Sun AM", true),
+    let slots: [AvailabilitySlot] = [
+        .init(label: "Mon 6–8", state: .unavailable),
+        .init(label: "Tue 6–8", state: .overlap),
+        .init(label: "Wed 6–8", state: .unavailable),
+        .init(label: "Thu 6–8", state: .overlap),
+        .init(label: "Fri 6–8", state: .unavailable),
+        .init(label: "Sat AM", state: .overlap),
+        .init(label: "Sun AM", state: .overlap),
     ]
 
     var body: some View {
         LazyVGrid(columns: [GridItem(.adaptive(minimum: 86))], spacing: 10) {
-            ForEach(slots, id: \.0) { label, overlap in
-                Text(label)
+            ForEach(slots) { slot in
+                Text(slot.label)
                     .font(.scoutPill)
                     .padding(.vertical, 8)
                     .padding(.horizontal, 12)
-                    .background(overlap ? accent : Color.gray.opacity(0.25))
-                    .foregroundStyle(overlap ? .white : .primary)
+                    .background(slot.state == .overlap ? accent : Color.gray.opacity(0.25))
+                    .foregroundStyle(slot.state == .overlap ? .white : .primary)
                     .clipShape(Capsule())
             }
         }
     }
 }
 
+struct AvailabilitySlot: Identifiable {
+    enum State {
+        case unavailable
+        case overlap
+    }
+
+    let id: String
+    let label: String
+    let state: State
+
+    init(label: String, state: State) {
+        self.id = label
+        self.label = label
+        self.state = state
+    }
+}
+
 #Preview {
     AvailabilityGridDemo(accent: .blue)
 }
-
