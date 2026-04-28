@@ -118,7 +118,7 @@ struct SwipeCardOverlayScrollLayout<Background: View, TopBar: View, Content: Vie
 
 #Preview("Swipe Overlay Layout") {
     SwipeCardOverlayScrollLayout {
-        PlayerBackgroundView(imageURL: getRandomHeroHeaderViewModel().imageURL, color: .scoutAccentStart)
+        PlayerBackgroundView(imageURL: randomMockCardViewModel().heroImageURL, color: .scoutAccentStart)
     } topBar: {
         HStack {
             GlassChip(title: "2.1 mi away")

@@ -45,21 +45,8 @@ struct SwipeBestOverlapTeaser: View {
 
     private var tagRow: some View {
         HStack(spacing: ScoutSpacing.md) {
-            ForEach(model.tags, id: \.self) { tag in
-                Text(tag)
-                    .font(.scoutSectionSubtitle)
-                    .foregroundStyle(Color.scoutTextPrimary)
-                    .padding(.horizontal, ScoutSpacing.lg)
-                    .padding(.vertical, ScoutSpacing.md)
-                    .background(
-                        Capsule()
-                            .fill(Color.black.opacity(0.18))
-                            .background(.ultraThinMaterial, in: Capsule())
-                    )
-                    .overlay(
-                        Capsule()
-                            .stroke(Color.scoutAccentStart.opacity(0.34), lineWidth: ScoutStroke.hairline)
-                    )
+            ForEach(model.tags) { tag in
+                SwipeTagPill(item: tag)
             }
         }
     }
@@ -78,7 +65,7 @@ struct SwipeBestOverlapTeaser: View {
             ForEach(model.bars) { bar in
                 VStack(spacing: ScoutSpacing.sm) {
                     RoundedRectangle(cornerRadius: ScoutRadius.sm, style: .continuous)
-                        .fill(Color.white.opacity(0.04))
+                        .fill(Color.scoutSwipeOverlayTrack.opacity(0.45))
                         .frame(height: 86)
                         .overlay(alignment: .bottom) {
                             RoundedRectangle(cornerRadius: ScoutRadius.sm, style: .continuous)
@@ -101,21 +88,9 @@ struct SwipeBestOverlapTeaser: View {
 extension SwipeBestOverlapTeaser {
     struct Model {
         let title: String
-        let tags: [String]
+        let tags: [SwipeCardTagItem]
         let value: String
         let bars: [SwipeOverlapBar]
-    }
-}
-
-struct SwipeOverlapBar: Identifiable {
-    let id: String
-    let label: String
-    let value: CGFloat
-
-    init(label: String, value: CGFloat) {
-        self.id = label
-        self.label = label
-        self.value = value
     }
 }
 
@@ -126,7 +101,10 @@ struct SwipeOverlapBar: Identifiable {
         SwipeBestOverlapTeaser(
             model: .init(
                 title: "Best Overlap",
-                tags: ["Competitive", "Late Night"],
+                tags: [
+                    SwipeCardTagItem(title: "Competitive"),
+                    SwipeCardTagItem(title: "Late Night")
+                ],
                 value: "92%",
                 bars: [
                     SwipeOverlapBar(label: "M", value: 0.42),

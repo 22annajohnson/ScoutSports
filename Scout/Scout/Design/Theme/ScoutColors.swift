@@ -22,6 +22,9 @@ extension Color {
     static let scoutAccentStart = Color.secondaryAccent
     static let scoutAccentEnd = Color.accent
     static let scoutHighlight = Color.vibe
+    static let scoutSwipeOverlaySurface = Color("SwipeOverlaySurfaceColor")
+    static let scoutSwipeOverlayStroke = Color("SwipeOverlayStrokeColor")
+    static let scoutSwipeOverlayTrack = Color("SwipeOverlayTrackColor")
     static let scoutSuccess = Color(red: 0.44, green: 0.88, blue: 0.66)
     static let scoutWarning = Color(red: 0.98, green: 0.76, blue: 0.34)
     static let scoutDanger = Color(red: 0.98, green: 0.42, blue: 0.48)

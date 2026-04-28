@@ -78,5 +78,5 @@ struct PlayerBackgroundView: View {
 }
 
 #Preview ("Background") {
-    PlayerBackgroundView(imageURL: getRandomHeroHeaderViewModel().imageURL, color: Color.scoutAccentStart)
+    PlayerBackgroundView(imageURL: randomMockCardViewModel().heroImageURL, color: Color.scoutAccentStart)
 }

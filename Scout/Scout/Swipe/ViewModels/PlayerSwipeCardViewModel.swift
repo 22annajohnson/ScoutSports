@@ -46,7 +46,10 @@ struct PlayerSwipeCardViewModel {
     private static func makeBestOverlapSection() -> SwipeBestOverlapTeaser.Model {
         .init(
             title: "Best Overlap",
-            tags: ["Competitive", "Late Night"],
+            tags: [
+                SwipeCardTagItem(title: "Competitive"),
+                SwipeCardTagItem(title: "Late Night")
+            ],
             value: "92%",
             bars: [
                 SwipeOverlapBar(label: "M", value: 0.42),

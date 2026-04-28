@@ -101,12 +101,12 @@ struct SwipeCardIdentitySection: View {
         .frame(minHeight: 88)
         .background(
             RoundedRectangle(cornerRadius: ScoutRadius.lg, style: .continuous)
-                .fill(Color.black.opacity(0.24))
+                .fill(Color.scoutSwipeOverlaySurface)
                 .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: ScoutRadius.lg, style: .continuous))
         )
         .overlay(
             RoundedRectangle(cornerRadius: ScoutRadius.lg, style: .continuous)
-                .stroke(Color.scoutAccentStart.opacity(0.24), lineWidth: ScoutStroke.hairline)
+                .stroke(Color.scoutSwipeOverlayStroke, lineWidth: ScoutStroke.hairline)
         )
     }
 
@@ -132,43 +132,7 @@ struct SwipeCardIdentitySection: View {
     }
 
     private func compactHighlightCard(_ tile: SwipeHighlightTile) -> some View {
-        VStack(alignment: .leading, spacing: ScoutSpacing.md) {
-            Text(tile.title.uppercased())
-                .font(.scoutMicro)
-                .tracking(3)
-                .foregroundStyle(Color.scoutTextSecondary)
-                .lineLimit(1)
-                .minimumScaleFactor(0.7)
-
-            Text(tile.value)
-                .font(.scoutNumberL)
-                .foregroundStyle(Color.white)
-                .lineLimit(1)
-                .minimumScaleFactor(0.72)
-
-            GeometryReader { geo in
-                Capsule()
-                    .fill(Color.white.opacity(0.10))
-                    .overlay(alignment: .leading) {
-                        Capsule()
-                            .fill(ScoutTheme.accentGradient)
-                            .frame(width: geo.size.width * tile.progress)
-                    }
-            }
-            .frame(height: 4)
-        }
-        .padding(ScoutSpacing.md)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .aspectRatio(1, contentMode: .fit)
-        .background(
-            RoundedRectangle(cornerRadius: ScoutRadius.lg, style: .continuous)
-                .fill(Color.black.opacity(0.22))
-                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: ScoutRadius.lg, style: .continuous))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: ScoutRadius.lg, style: .continuous)
-                .stroke(Color.white.opacity(0.12), lineWidth: ScoutStroke.hairline)
-        )
+        SwipeMetricTileView(tile: tile, style: .compactSquare)
     }
 }
 
