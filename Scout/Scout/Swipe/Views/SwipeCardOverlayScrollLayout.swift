@@ -7,23 +7,28 @@
 
 import SwiftUI
 
+enum SwipeOverlayCoordinateSpace {
+    static let name = "SwipeOverlayLayout"
+}
+
 struct SwipeCardOverlayScrollLayout<Background: View, TopBar: View, Content: View, Dock: View>: View {
     let heroStartRatio: CGFloat
     let background: Background
-    let topBar: TopBar
+    let topBar: (CGFloat) -> TopBar
     let content: Content
     let dock: Dock
+    @State private var scrollOffsetY: CGFloat = 0
 
     init(
         heroStartRatio: CGFloat = 0.52,
         @ViewBuilder background: () -> Background,
-        @ViewBuilder topBar: () -> TopBar,
+        @ViewBuilder topBar: @escaping (CGFloat) -> TopBar,
         @ViewBuilder content: () -> Content,
         @ViewBuilder dock: () -> Dock
     ) {
         self.heroStartRatio = heroStartRatio
         self.background = background()
-        self.topBar = topBar()
+        self.topBar = topBar
         self.content = content()
         self.dock = dock()
     }
@@ -31,6 +36,8 @@ struct SwipeCardOverlayScrollLayout<Background: View, TopBar: View, Content: Vie
     var body: some View {
         GeometryReader { geo in
             let metrics = LayoutMetrics(geometry: geo, heroStartRatio: heroStartRatio)
+            let heroMergeProgress = metrics.heroMergeProgress(for: scrollOffsetY)
+            let topBarOffset = -metrics.heroDismissDistance * heroMergeProgress
 
             ZStack(alignment: .top) {
                 fullScreenWash
@@ -43,10 +50,13 @@ struct SwipeCardOverlayScrollLayout<Background: View, TopBar: View, Content: Vie
                     .offset(y: -metrics.backgroundTopInset)
                     .ignoresSafeArea()
 
-                topBar
+                topBar(heroMergeProgress)
                     .padding(.horizontal, ScoutSpacing.md)
                     .padding(.top, metrics.topBarTopInset)
                     .frame(maxWidth: .infinity, alignment: .top)
+                    .offset(y: topBarOffset)
+                    .clipped()
+                    .animation(ScoutMotion.selection, value: heroMergeProgress)
                     .zIndex(2)
 
                 ScrollView(showsIndicators: false) {
@@ -62,6 +72,11 @@ struct SwipeCardOverlayScrollLayout<Background: View, TopBar: View, Content: Vie
                     }
                     .frame(maxWidth: .infinity)
                 }
+                .onScrollGeometryChange(for: CGFloat.self, of: { geometry in
+                    geometry.contentOffset.y
+                }, action: { _, offsetY in
+                    scrollOffsetY = offsetY
+                })
                 .ignoresSafeArea(edges: .bottom)
                 .zIndex(1)
 
@@ -76,9 +91,7 @@ struct SwipeCardOverlayScrollLayout<Background: View, TopBar: View, Content: Vie
                 .zIndex(3)
             }
             .background(fullScreenWash.ignoresSafeArea())
-            .ignoresSafeArea()
         }
-        .ignoresSafeArea()
     }
 
     private var fullScreenWash: some View {
@@ -98,20 +111,30 @@ struct SwipeCardOverlayScrollLayout<Background: View, TopBar: View, Content: Vie
         let backgroundTopInset: CGFloat
         let backgroundHeight: CGFloat
         let heroStart: CGFloat
+        let heroDismissDistance: CGFloat
+        let heroMergeRange: CGFloat
         let topBarTopInset: CGFloat
+        let compactTopBarTopInset: CGFloat
         let dockBottomInset: CGFloat
         let scrollBottomClearance: CGFloat
 
         init(geometry: GeometryProxy, heroStartRatio: CGFloat) {
-            let safeTop = geometry.safeAreaInsets.top
             let safeBottom = max(geometry.safeAreaInsets.bottom, ScoutSpacing.sm)
 
-            self.backgroundTopInset = safeTop
-            self.backgroundHeight = geometry.size.height + safeTop + geometry.safeAreaInsets.bottom
+            self.backgroundTopInset = geometry.safeAreaInsets.top
+            self.backgroundHeight = geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom
             self.heroStart = max(220, geometry.size.height * heroStartRatio)
-            self.topBarTopInset = safeTop + (2 * ScoutSpacing.xxxl)
+            self.heroMergeRange = 92
+            self.topBarTopInset = ScoutSpacing.lg
+            self.compactTopBarTopInset = ScoutSpacing.sm
+            self.heroDismissDistance = max(0, topBarTopInset - compactTopBarTopInset)
             self.dockBottomInset = safeBottom + ScoutSpacing.lg
             self.scrollBottomClearance = 140 + safeBottom
+        }
+
+        func heroMergeProgress(for scrollOffsetY: CGFloat) -> CGFloat {
+            guard scrollOffsetY.isFinite else { return 0 }
+            return min(max(scrollOffsetY / heroMergeRange, 0), 1)
         }
     }
 }
@@ -119,7 +142,7 @@ struct SwipeCardOverlayScrollLayout<Background: View, TopBar: View, Content: Vie
 #Preview("Swipe Overlay Layout") {
     SwipeCardOverlayScrollLayout {
         PlayerBackgroundView(imageURL: randomMockCardViewModel().heroImageURL, color: .scoutAccentStart)
-    } topBar: {
+    } topBar: { _ in
         HStack {
             GlassChip(title: "2.1 mi away")
             Spacer()

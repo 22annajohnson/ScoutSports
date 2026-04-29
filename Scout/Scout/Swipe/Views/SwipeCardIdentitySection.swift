@@ -10,6 +10,10 @@ import SwiftUI
 struct SwipeCardIdentitySection: View {
     let model: Model
 
+    private var readableAccent: Color {
+        Color.scoutAccentEnd.opacity(0.96)
+    }
+
     var body: some View {
         GlassCard(padding: ScoutSpacing.lg) {
             VStack(alignment: .leading, spacing: ScoutSpacing.md) {
@@ -51,7 +55,7 @@ struct SwipeCardIdentitySection: View {
             if let age = model.age {
                 Text("\(age)")
                     .font(.scoutNumberM)
-                    .foregroundStyle(Color.scoutAccentStart)
+                    .foregroundStyle(readableAccent)
                     .lineLimit(1)
             }
         }
@@ -66,7 +70,7 @@ struct SwipeCardIdentitySection: View {
 
             Text(model.intent)
                 .font(.scoutCallout)
-                .foregroundStyle(Color.scoutAccentStart)
+                .foregroundStyle(readableAccent)
                 .lineLimit(1)
                 .minimumScaleFactor(0.84)
         }
@@ -74,12 +78,12 @@ struct SwipeCardIdentitySection: View {
         .padding(.vertical, ScoutSpacing.xs)
         .background(
             Capsule()
-                .fill(Color.scoutAccentStart.opacity(0.12))
+                .fill(Color.scoutAccentEnd.opacity(0.16))
                 .background(.ultraThinMaterial, in: Capsule())
         )
         .overlay(
             Capsule()
-                .stroke(Color.scoutAccentStart.opacity(0.24), lineWidth: ScoutStroke.hairline)
+                .stroke(Color.scoutAccentEnd.opacity(0.28), lineWidth: ScoutStroke.hairline)
         )
     }
 

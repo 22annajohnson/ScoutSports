@@ -24,13 +24,13 @@ struct ScoutActionDock: View {
 
     var body: some View {
         HStack(spacing: ScoutSpacing.lg) {
-            actionButton(systemImage: "xmark", size: 58, action: onPass)
+            actionButton(systemImage: "xmark", size: 68, action: onPass)
 
             Button(action: onBoost) {
                 Image(systemName: "bolt.fill")
                     .font(.system(size: 24, weight: .bold))
                     .foregroundStyle(Color.scoutTextOnAccent)
-                    .frame(width: 82, height: 82)
+                    .frame(width: 96, height: 96)
                     .background(
                         Circle()
                             .fill(ScoutTheme.accentGradient)
@@ -43,7 +43,7 @@ struct ScoutActionDock: View {
             }
             .buttonStyle(ScoutDockButtonStyle())
 
-            actionButton(systemImage: "heart", size: 58, action: onLike)
+            actionButton(systemImage: "heart", size: 68, action: onLike)
         }
         .padding(.horizontal, ScoutSpacing.xl)
         .padding(.vertical, ScoutSpacing.md)
@@ -56,6 +56,7 @@ struct ScoutActionDock: View {
             Capsule()
                 .stroke(Color.scoutGlassStroke, lineWidth: ScoutStroke.hairline)
         )
+        .shadow(color: Color.black.opacity(0.12), radius: 18, y: 10)
     }
 
     private func actionButton(systemImage: String, size: CGFloat, action: @escaping () -> Void) -> some View {
@@ -66,11 +67,12 @@ struct ScoutActionDock: View {
                 .frame(width: size, height: size)
                 .background(
                     Circle()
-                        .fill(Color.scoutSurfaceElevated)
+                        .fill(Color.scoutSwipeOverlaySurface)
+                        .background(.ultraThinMaterial, in: Circle())
                 )
                 .overlay(
                     Circle()
-                        .stroke(Color.scoutGlassStroke, lineWidth: ScoutStroke.hairline)
+                        .stroke(Color.scoutSwipeOverlayStroke, lineWidth: ScoutStroke.hairline)
                 )
         }
         .buttonStyle(ScoutDockButtonStyle())

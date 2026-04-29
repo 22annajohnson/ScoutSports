@@ -11,6 +11,11 @@ import SwiftUI
 @MainActor
 @Observable
 final class SwipeDeckInteractionViewModel {
+    struct BackgroundCardPresentation {
+        let blurRadius: CGFloat
+        let dimOpacity: CGFloat
+    }
+
     enum SwipeAction {
         case pass
         case like
@@ -31,6 +36,14 @@ final class SwipeDeckInteractionViewModel {
 
     var overlaySide: SwipeArcShape.Side {
         dragOffset.width < 0 ? .right : .left
+    }
+
+    var backgroundCardPresentation: BackgroundCardPresentation {
+        let easedProgress = pow(swipeProgress, 0.9)
+        return BackgroundCardPresentation(
+            blurRadius: max(0, 18 * (1 - easedProgress)),
+            dimOpacity: 0.10 * (1 - easedProgress)
+        )
     }
 
     func currentCard(in cards: [CardViewModel]) -> CardViewModel? {
