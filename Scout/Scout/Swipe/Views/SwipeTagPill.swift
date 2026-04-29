@@ -18,7 +18,7 @@ struct SwipeTagPill: View {
             .lineLimit(1)
             .minimumScaleFactor(0.84)
             .frame(maxWidth: .infinity, minHeight: minHeight)
-            .padding(.horizontal, ScoutSpacing.sm)
+            .padding(.horizontal, ScoutLayout.Spacing.sm)
             .background(
                 Capsule()
                     .fill(backgroundFill)
@@ -26,7 +26,7 @@ struct SwipeTagPill: View {
             )
             .overlay(
                 Capsule()
-                    .stroke(borderColor, lineWidth: ScoutStroke.hairline)
+                    .stroke(borderColor, lineWidth: ScoutLayout.Stroke.hairline)
             )
     }
 

@@ -10,7 +10,7 @@ import SwiftUI
 private struct StateAndMotionPreview: View {
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: ScoutSpacing.xl) {
+            VStack(alignment: .leading, spacing: ScoutLayout.Spacing.xl) {
                 Text("POLISH")
                     .font(.scoutLabelCaps)
                     .tracking(3)
@@ -20,7 +20,7 @@ private struct StateAndMotionPreview: View {
                     .font(.scoutDisplayCompact)
                     .foregroundStyle(Color.scoutTextPrimary)
 
-                VStack(spacing: ScoutSpacing.md) {
+                VStack(spacing: ScoutLayout.Spacing.md) {
                     Button("Primary Action") {}
                         .buttonStyle(ScoutPrimaryButtonStyle())
 
@@ -28,7 +28,7 @@ private struct StateAndMotionPreview: View {
                         .buttonStyle(ScoutSecondaryGlassButtonStyle())
                 }
 
-                HStack(spacing: ScoutSpacing.sm) {
+                HStack(spacing: ScoutLayout.Spacing.sm) {
                     GlassChip(title: "New", style: .accent, isEmphasized: true)
                     GlassChip(title: "Selected", systemImage: "checkmark", style: .selected, isEmphasized: true)
                     GlassChip(title: "Nearby")
@@ -56,7 +56,7 @@ private struct StateAndMotionPreview: View {
                     action: {}
                 )
             }
-            .padding(ScoutSpacing.xl)
+            .padding(ScoutLayout.Spacing.xl)
         }
         .background(ScoutTheme.screenBackground.ignoresSafeArea())
     }

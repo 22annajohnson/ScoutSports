@@ -51,7 +51,7 @@ struct SwipeCardOverlayScrollLayout<Background: View, TopBar: View, Content: Vie
                     .ignoresSafeArea()
 
                 topBar(heroMergeProgress)
-                    .padding(.horizontal, ScoutSpacing.md)
+                    .padding(.horizontal, ScoutLayout.Spacing.md)
                     .padding(.top, metrics.topBarTopInset)
                     .frame(maxWidth: .infinity, alignment: .top)
                     .offset(y: topBarOffset)
@@ -60,12 +60,12 @@ struct SwipeCardOverlayScrollLayout<Background: View, TopBar: View, Content: Vie
                     .zIndex(2)
 
                 ScrollView(showsIndicators: false) {
-                    VStack(spacing: ScoutSpacing.lg) {
+                    VStack(spacing: ScoutLayout.Spacing.lg) {
                         Color.clear
                             .frame(height: metrics.heroStart)
 
                         content
-                            .padding(.horizontal, ScoutSpacing.lg)
+                            .padding(.horizontal, ScoutLayout.Spacing.lg)
 
                         Color.clear
                             .frame(height: metrics.scrollBottomClearance)
@@ -84,7 +84,7 @@ struct SwipeCardOverlayScrollLayout<Background: View, TopBar: View, Content: Vie
                     Spacer()
 
                     dock
-                        .padding(.horizontal, ScoutSpacing.lg)
+                        .padding(.horizontal, ScoutLayout.Spacing.lg)
                         .padding(.bottom, metrics.dockBottomInset)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -119,17 +119,18 @@ struct SwipeCardOverlayScrollLayout<Background: View, TopBar: View, Content: Vie
         let scrollBottomClearance: CGFloat
 
         init(geometry: GeometryProxy, heroStartRatio: CGFloat) {
-            let safeBottom = max(geometry.safeAreaInsets.bottom, ScoutSpacing.sm)
+            let safeTop = ScoutLayout.SafeArea.topInset(from: geometry.safeAreaInsets)
+            let safeBottom = ScoutLayout.SafeArea.bottomInset(from: geometry.safeAreaInsets)
 
-            self.backgroundTopInset = geometry.safeAreaInsets.top
-            self.backgroundHeight = geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom
+            self.backgroundTopInset = safeTop
+            self.backgroundHeight = ScoutLayout.SafeArea.fullHeight(for: geometry.size, insets: geometry.safeAreaInsets)
             self.heroStart = max(220, geometry.size.height * heroStartRatio)
             self.heroMergeRange = 92
-            self.topBarTopInset = ScoutSpacing.lg
-            self.compactTopBarTopInset = ScoutSpacing.sm
+            self.topBarTopInset = ScoutLayout.Spacing.lg
+            self.compactTopBarTopInset = ScoutLayout.Spacing.sm
             self.heroDismissDistance = max(0, topBarTopInset - compactTopBarTopInset)
-            self.dockBottomInset = safeBottom + ScoutSpacing.lg
-            self.scrollBottomClearance = 140 + safeBottom
+            self.dockBottomInset = safeBottom + (3 * ScoutLayout.Spacing.xl)
+            self.scrollBottomClearance = 256 + safeBottom
         }
 
         func heroMergeProgress(for scrollOffsetY: CGFloat) -> CGFloat {
@@ -149,7 +150,7 @@ struct SwipeCardOverlayScrollLayout<Background: View, TopBar: View, Content: Vie
             GlassChip(title: "92 Match", style: .accent)
         }
     } content: {
-        VStack(spacing: ScoutSpacing.lg) {
+        VStack(spacing: ScoutLayout.Spacing.lg) {
             GlassCard {
                 Text("Identity section starts around mid-screen and can scroll upward over the image.")
                     .font(.scoutBody)

@@ -19,7 +19,7 @@ struct SwipeArcOverlay: View {
                 .fill(color.opacity(0.92))
                 .overlay(
                     SwipeArcShape(progress: progress, side: side)
-                        .stroke(Color.white.opacity(0.18), lineWidth: 1)
+                        .stroke(Color.scoutOnImageStroke, lineWidth: 1)
                 )
 
             // Text sits near the arc edge

@@ -25,13 +25,13 @@ struct ScoutFormPageShell<Header: View, Content: View, Footer: View>: View {
     var body: some View {
         VStack(spacing: 0) {
             ScrollView(showsIndicators: false) {
-                VStack(alignment: .leading, spacing: ScoutSpacing.xl) {
+                VStack(alignment: .leading, spacing: ScoutLayout.Spacing.xl) {
                     header
                     content
                 }
-                .padding(.horizontal, ScoutSpacing.xl)
-                .padding(.top, ScoutSpacing.xl)
-                .padding(.bottom, ScoutSpacing.xxl)
+                .padding(.horizontal, ScoutLayout.Spacing.xl)
+                .padding(.top, ScoutLayout.Spacing.xl)
+                .padding(.bottom, ScoutLayout.Spacing.xxl)
             }
 
             footer
@@ -52,7 +52,7 @@ struct ScoutFormPageShell<Header: View, Content: View, Footer: View>: View {
     } content: {
         GlassCard {
             ScoutSection(title: "Pick your style") {
-                VStack(spacing: ScoutSpacing.sm) {
+                VStack(spacing: ScoutLayout.Spacing.sm) {
                     ScoutSelectionRow(title: "Casual", subtitle: "Meet people and keep it light", isSelected: false)
                     ScoutSelectionRow(title: "Competitive", subtitle: "Looking for stronger games", isSelected: true)
                     ScoutSelectionRow(title: "Drills / practice", subtitle: "Skill growth first", isSelected: false)

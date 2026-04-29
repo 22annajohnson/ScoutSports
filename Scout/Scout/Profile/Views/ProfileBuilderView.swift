@@ -92,7 +92,7 @@ struct ProfileBuilderView: View {
     }
 
     private func header(for step: ProfileBuilderViewModel.Step) -> some View {
-        VStack(alignment: .leading, spacing: ScoutSpacing.md) {
+        VStack(alignment: .leading, spacing: ScoutLayout.Spacing.md) {
             ScoutPageHeader(
                 eyebrow: "Profile Builder",
                 title: headerTitle(for: step),
@@ -119,12 +119,12 @@ struct ProfileBuilderView: View {
             .frame(height: 10)
             .overlay {
                 Capsule()
-                    .stroke(Color.scoutGlassStroke, lineWidth: ScoutStroke.hairline)
+                    .stroke(Color.scoutGlassStroke, lineWidth: ScoutLayout.Stroke.hairline)
             }
         }
-        .padding(.horizontal, ScoutSpacing.xl)
-        .padding(.top, ScoutSpacing.xl)
-        .padding(.bottom, ScoutSpacing.lg)
+        .padding(.horizontal, ScoutLayout.Spacing.xl)
+        .padding(.top, ScoutLayout.Spacing.xl)
+        .padding(.bottom, ScoutLayout.Spacing.lg)
     }
 
     private func headerTitle(for step: ProfileBuilderViewModel.Step) -> String {
@@ -191,7 +191,7 @@ struct ProfileBuilderView: View {
                     }
                 }
             } label: {
-                HStack(spacing: ScoutSpacing.xs) {
+                HStack(spacing: ScoutLayout.Spacing.xs) {
                     if vm.isSaving {
                         ProgressView()
                             .tint(Color.scoutTextOnAccent)
@@ -218,14 +218,14 @@ private struct ActionShotStep: View {
             let mediaHeight = boundedMediaHeight(for: geo.size.height)
 
             ScrollView(showsIndicators: false) {
-                VStack(spacing: ScoutSpacing.lg) {
+                VStack(spacing: ScoutLayout.Spacing.lg) {
                     GlassCard {
                         ScoutSection(
                             eyebrow: "Hero Media",
                             title: "Action shot",
                             subtitle: "Required. This is the image people will feel first when your card appears."
                         ) {
-                            VStack(spacing: ScoutSpacing.md) {
+                            VStack(spacing: ScoutLayout.Spacing.md) {
                                 BuilderPhotoFrame(title: "Action Shot", systemImage: "figure.pickleball", image: image, isCircular: false)
                                     .frame(height: mediaHeight)
 
@@ -242,8 +242,8 @@ private struct ActionShotStep: View {
                     }
                 }
                 .frame(minHeight: geo.size.height, alignment: .top)
-                .padding(.horizontal, ScoutSpacing.xl)
-                .padding(.bottom, ScoutSpacing.xl)
+                .padding(.horizontal, ScoutLayout.Spacing.xl)
+                .padding(.bottom, ScoutLayout.Spacing.xl)
             }
         }
     }
@@ -265,14 +265,14 @@ private struct HeadshotStep: View {
         let pickerTitle = image == nil ? "Choose Photo" : "Change Photo"
 
         ScrollView(showsIndicators: false) {
-            VStack(spacing: ScoutSpacing.lg) {
+            VStack(spacing: ScoutLayout.Spacing.lg) {
                 GlassCard {
                     ScoutSection(
                         eyebrow: "Profile Photo",
                         title: "Headshot",
                         subtitle: "Optional, but strongly recommended for trust and recognition."
                     ) {
-                        VStack(spacing: ScoutSpacing.md) {
+                        VStack(spacing: ScoutLayout.Spacing.md) {
                             BuilderPhotoFrame(title: "Headshot", systemImage: "person.crop.circle", image: image, isCircular: true)
                                 .frame(width: 220, height: 220)
                                 .frame(maxWidth: .infinity)
@@ -289,8 +289,8 @@ private struct HeadshotStep: View {
                     }
                 }
             }
-            .padding(.horizontal, ScoutSpacing.xl)
-            .padding(.bottom, ScoutSpacing.xl)
+            .padding(.horizontal, ScoutLayout.Spacing.xl)
+            .padding(.bottom, ScoutLayout.Spacing.xl)
         }
     }
 }
@@ -301,14 +301,14 @@ private struct ClubsAndCourtsStep: View {
 
     var body: some View {
         ScrollView(showsIndicators: false) {
-            VStack(spacing: ScoutSpacing.lg) {
+            VStack(spacing: ScoutLayout.Spacing.lg) {
                 GlassCard {
                     ScoutSection(
                         eyebrow: "Home Base",
                         title: "Clubs and courts",
                         subtitle: "This helps Scout prioritize players near your regular scene."
                     ) {
-                        VStack(spacing: ScoutSpacing.md) {
+                        VStack(spacing: ScoutLayout.Spacing.md) {
                             BuilderField(title: "Home Court", prompt: "Home court (optional)", text: $homeCourt)
 
                             BuilderField(title: "Club Memberships", prompt: "Club memberships (comma separated)", text: $clubsText)
@@ -326,8 +326,8 @@ private struct ClubsAndCourtsStep: View {
                     }
                 }
             }
-            .padding(.horizontal, ScoutSpacing.xl)
-            .padding(.bottom, ScoutSpacing.xl)
+            .padding(.horizontal, ScoutLayout.Spacing.xl)
+            .padding(.bottom, ScoutLayout.Spacing.xl)
         }
     }
 }
@@ -343,7 +343,7 @@ private struct BackgroundStep: View {
                     title: "Pick your background",
                     subtitle: "This gives people quick context for where your game comes from."
                 ) {
-                    VStack(spacing: ScoutSpacing.sm) {
+                    VStack(spacing: ScoutLayout.Spacing.sm) {
                 ForEach(ProfileBuilderViewModel.Background.allCases, id: \.self) { option in
                             Button {
                                 background = option
@@ -359,8 +359,8 @@ private struct BackgroundStep: View {
                     }
                 }
             }
-            .padding(.horizontal, ScoutSpacing.xl)
-            .padding(.bottom, ScoutSpacing.xl)
+            .padding(.horizontal, ScoutLayout.Spacing.xl)
+            .padding(.bottom, ScoutLayout.Spacing.xl)
         }
     }
 }
@@ -375,7 +375,7 @@ private struct PlayStyleStep: View {
 
     var body: some View {
         ScrollView(showsIndicators: false) {
-            VStack(spacing: ScoutSpacing.lg) {
+            VStack(spacing: ScoutLayout.Spacing.lg) {
                 GlassCard {
                     ScoutSection(
                         eyebrow: "Skill",
@@ -392,7 +392,7 @@ private struct PlayStyleStep: View {
                         title: "How you like to play",
                         subtitle: "We’ll use this to improve the quality of your matches."
                     ) {
-                        VStack(spacing: ScoutSpacing.sm) {
+                        VStack(spacing: ScoutLayout.Spacing.sm) {
                             ForEach(ProfileBuilderViewModel.PlayStyle.allCases, id: \.self) { style in
                                 Button {
                                     playStyle = style
@@ -415,7 +415,7 @@ private struct PlayStyleStep: View {
                         title: "How you show up",
                         subtitle: "These are your self-reported starting points."
                     ) {
-                        VStack(spacing: ScoutSpacing.md) {
+                        VStack(spacing: ScoutLayout.Spacing.md) {
                             ratingRow(title: "Competitiveness", value: $competitivenessRating)
                             ratingRow(title: "Friendliness", value: $friendlinessRating)
                             ratingRow(title: "Social vibe", value: $socialVibeRating)
@@ -438,27 +438,27 @@ private struct PlayStyleStep: View {
                     }
                 }
             }
-            .padding(.horizontal, ScoutSpacing.xl)
-            .padding(.bottom, ScoutSpacing.xl)
+            .padding(.horizontal, ScoutLayout.Spacing.xl)
+            .padding(.bottom, ScoutLayout.Spacing.xl)
         }
     }
 
     private func ratingRow(title: String, value: Binding<Int>) -> some View {
-        VStack(alignment: .leading, spacing: ScoutSpacing.sm) {
+        VStack(alignment: .leading, spacing: ScoutLayout.Spacing.sm) {
             Text(title)
                 .font(.scoutBodyEmphasis)
                 .foregroundStyle(Color.scoutTextPrimary)
 
             BuilderSegmentedPicker(selection: value, values: Array(1...5))
         }
-        .padding(ScoutSpacing.md)
+        .padding(ScoutLayout.Spacing.md)
         .background(
-            RoundedRectangle(cornerRadius: ScoutRadius.md, style: .continuous)
+            RoundedRectangle(cornerRadius: ScoutLayout.Radius.md, style: .continuous)
                 .fill(Color.scoutSurfaceElevated)
         )
         .overlay(
-            RoundedRectangle(cornerRadius: ScoutRadius.md, style: .continuous)
-                .stroke(Color.scoutGlassStroke, lineWidth: ScoutStroke.hairline)
+            RoundedRectangle(cornerRadius: ScoutLayout.Radius.md, style: .continuous)
+                .stroke(Color.scoutGlassStroke, lineWidth: ScoutLayout.Stroke.hairline)
         )
     }
 }
@@ -482,7 +482,7 @@ private struct BioStep: View {
 
     var body: some View {
         ScrollView(showsIndicators: false) {
-            VStack(spacing: ScoutSpacing.lg) {
+            VStack(spacing: ScoutLayout.Spacing.lg) {
                 GlassCard {
                     ScoutSection(
                         eyebrow: "Bio",
@@ -493,21 +493,21 @@ private struct BioStep: View {
                             .font(.scoutBody)
                             .foregroundStyle(Color.scoutTextPrimary)
                             .frame(minHeight: 180)
-                            .padding(ScoutSpacing.sm)
+                            .padding(ScoutLayout.Spacing.sm)
                             .scrollContentBackground(.hidden)
                             .background(
-                                RoundedRectangle(cornerRadius: ScoutRadius.md, style: .continuous)
+                                RoundedRectangle(cornerRadius: ScoutLayout.Radius.md, style: .continuous)
                                     .fill(Color.scoutSurfaceElevated)
                             )
                             .overlay(
-                                RoundedRectangle(cornerRadius: ScoutRadius.md, style: .continuous)
-                                    .stroke(Color.scoutGlassStroke, lineWidth: ScoutStroke.hairline)
+                                RoundedRectangle(cornerRadius: ScoutLayout.Radius.md, style: .continuous)
+                                    .stroke(Color.scoutGlassStroke, lineWidth: ScoutLayout.Stroke.hairline)
                             )
                     }
                 }
             }
-            .padding(.horizontal, ScoutSpacing.xl)
-            .padding(.bottom, ScoutSpacing.xl)
+            .padding(.horizontal, ScoutLayout.Spacing.xl)
+            .padding(.bottom, ScoutLayout.Spacing.xl)
         }
     }
 }
@@ -519,8 +519,8 @@ private struct ReviewStep: View {
 
     var body: some View {
         ScrollView(showsIndicators: false) {
-            VStack(spacing: ScoutSpacing.lg) {
-                GlassCard(padding: ScoutSpacing.md) {
+            VStack(spacing: ScoutLayout.Spacing.lg) {
+                GlassCard(padding: ScoutLayout.Spacing.md) {
                     ZStack(alignment: .topTrailing) {
                         Group {
                             if let actionShot {
@@ -538,7 +538,7 @@ private struct ReviewStep: View {
                             }
                         }
                         .frame(height: 280)
-                        .clipShape(RoundedRectangle(cornerRadius: ScoutRadius.lg, style: .continuous))
+                        .clipShape(RoundedRectangle(cornerRadius: ScoutLayout.Radius.lg, style: .continuous))
 
                         if let headshot {
                             Image(uiImage: headshot)
@@ -546,8 +546,8 @@ private struct ReviewStep: View {
                                 .scaledToFill()
                                 .frame(width: 82, height: 82)
                                 .clipShape(Circle())
-                                .overlay(Circle().stroke(Color.white.opacity(0.8), lineWidth: 2))
-                                .padding(ScoutSpacing.md)
+                                .overlay(Circle().stroke(Color.scoutOnImageStrokeStrong, lineWidth: 2))
+                                .padding(ScoutLayout.Spacing.md)
                         }
                     }
                 }
@@ -558,7 +558,7 @@ private struct ReviewStep: View {
                         title: "Your profile snapshot",
                         subtitle: "This should feel close to what someone will see when deciding to play with you."
                     ) {
-                        VStack(alignment: .leading, spacing: ScoutSpacing.md) {
+                        VStack(alignment: .leading, spacing: ScoutLayout.Spacing.md) {
                             summaryRow(title: "Home court", value: form.homeCourtName.isEmpty ? "—" : form.homeCourtName)
                             summaryRow(title: "Clubs", value: form.clubsText.isEmpty ? "—" : form.clubsText)
                             summaryRow(title: "Background", value: form.background.displayName)
@@ -576,14 +576,14 @@ private struct ReviewStep: View {
                 Text("Tap Save to finish.")
                     .font(.scoutCaption)
                     .foregroundStyle(Color.scoutTextSecondary)
-                    .padding(.bottom, ScoutSpacing.xl)
+                    .padding(.bottom, ScoutLayout.Spacing.xl)
             }
-            .padding(.horizontal, ScoutSpacing.xl)
+            .padding(.horizontal, ScoutLayout.Spacing.xl)
         }
     }
 
     private func summaryRow(title: String, value: String) -> some View {
-        VStack(alignment: .leading, spacing: ScoutSpacing.xxs) {
+        VStack(alignment: .leading, spacing: ScoutLayout.Spacing.xxs) {
             Text(title.uppercased())
                 .font(.scoutMicro)
                 .tracking(2)
@@ -594,14 +594,14 @@ private struct ReviewStep: View {
                 .foregroundStyle(Color.scoutTextPrimary)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .padding(ScoutSpacing.md)
+        .padding(ScoutLayout.Spacing.md)
         .background(
-            RoundedRectangle(cornerRadius: ScoutRadius.md, style: .continuous)
+            RoundedRectangle(cornerRadius: ScoutLayout.Radius.md, style: .continuous)
                 .fill(Color.scoutSurfaceElevated)
         )
         .overlay(
-            RoundedRectangle(cornerRadius: ScoutRadius.md, style: .continuous)
-                .stroke(Color.scoutGlassStroke, lineWidth: ScoutStroke.hairline)
+            RoundedRectangle(cornerRadius: ScoutLayout.Radius.md, style: .continuous)
+                .stroke(Color.scoutGlassStroke, lineWidth: ScoutLayout.Stroke.hairline)
         )
     }
 }
@@ -612,7 +612,7 @@ private struct BuilderField: View {
     @Binding var text: String
 
     var body: some View {
-        VStack(alignment: .leading, spacing: ScoutSpacing.xs) {
+        VStack(alignment: .leading, spacing: ScoutLayout.Spacing.xs) {
             Text(title.uppercased())
                 .font(.scoutLabelCaps)
                 .tracking(2.5)
@@ -621,15 +621,15 @@ private struct BuilderField: View {
             TextField(prompt, text: $text)
                 .font(.scoutBody)
                 .foregroundStyle(Color.scoutTextPrimary)
-                .padding(.horizontal, ScoutSpacing.md)
-                .padding(.vertical, ScoutSpacing.md)
+                .padding(.horizontal, ScoutLayout.Spacing.md)
+                .padding(.vertical, ScoutLayout.Spacing.md)
                 .background(
-                    RoundedRectangle(cornerRadius: ScoutRadius.md, style: .continuous)
+                    RoundedRectangle(cornerRadius: ScoutLayout.Radius.md, style: .continuous)
                         .fill(Color.scoutSurfaceElevated)
                 )
                 .overlay(
-                    RoundedRectangle(cornerRadius: ScoutRadius.md, style: .continuous)
-                        .stroke(Color.scoutGlassStroke, lineWidth: ScoutStroke.hairline)
+                    RoundedRectangle(cornerRadius: ScoutLayout.Radius.md, style: .continuous)
+                        .stroke(Color.scoutGlassStroke, lineWidth: ScoutLayout.Stroke.hairline)
                 )
         }
     }
@@ -666,11 +666,11 @@ private struct BuilderPhotoFrame: View {
         }
         .overlay(alignment: .bottomLeading) {
             GlassChip(title: title)
-                .padding(ScoutSpacing.md)
+                .padding(ScoutLayout.Spacing.md)
         }
         .overlay {
             Circle()
-                .stroke(Color.scoutGlassStroke, lineWidth: ScoutStroke.hairline)
+                .stroke(Color.scoutGlassStroke, lineWidth: ScoutLayout.Stroke.hairline)
         }
     }
 
@@ -680,9 +680,9 @@ private struct BuilderPhotoFrame: View {
                 Image(uiImage: image)
                     .resizable()
                     .scaledToFill()
-                    .clipShape(RoundedRectangle(cornerRadius: ScoutRadius.lg, style: .continuous))
+                    .clipShape(RoundedRectangle(cornerRadius: ScoutLayout.Radius.lg, style: .continuous))
             } else {
-                RoundedRectangle(cornerRadius: ScoutRadius.lg, style: .continuous)
+                RoundedRectangle(cornerRadius: ScoutLayout.Radius.lg, style: .continuous)
                     .fill(Color.scoutSurfaceElevated)
                     .overlay {
                         placeholder
@@ -691,16 +691,16 @@ private struct BuilderPhotoFrame: View {
         }
         .overlay(alignment: .bottomLeading) {
             GlassChip(title: title)
-                .padding(ScoutSpacing.md)
+                .padding(ScoutLayout.Spacing.md)
         }
         .overlay {
-            RoundedRectangle(cornerRadius: ScoutRadius.lg, style: .continuous)
-                .stroke(Color.scoutGlassStroke, lineWidth: ScoutStroke.hairline)
+            RoundedRectangle(cornerRadius: ScoutLayout.Radius.lg, style: .continuous)
+                .stroke(Color.scoutGlassStroke, lineWidth: ScoutLayout.Stroke.hairline)
         }
     }
 
     private var placeholder: some View {
-        VStack(spacing: ScoutSpacing.sm) {
+        VStack(spacing: ScoutLayout.Spacing.sm) {
             Image(systemName: systemImage)
                 .font(.system(size: 40, weight: .semibold))
                 .foregroundStyle(Color.scoutAccentStart)
@@ -709,7 +709,7 @@ private struct BuilderPhotoFrame: View {
                 .foregroundStyle(Color.scoutTextPrimary)
         }
         .multilineTextAlignment(.center)
-        .padding(ScoutSpacing.xl)
+        .padding(ScoutLayout.Spacing.xl)
     }
 }
 

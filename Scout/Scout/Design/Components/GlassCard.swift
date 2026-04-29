@@ -8,12 +8,12 @@
 import SwiftUI
 
 struct GlassCard<Content: View>: View {
-    private let shape = RoundedRectangle(cornerRadius: ScoutRadius.lg, style: .continuous)
+    private let shape = RoundedRectangle(cornerRadius: ScoutLayout.Radius.lg, style: .continuous)
     private let padding: CGFloat
     private let content: Content
 
     init(
-        padding: CGFloat = ScoutSpacing.lg,
+        padding: CGFloat = ScoutLayout.Spacing.lg,
         @ViewBuilder content: () -> Content
     ) {
         self.padding = padding
@@ -27,10 +27,10 @@ struct GlassCard<Content: View>: View {
             .overlay(cardStroke)
             .overlay(cardHighlights)
             .shadow(
-                color: ScoutShadow.soft,
-                radius: ScoutShadow.raisedRadius,
+                color: Color.scoutShadowSoft,
+                radius: ScoutLayout.Shadow.raisedRadius,
                 x: 0,
-                y: ScoutShadow.raisedY
+                y: ScoutLayout.Shadow.raisedY
             )
     }
 
@@ -42,7 +42,7 @@ struct GlassCard<Content: View>: View {
                     .fill(
                         LinearGradient(
                             colors: [
-                                Color.white.opacity(0.12),
+                                Color.scoutGlassHighlight,
                                 Color.scoutGlassFill.opacity(0.92),
                                 Color.scoutAccentStart.opacity(0.08)
                             ],
@@ -72,14 +72,14 @@ struct GlassCard<Content: View>: View {
             .stroke(
                 LinearGradient(
                     colors: [
-                        Color.white.opacity(0.22),
+                        Color.scoutGlassHighlightStrong,
                         Color.scoutGlassStroke,
                         Color.scoutAccentStart.opacity(0.16)
                     ],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 ),
-                lineWidth: ScoutStroke.hairline
+                lineWidth: ScoutLayout.Stroke.hairline
             )
     }
 
@@ -89,7 +89,7 @@ struct GlassCard<Content: View>: View {
             .stroke(
                 LinearGradient(
                     colors: [
-                        Color.white.opacity(0.22),
+                        Color.scoutGlassHighlightStrong,
                         Color.clear,
                         Color.clear
                     ],
@@ -106,7 +106,7 @@ struct GlassCard<Content: View>: View {
         ScoutTheme.screenBackground.ignoresSafeArea()
 
         GlassCard {
-            VStack(alignment: .leading, spacing: ScoutSpacing.sm) {
+            VStack(alignment: .leading, spacing: ScoutLayout.Spacing.sm) {
                 Text("MATCHUP")
                     .font(.scoutLabelCaps)
                     .tracking(3)

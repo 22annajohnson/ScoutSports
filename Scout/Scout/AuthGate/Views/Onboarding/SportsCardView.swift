@@ -20,15 +20,7 @@ struct SportCard: View {
             if isEnabled { onTap() }
         } label: {
             ZStack(alignment: .topTrailing) {
-                RoundedRectangle(cornerRadius: ScoutRadius.lg, style: .continuous)
-                    .fill(isSelected ? Color.scoutSurfaceElevated : Color.scoutGlassFill)
-                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: ScoutRadius.lg, style: .continuous))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: ScoutRadius.lg, style: .continuous)
-                            .stroke(isSelected ? Color.scoutAccentStart.opacity(0.55) : Color.scoutGlassStroke, lineWidth: isSelected ? ScoutStroke.emphasis : ScoutStroke.hairline)
-                    )
-
-                VStack(alignment: .leading, spacing: ScoutSpacing.sm) {
+                VStack(alignment: .leading, spacing: ScoutLayout.Spacing.sm) {
                     Text(title)
                         .font(.scoutSectionTitle)
                         .foregroundStyle(Color.scoutTextPrimary)
@@ -42,17 +34,18 @@ struct SportCard: View {
                     Spacer(minLength: 0)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(ScoutSpacing.lg)
+                .padding(ScoutLayout.Spacing.lg)
 
                 if isSelected {
                     GlassChip(title: "Selected", systemImage: "checkmark", style: .selected)
-                        .padding(ScoutSpacing.sm)
+                        .padding(ScoutLayout.Spacing.sm)
                 } else if !isEnabled {
                     GlassChip(title: "Coming soon")
-                        .padding(ScoutSpacing.sm)
+                        .padding(ScoutLayout.Spacing.sm)
                 }
             }
             .frame(maxWidth: .infinity, minHeight: 148)
+            .scoutGlassSelectableSurface(isSelected: isSelected, cornerRadius: ScoutLayout.Radius.lg)
             .opacity(isEnabled ? 1.0 : 0.7)
         }
         .buttonStyle(.plain)

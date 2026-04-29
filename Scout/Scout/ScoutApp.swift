@@ -29,6 +29,7 @@ struct ScoutApp: App {
                 .environment(\.appEnvironment, appEnvironment)
                 .environment(session)
                 .tint(Color.scout)
+                .preferredColorScheme(.dark)
         }
     }
 }

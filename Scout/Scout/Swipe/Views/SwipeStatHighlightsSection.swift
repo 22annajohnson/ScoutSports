@@ -11,7 +11,7 @@ struct SwipeStatHighlightsSection: View {
     let tiles: [SwipeHighlightTile]
 
     var body: some View {
-        HStack(alignment: .top, spacing: ScoutSpacing.md) {
+        HStack(alignment: .top, spacing: ScoutLayout.Spacing.md) {
             ForEach(tiles) { tile in
                 statCard(tile)
             }

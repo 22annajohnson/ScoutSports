@@ -26,8 +26,8 @@ struct ScoutSection<Content: View>: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: ScoutSpacing.md) {
-            VStack(alignment: .leading, spacing: ScoutSpacing.xs) {
+        VStack(alignment: .leading, spacing: ScoutLayout.Spacing.md) {
+            VStack(alignment: .leading, spacing: ScoutLayout.Spacing.xs) {
                 if let eyebrow {
                     Text(eyebrow.uppercased())
                         .font(.scoutLabelCaps)
@@ -61,7 +61,7 @@ struct ScoutSection<Content: View>: View {
                 title: "How you show up",
                 subtitle: "Use shared section spacing and headings before introducing screen-specific polish."
             ) {
-                VStack(spacing: ScoutSpacing.sm) {
+                VStack(spacing: ScoutLayout.Spacing.sm) {
                     ScoutSelectionRow(title: "Competitive", subtitle: "Looking for strong games", isSelected: true)
                     ScoutSelectionRow(title: "Casual", subtitle: "Fun-first and flexible", isSelected: false)
                 }

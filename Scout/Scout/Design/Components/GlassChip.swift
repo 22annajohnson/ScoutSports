@@ -20,7 +20,7 @@ struct GlassChip: View {
     var isEmphasized: Bool = false
 
     var body: some View {
-        HStack(spacing: ScoutSpacing.xs) {
+        HStack(spacing: ScoutLayout.Spacing.xs) {
             if let systemImage {
                 Image(systemName: systemImage)
                     .font(.system(size: 12, weight: .semibold))
@@ -32,8 +32,8 @@ struct GlassChip: View {
                 .minimumScaleFactor(0.92)
         }
         .foregroundStyle(foregroundStyle)
-        .padding(.horizontal, ScoutSpacing.md)
-        .padding(.vertical, ScoutSpacing.sm)
+        .padding(.horizontal, ScoutLayout.Spacing.md)
+        .padding(.vertical, ScoutLayout.Spacing.sm)
         .fixedSize(horizontal: true, vertical: false)
         .background(background)
         .overlay(stroke)
@@ -70,13 +70,13 @@ struct GlassChip: View {
 
     private var stroke: some View {
         Capsule()
-            .stroke(strokeColor, lineWidth: style == .selected ? ScoutStroke.emphasis : ScoutStroke.hairline)
+            .stroke(strokeColor, lineWidth: style == .selected ? ScoutLayout.Stroke.emphasis : ScoutLayout.Stroke.hairline)
     }
 
     private var strokeColor: Color {
         switch style {
         case .selected:
-            return .white.opacity(0.18)
+            return .scoutOnImageStroke
         case .neutral, .accent:
             return .scoutGlassStroke
         }
@@ -87,7 +87,7 @@ struct GlassChip: View {
     ZStack {
         ScoutTheme.screenBackground.ignoresSafeArea()
 
-        VStack(spacing: ScoutSpacing.md) {
+        VStack(spacing: ScoutLayout.Spacing.md) {
             GlassChip(title: "2.1 mi away")
             GlassChip(title: "92 Match", systemImage: "bolt.fill", style: .accent)
             GlassChip(title: "Tue/Thu Nights", systemImage: "checkmark", style: .selected, isEmphasized: true)

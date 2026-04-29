@@ -32,7 +32,7 @@ struct ScoutHeroLayout<Background: View, TopBar: View, Overlay: View, Bottom: Vi
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .overlay(
                         LinearGradient(
-                            colors: [.clear, Color.black.opacity(0.45)],
+                            colors: [.clear, Color.scoutScrimHero],
                             startPoint: .center,
                             endPoint: .bottom
                         )
@@ -40,14 +40,14 @@ struct ScoutHeroLayout<Background: View, TopBar: View, Overlay: View, Bottom: Vi
 
                 VStack(spacing: 0) {
                     topBar
-                        .padding(.horizontal, ScoutSpacing.lg)
-                        .padding(.top, ScoutSpacing.xl)
+                        .padding(.horizontal, ScoutLayout.Spacing.lg)
+                        .padding(.top, ScoutLayout.Spacing.xl)
 
                     Spacer()
 
                     overlay
-                        .padding(.horizontal, ScoutSpacing.lg)
-                        .padding(.bottom, ScoutSpacing.xl)
+                        .padding(.horizontal, ScoutLayout.Spacing.lg)
+                        .padding(.bottom, ScoutLayout.Spacing.xl)
                 }
             }
             .frame(minHeight: 420)
@@ -75,30 +75,30 @@ struct ScoutHeroLayout<Background: View, TopBar: View, Overlay: View, Bottom: Vi
             GlassChip(title: "92 Match", style: .accent)
         }
     } overlay: {
-        VStack(alignment: .leading, spacing: ScoutSpacing.md) {
+        VStack(alignment: .leading, spacing: ScoutLayout.Spacing.md) {
             Text("Sophie 27")
                 .font(.scoutDisplayCompact)
-                .foregroundStyle(Color.white)
+                .foregroundStyle(Color.scoutOnImageTextPrimary)
 
-            HStack(spacing: ScoutSpacing.sm) {
+            HStack(spacing: ScoutLayout.Spacing.sm) {
                 GlassChip(title: "4.7 Competitive")
                 GlassChip(title: "Tue/Thu Nights")
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     } bottom: {
-        VStack(spacing: ScoutSpacing.xl) {
-            HStack(spacing: ScoutSpacing.md) {
+        VStack(spacing: ScoutLayout.Spacing.xl) {
+            HStack(spacing: ScoutLayout.Spacing.md) {
                 ScoutStatTile(title: "Skill", value: "4.3")
                 ScoutStatTile(title: "Matches", value: "38")
                 ScoutStatTile(title: "Win Rate", value: "71%")
             }
-            .padding(.horizontal, ScoutSpacing.lg)
-            .padding(.top, ScoutSpacing.xl)
+            .padding(.horizontal, ScoutLayout.Spacing.lg)
+            .padding(.top, ScoutLayout.Spacing.xl)
 
             ScoutActionDock()
-                .padding(.horizontal, ScoutSpacing.lg)
-                .padding(.bottom, ScoutSpacing.xl)
+                .padding(.horizontal, ScoutLayout.Spacing.lg)
+                .padding(.bottom, ScoutLayout.Spacing.xl)
         }
     }
 }

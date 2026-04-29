@@ -13,8 +13,8 @@ struct ScoutSelectionRow: View {
     var isSelected: Bool
 
     var body: some View {
-        HStack(spacing: ScoutSpacing.md) {
-            VStack(alignment: .leading, spacing: ScoutSpacing.xxs) {
+        HStack(spacing: ScoutLayout.Spacing.md) {
+            VStack(alignment: .leading, spacing: ScoutLayout.Spacing.xxs) {
                 Text(title)
                     .font(.scoutBodyEmphasis)
                     .foregroundStyle(Color.scoutTextPrimary)
@@ -30,7 +30,7 @@ struct ScoutSelectionRow: View {
 
             ZStack {
                 Circle()
-                    .stroke(isSelected ? Color.clear : Color.scoutGlassStroke, lineWidth: ScoutStroke.hairline)
+                    .stroke(isSelected ? Color.clear : Color.scoutGlassStroke, lineWidth: ScoutLayout.Stroke.hairline)
                     .fill(isSelected ? AnyShapeStyle(ScoutTheme.accentGradient) : AnyShapeStyle(Color.clear))
 
                 if isSelected {
@@ -41,17 +41,9 @@ struct ScoutSelectionRow: View {
             }
             .frame(width: 28, height: 28)
         }
-        .padding(.horizontal, ScoutSpacing.lg)
-        .padding(.vertical, ScoutSpacing.md)
-        .background(
-            RoundedRectangle(cornerRadius: ScoutRadius.md, style: .continuous)
-                .fill(isSelected ? Color.scoutSurfaceElevated : Color.scoutGlassFill)
-                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: ScoutRadius.md, style: .continuous))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: ScoutRadius.md, style: .continuous)
-                .stroke(isSelected ? Color.scoutAccentStart.opacity(0.55) : Color.scoutGlassStroke, lineWidth: isSelected ? ScoutStroke.emphasis : ScoutStroke.hairline)
-        )
+        .padding(.horizontal, ScoutLayout.Spacing.lg)
+        .padding(.vertical, ScoutLayout.Spacing.md)
+        .scoutGlassSelectableSurface(isSelected: isSelected, cornerRadius: ScoutLayout.Radius.md)
     }
 }
 
@@ -59,7 +51,7 @@ struct ScoutSelectionRow: View {
     ZStack {
         ScoutTheme.screenBackground.ignoresSafeArea()
 
-        VStack(spacing: ScoutSpacing.md) {
+        VStack(spacing: ScoutLayout.Spacing.md) {
             ScoutSelectionRow(title: "Casual", subtitle: "Meet people and keep it light", isSelected: false)
             ScoutSelectionRow(title: "Competitive", subtitle: "Looking for strong games", isSelected: true)
         }

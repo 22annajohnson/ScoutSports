@@ -19,10 +19,10 @@ private struct LayoutGalleryPreview: View {
                     GlassChip(title: "2/4")
                 }
             } content: {
-                VStack(spacing: ScoutSpacing.xl) {
+                VStack(spacing: ScoutLayout.Spacing.xl) {
                     GlassCard {
                         ScoutSection(title: "Pick your style") {
-                            VStack(spacing: ScoutSpacing.sm) {
+                            VStack(spacing: ScoutLayout.Spacing.sm) {
                                 ScoutSelectionRow(title: "Casual", subtitle: "Fun-first and social", isSelected: false)
                                 ScoutSelectionRow(title: "Competitive", subtitle: "Stronger games and clear intent", isSelected: true)
                             }
@@ -35,7 +35,7 @@ private struct LayoutGalleryPreview: View {
                             title: "How you show up",
                             subtitle: "Consistent section hierarchy within longer scrolling flows."
                         ) {
-                            HStack(spacing: ScoutSpacing.md) {
+                            HStack(spacing: ScoutLayout.Spacing.md) {
                                 ScoutStatTile(title: "Competitiveness", value: "3")
                                 ScoutStatTile(title: "Friendliness", value: "3")
                             }
@@ -69,35 +69,35 @@ private struct LayoutGalleryPreview: View {
                     GlassChip(title: "92 Match", style: .accent)
                 }
             } overlay: {
-                VStack(alignment: .leading, spacing: ScoutSpacing.md) {
+                VStack(alignment: .leading, spacing: ScoutLayout.Spacing.md) {
                     Text("Find your next match")
                         .font(.scoutLabelCaps)
                         .tracking(3)
-                        .foregroundStyle(Color.white.opacity(0.82))
+                        .foregroundStyle(Color.scoutOnImageTextSoft)
 
                     Text("Sophie 27")
                         .font(.scoutDisplayCompact)
-                        .foregroundStyle(Color.white)
+                        .foregroundStyle(Color.scoutOnImageTextPrimary)
 
-                    HStack(spacing: ScoutSpacing.sm) {
+                    HStack(spacing: ScoutLayout.Spacing.sm) {
                         GlassChip(title: "4.7 Competitive")
                         GlassChip(title: "Reliable")
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             } bottom: {
-                VStack(spacing: ScoutSpacing.xl) {
-                    HStack(spacing: ScoutSpacing.md) {
+                VStack(spacing: ScoutLayout.Spacing.xl) {
+                    HStack(spacing: ScoutLayout.Spacing.md) {
                         ScoutStatTile(title: "Skill", value: "4.3")
                         ScoutStatTile(title: "Matches", value: "38")
                         ScoutStatTile(title: "Win Rate", value: "71%")
                     }
-                    .padding(.horizontal, ScoutSpacing.lg)
-                    .padding(.top, ScoutSpacing.xl)
+                    .padding(.horizontal, ScoutLayout.Spacing.lg)
+                    .padding(.top, ScoutLayout.Spacing.xl)
 
                     ScoutActionDock()
-                        .padding(.horizontal, ScoutSpacing.lg)
-                        .padding(.bottom, ScoutSpacing.xl)
+                        .padding(.horizontal, ScoutLayout.Spacing.lg)
+                        .padding(.bottom, ScoutLayout.Spacing.xl)
                 }
             }
             .tabItem { Text("Hero") }

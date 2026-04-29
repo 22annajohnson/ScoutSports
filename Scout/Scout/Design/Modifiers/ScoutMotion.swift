@@ -31,8 +31,8 @@ struct ScoutPulseHighlight: ViewModifier {
         content
             .overlay {
                 if isActive {
-                    RoundedRectangle(cornerRadius: ScoutRadius.lg, style: .continuous)
-                        .stroke(Color.white.opacity(0.14), lineWidth: 1)
+                    RoundedRectangle(cornerRadius: ScoutLayout.Radius.lg, style: .continuous)
+                        .stroke(Color.scoutOnImageStrokeSoft, lineWidth: 1)
                         .blur(radius: 2)
                         .transition(.opacity)
                 }
