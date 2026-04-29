@@ -32,8 +32,8 @@ struct PlayerSwipeScrollView: View {
     var body: some View {
         SwipeCardOverlayScrollLayout {
             PlayerBackgroundView(imageURL: viewModel.heroImageURL, color: accent)
-        } topBar: {
-            heroTopBar
+        } topBar: { mergeProgress in
+            heroTopBar(mergeProgress: mergeProgress)
         } content: {
             VStack(spacing: ScoutSpacing.lg) {
                 identityPanel
@@ -50,10 +50,14 @@ struct PlayerSwipeScrollView: View {
         }
     }
 
-    private var heroTopBar: some View {
+    @ViewBuilder
+    private func heroTopBar(mergeProgress: CGFloat) -> some View {
         SwipeHeroTopBar(
-            title: viewModel.screenTitle,
-            distance: viewModel.distanceLabel
+            model: .init(
+                title: viewModel.screenTitle,
+                distance: viewModel.distanceLabel
+            ),
+            mergeProgress: mergeProgress
         )
     }
 

@@ -25,19 +25,15 @@ struct SwipeDeckView: View {
                     let dx = interaction.dragOffset.width
                     let progress = interaction.swipeProgress
                     let side = interaction.overlaySide
+                    let backgroundPresentation = interaction.backgroundCardPresentation
 
                     // NEXT card underneath (full-screen, becomes clear as progress -> 1)
                     if let nextModel {
-                        // Ease so it stays blurrier early and clears as you commit
-                        let eased = pow(progress, 0.9)
-                        let blurRadius = max(0, 18 * (1 - eased))
-                        let dimOpacity = 0.10 * (1 - eased)
-
                         PlayerSwipeScrollView(model: nextModel)
                             .id(nextModel.id)
                             .scrollDisabled(true)
-                            .blur(radius: blurRadius)
-                            .overlay(Color.black.opacity(dimOpacity).allowsHitTesting(false))
+                            .blur(radius: backgroundPresentation.blurRadius)
+                            .overlay(Color.black.opacity(backgroundPresentation.dimOpacity).allowsHitTesting(false))
                             .animation(.easeOut(duration: 0.12), value: progress)
                             .zIndex(0)
                     }
