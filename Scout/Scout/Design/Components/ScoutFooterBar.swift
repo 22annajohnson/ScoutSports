@@ -15,12 +15,12 @@ struct ScoutFooterBar<Content: View>: View {
     }
 
     var body: some View {
-        HStack(spacing: ScoutSpacing.md) {
+        HStack(spacing: ScoutLayout.Spacing.md) {
             content
         }
-        .padding(.horizontal, ScoutSpacing.lg)
-        .padding(.top, ScoutSpacing.md)
-        .padding(.bottom, ScoutSpacing.lg)
+        .padding(.horizontal, ScoutLayout.Spacing.lg)
+        .padding(.top, ScoutLayout.Spacing.md)
+        .padding(.bottom, ScoutLayout.Spacing.lg)
         .background(
             Rectangle()
                 .fill(Color.scoutGlassFill)

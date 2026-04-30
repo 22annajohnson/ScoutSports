@@ -22,8 +22,8 @@ struct ScoutStateCard: View {
 
     var body: some View {
         GlassCard {
-            VStack(alignment: .leading, spacing: ScoutSpacing.md) {
-                HStack(spacing: ScoutSpacing.md) {
+            VStack(alignment: .leading, spacing: ScoutLayout.Spacing.md) {
+                HStack(spacing: ScoutLayout.Spacing.md) {
                     stateIcon
                         .frame(width: 44, height: 44)
                         .background(
@@ -31,7 +31,7 @@ struct ScoutStateCard: View {
                                 .fill(Color.scoutSurfaceElevated)
                         )
 
-                    VStack(alignment: .leading, spacing: ScoutSpacing.xxs) {
+                    VStack(alignment: .leading, spacing: ScoutLayout.Spacing.xxs) {
                         Text(title)
                             .font(.scoutSectionTitle)
                             .foregroundStyle(Color.scoutTextPrimary)
@@ -75,7 +75,7 @@ struct ScoutStateCard: View {
     ZStack {
         ScoutTheme.screenBackground.ignoresSafeArea()
 
-        VStack(spacing: ScoutSpacing.md) {
+        VStack(spacing: ScoutLayout.Spacing.md) {
             ScoutStateCard(
                 state: .loading,
                 title: "Loading matches",

@@ -15,8 +15,8 @@ struct SwipeCardIdentitySection: View {
     }
 
     var body: some View {
-        GlassCard(padding: ScoutSpacing.lg) {
-            VStack(alignment: .leading, spacing: ScoutSpacing.md) {
+        GlassCard(padding: ScoutLayout.Spacing.lg) {
+            VStack(alignment: .leading, spacing: ScoutLayout.Spacing.md) {
                 header
                 bodyCopy
 
@@ -33,8 +33,8 @@ struct SwipeCardIdentitySection: View {
     }
 
     private var header: some View {
-        HStack(alignment: .top, spacing: ScoutSpacing.lg) {
-            VStack(alignment: .leading, spacing: ScoutSpacing.md) {
+        HStack(alignment: .top, spacing: ScoutLayout.Spacing.lg) {
+            VStack(alignment: .leading, spacing: ScoutLayout.Spacing.md) {
                 intentChip
                 nameRow
             }
@@ -45,10 +45,10 @@ struct SwipeCardIdentitySection: View {
     }
 
     private var nameRow: some View {
-        HStack(alignment: .firstTextBaseline, spacing: ScoutSpacing.xs) {
+        HStack(alignment: .firstTextBaseline, spacing: ScoutLayout.Spacing.xs) {
             Text(model.name)
                 .font(.scoutDisplayCompact)
-                .foregroundStyle(Color.white)
+                .foregroundStyle(Color.scoutOnImageTextPrimary)
                 .lineLimit(1)
                 .minimumScaleFactor(0.72)
 
@@ -63,7 +63,7 @@ struct SwipeCardIdentitySection: View {
     }
 
     private var intentChip: some View {
-        HStack(spacing: ScoutSpacing.sm) {
+        HStack(spacing: ScoutLayout.Spacing.sm) {
             Circle()
                 .fill(Color.scoutAccentEnd)
                 .frame(width: 9, height: 9)
@@ -74,8 +74,8 @@ struct SwipeCardIdentitySection: View {
                 .lineLimit(1)
                 .minimumScaleFactor(0.84)
         }
-        .padding(.horizontal, ScoutSpacing.md)
-        .padding(.vertical, ScoutSpacing.xs)
+        .padding(.horizontal, ScoutLayout.Spacing.md)
+        .padding(.vertical, ScoutLayout.Spacing.xs)
         .background(
             Capsule()
                 .fill(Color.scoutAccentEnd.opacity(0.16))
@@ -83,12 +83,13 @@ struct SwipeCardIdentitySection: View {
         )
         .overlay(
             Capsule()
-                .stroke(Color.scoutAccentEnd.opacity(0.28), lineWidth: ScoutStroke.hairline)
+                .stroke(Color.scoutAccentStart.opacity(0.24), lineWidth: ScoutLayout.Stroke.hairline)
+                .stroke(Color.scoutAccentEnd.opacity(0.28), lineWidth: ScoutLayout.Stroke.hairline)
         )
     }
 
     private var scoreCapsule: some View {
-        VStack(spacing: ScoutSpacing.xs) {
+        VStack(spacing: ScoutLayout.Spacing.xs) {
             Text("OVERALL")
                 .font(.scoutMicro)
                 .tracking(4)
@@ -97,29 +98,29 @@ struct SwipeCardIdentitySection: View {
 
             Text("\(model.score)")
                 .font(.scoutNumberL)
-                .foregroundStyle(Color.white)
+                .foregroundStyle(Color.scoutOnImageTextPrimary)
                 .lineLimit(1)
                 .minimumScaleFactor(0.82)
         }
         .frame(width: 108)
         .frame(minHeight: 88)
         .background(
-            RoundedRectangle(cornerRadius: ScoutRadius.lg, style: .continuous)
+            RoundedRectangle(cornerRadius: ScoutLayout.Radius.lg, style: .continuous)
                 .fill(Color.scoutSwipeOverlaySurface)
-                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: ScoutRadius.lg, style: .continuous))
+                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: ScoutLayout.Radius.lg, style: .continuous))
         )
         .overlay(
-            RoundedRectangle(cornerRadius: ScoutRadius.lg, style: .continuous)
-                .stroke(Color.scoutSwipeOverlayStroke, lineWidth: ScoutStroke.hairline)
+            RoundedRectangle(cornerRadius: ScoutLayout.Radius.lg, style: .continuous)
+                .stroke(Color.scoutSwipeOverlayStroke, lineWidth: ScoutLayout.Stroke.hairline)
         )
     }
 
     private var bodyCopy: some View {
-        VStack(alignment: .leading, spacing: ScoutSpacing.xs) {
+        VStack(alignment: .leading, spacing: ScoutLayout.Spacing.xs) {
             ForEach(Array(model.summaryLines.prefix(3).enumerated()), id: \.offset) { _, line in
                 Text(line)
                     .font(.scoutBody)
-                    .foregroundStyle(Color.white.opacity(0.9))
+                    .foregroundStyle(Color.scoutOnImageTextMuted)
                     .fixedSize(horizontal: false, vertical: true)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -128,7 +129,7 @@ struct SwipeCardIdentitySection: View {
     }
 
     private var compactHighlights: some View {
-        HStack(alignment: .top, spacing: ScoutSpacing.sm) {
+        HStack(alignment: .top, spacing: ScoutLayout.Spacing.sm) {
             ForEach(model.highlights) { tile in
                 compactHighlightCard(tile)
             }

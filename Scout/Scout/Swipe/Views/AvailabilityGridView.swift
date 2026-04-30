@@ -27,8 +27,8 @@ struct AvailabilityGridDemo: View {
                     .font(.scoutPill)
                     .padding(.vertical, 8)
                     .padding(.horizontal, 12)
-                    .background(slot.state == .overlap ? accent : Color.gray.opacity(0.25))
-                    .foregroundStyle(slot.state == .overlap ? .white : .primary)
+                    .background(slot.state == .overlap ? accent : Color.scoutSwipeOverlayTrack.opacity(0.25))
+                    .foregroundStyle(slot.state == .overlap ? Color.scoutOnImageTextPrimary : Color.scoutTextPrimary)
                     .clipShape(Capsule())
             }
         }

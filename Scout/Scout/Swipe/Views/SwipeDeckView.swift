@@ -33,7 +33,7 @@ struct SwipeDeckView: View {
                             .id(nextModel.id)
                             .scrollDisabled(true)
                             .blur(radius: backgroundPresentation.blurRadius)
-                            .overlay(Color.black.opacity(backgroundPresentation.dimOpacity).allowsHitTesting(false))
+                            .overlay(Color.scoutBackground.opacity(backgroundPresentation.dimOpacity).allowsHitTesting(false))
                             .animation(.easeOut(duration: 0.12), value: progress)
                             .zIndex(0)
                     }
@@ -66,7 +66,7 @@ struct SwipeDeckView: View {
                         SwipeArcOverlay(
                             side: side,
                             progress: progress,
-                            color: side == .left ? Color.scout : Color.gray,
+                            color: side == .left ? Color.scoutAccentEnd : Color.scoutTextSecondary,
                             title: side == .right ? "NEXT TIME" : "MATCH"
                         )
                         .allowsHitTesting(false)
@@ -79,7 +79,7 @@ struct SwipeDeckView: View {
                     Text("No more players")
                         .font(.title.bold())
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .background(Color(.systemBackground))
+                        .background(Color.scoutBackground)
                 }
             }
         }
@@ -89,7 +89,7 @@ struct SwipeDeckView: View {
         .fullScreenCover(item: $interaction.matchPresentation) { matchPresentation in
                 MatchView(
                     model: matchPresentation,
-                    accent: Color.scout,
+                    accent: Color.scoutAccentEnd,
                     onProposeTime: {},
                     onSendMessage: {}
                 )

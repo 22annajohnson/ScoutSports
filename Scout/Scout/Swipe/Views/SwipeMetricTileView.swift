@@ -27,7 +27,7 @@ struct SwipeMetricTileView: View {
 
             Text(tile.value)
                 .font(.scoutNumberL)
-                .foregroundStyle(Color.white)
+                .foregroundStyle(Color.scoutOnImageTextPrimary)
                 .lineLimit(1)
                 .minimumScaleFactor(0.72)
 
@@ -46,31 +46,31 @@ struct SwipeMetricTileView: View {
         .frame(maxWidth: .infinity, minHeight: minimumHeight, alignment: .leading)
         .modifier(SwipeMetricTileLayout(style: style))
         .background(
-            RoundedRectangle(cornerRadius: ScoutRadius.lg, style: .continuous)
+            RoundedRectangle(cornerRadius: ScoutLayout.Radius.lg, style: .continuous)
                 .fill(Color.scoutSwipeOverlaySurface)
-                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: ScoutRadius.lg, style: .continuous))
+                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: ScoutLayout.Radius.lg, style: .continuous))
         )
         .overlay(
-            RoundedRectangle(cornerRadius: ScoutRadius.lg, style: .continuous)
-                .stroke(Color.scoutSwipeOverlayStroke, lineWidth: ScoutStroke.hairline)
+            RoundedRectangle(cornerRadius: ScoutLayout.Radius.lg, style: .continuous)
+                .stroke(Color.scoutSwipeOverlayStroke, lineWidth: ScoutLayout.Stroke.hairline)
         )
     }
 
     private var metricSpacing: CGFloat {
         switch style {
         case .compactSquare:
-            return ScoutSpacing.md
+            return ScoutLayout.Spacing.md
         case .featureBand:
-            return ScoutSpacing.lg
+            return ScoutLayout.Spacing.lg
         }
     }
 
     private var tilePadding: CGFloat {
         switch style {
         case .compactSquare:
-            return ScoutSpacing.md
+            return ScoutLayout.Spacing.md
         case .featureBand:
-            return ScoutSpacing.lg
+            return ScoutLayout.Spacing.lg
         }
     }
 

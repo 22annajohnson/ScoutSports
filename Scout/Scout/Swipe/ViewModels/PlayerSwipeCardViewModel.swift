@@ -44,22 +44,26 @@ struct PlayerSwipeCardViewModel {
     }
 
     private static func makeBestOverlapSection() -> SwipeBestOverlapTeaser.Model {
-        .init(
+        let barData: [(String, CGFloat)] = [
+            ("M", 0.42),
+            ("T", 0.14),
+            ("W", 0.26),
+            ("T", 0.86),
+            ("F", 0.72),
+            ("S", 0.12),
+            ("S", 0.36)
+        ]
+
+        return .init(
             title: "Best Overlap",
             tags: [
                 SwipeCardTagItem(title: "Competitive"),
                 SwipeCardTagItem(title: "Late Night")
             ],
             value: "92%",
-            bars: [
-                SwipeOverlapBar(label: "M", value: 0.42),
-                SwipeOverlapBar(label: "T", value: 0.14),
-                SwipeOverlapBar(label: "W", value: 0.26),
-                SwipeOverlapBar(label: "T", value: 0.86),
-                SwipeOverlapBar(label: "F", value: 0.72),
-                SwipeOverlapBar(label: "S", value: 0.12),
-                SwipeOverlapBar(label: "S", value: 0.36)
-            ]
+            bars: barData.enumerated().map { index, bar in
+                SwipeOverlapBar(label: bar.0, value: bar.1, position: index)
+            }
         )
     }
 

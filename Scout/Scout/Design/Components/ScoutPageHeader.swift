@@ -26,8 +26,8 @@ struct ScoutPageHeader<Trailing: View>: View {
     }
 
     var body: some View {
-        HStack(alignment: .top, spacing: ScoutSpacing.md) {
-            VStack(alignment: .leading, spacing: ScoutSpacing.sm) {
+        HStack(alignment: .top, spacing: ScoutLayout.Spacing.md) {
+            VStack(alignment: .leading, spacing: ScoutLayout.Spacing.sm) {
                 if let eyebrow {
                     Text(eyebrow.uppercased())
                         .font(.scoutLabelCaps)

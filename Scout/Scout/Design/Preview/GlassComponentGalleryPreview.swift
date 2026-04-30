@@ -10,7 +10,7 @@ import SwiftUI
 private struct GlassComponentGalleryPreview: View {
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: ScoutSpacing.xl) {
+            VStack(alignment: .leading, spacing: ScoutLayout.Spacing.xl) {
                 Text("COMPONENT KIT")
                     .font(.scoutLabelCaps)
                     .tracking(3)
@@ -20,13 +20,13 @@ private struct GlassComponentGalleryPreview: View {
                     .font(.scoutDisplayCompact)
                     .foregroundStyle(Color.scoutTextPrimary)
 
-                HStack(spacing: ScoutSpacing.sm) {
+                HStack(spacing: ScoutLayout.Spacing.sm) {
                     GlassChip(title: "2.1 mi away")
                     GlassChip(title: "92 Match", style: .accent)
                 }
 
                 GlassCard {
-                    VStack(alignment: .leading, spacing: ScoutSpacing.md) {
+                    VStack(alignment: .leading, spacing: ScoutLayout.Spacing.md) {
                         HStack {
                             Text("How you show up")
                                 .font(.scoutSectionTitle)
@@ -40,12 +40,12 @@ private struct GlassComponentGalleryPreview: View {
                     }
                 }
 
-                HStack(spacing: ScoutSpacing.md) {
+                HStack(spacing: ScoutLayout.Spacing.md) {
                     ScoutStatTile(title: "Skill", value: "4.3")
                     ScoutStatTile(title: "Win Rate", value: "71%")
                 }
 
-                VStack(spacing: ScoutSpacing.md) {
+                VStack(spacing: ScoutLayout.Spacing.md) {
                     Button("Continue") {}
                         .buttonStyle(ScoutPrimaryButtonStyle())
 
@@ -55,7 +55,7 @@ private struct GlassComponentGalleryPreview: View {
 
                 ScoutActionDock()
             }
-            .padding(ScoutSpacing.xl)
+            .padding(ScoutLayout.Spacing.xl)
         }
         .background(ScoutTheme.screenBackground.ignoresSafeArea())
     }

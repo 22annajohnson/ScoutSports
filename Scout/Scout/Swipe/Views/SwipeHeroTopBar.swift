@@ -15,7 +15,7 @@ struct SwipeHeroTopBar: View {
     }
 
     private var brandAccent: Color {
-        Color.white.opacity(0.92)
+        Color.scoutAccentEnd.opacity(0.96)
     }
 
     init(
@@ -57,17 +57,17 @@ struct SwipeHeroTopBar: View {
     }
 
     private var expandedHeader: some View {
-        VStack(alignment: .leading, spacing: ScoutSpacing.lg) {
-            VStack(alignment: .leading, spacing: ScoutSpacing.xs) {
+        VStack(alignment: .leading, spacing: ScoutLayout.Spacing.lg) {
+            VStack(alignment: .leading, spacing: ScoutLayout.Spacing.xs) {
                 Text("SCOUT")
                     .font(.scoutMicro)
                     .tracking(5)
                     .foregroundStyle(brandAccent)
-                    .shadow(color: Color.black.opacity(0.28), radius: 10, y: 2)
+                    .shadow(color: Color.scoutScrimStrong, radius: 10, y: 2)
 
                 Text(viewModel.model.title)
                     .font(.scoutHeroTitle)
-                    .foregroundStyle(Color.white)
+                    .foregroundStyle(Color.scoutOnImageTextPrimary)
                     .lineLimit(2)
                     .minimumScaleFactor(0.78)
             }
@@ -78,7 +78,7 @@ struct SwipeHeroTopBar: View {
 
     private var compactHeader: some View {
         SwipeCompactHeaderCard {
-            HStack(alignment: .center, spacing: ScoutSpacing.md) {
+            HStack(alignment: .center, spacing: ScoutLayout.Spacing.md) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("SCOUT")
                         .font(.scoutMicro)
@@ -87,13 +87,13 @@ struct SwipeHeroTopBar: View {
 
                     Text(viewModel.model.title)
                         .font(.scoutSectionTitle)
-                        .foregroundStyle(Color.white)
+                        .foregroundStyle(Color.scoutOnImageTextPrimary)
                         .lineLimit(1)
                         .minimumScaleFactor(0.72)
                         .layoutPriority(1)
                 }
 
-                Spacer(minLength: ScoutSpacing.sm)
+                Spacer(minLength: ScoutLayout.Spacing.sm)
 
                 metaPill(viewModel.model.distance, systemImage: "location")
                     .fixedSize(horizontal: true, vertical: false)
@@ -102,27 +102,27 @@ struct SwipeHeroTopBar: View {
     }
 
     private func metaPill(_ title: String, systemImage: String) -> some View {
-        HStack(spacing: ScoutSpacing.sm) {
+        HStack(spacing: ScoutLayout.Spacing.sm) {
             Image(systemName: systemImage)
                 .font(.system(size: 12, weight: .semibold))
                 .foregroundStyle(readableAccent)
 
             Text(title)
                 .font(.scoutCallout)
-                .foregroundStyle(Color.white.opacity(0.94))
+                .foregroundStyle(Color.scoutOnImageTextSecondary)
                 .lineLimit(1)
                 .minimumScaleFactor(0.88)
         }
-        .padding(.horizontal, ScoutSpacing.md)
-        .padding(.vertical, ScoutSpacing.sm)
+        .padding(.horizontal, ScoutLayout.Spacing.md)
+        .padding(.vertical, ScoutLayout.Spacing.sm)
         .background(
             Capsule()
-                .fill(Color.black.opacity(0.28))
+                .fill(Color.scoutScrimStrong)
                 .background(.ultraThinMaterial, in: Capsule())
         )
         .overlay(
             Capsule()
-                .stroke(Color.white.opacity(0.14), lineWidth: ScoutStroke.hairline)
+                .stroke(Color.scoutOnImageStrokeSoft, lineWidth: ScoutLayout.Stroke.hairline)
         )
     }
 }

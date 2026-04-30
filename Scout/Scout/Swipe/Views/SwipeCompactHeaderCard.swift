@@ -16,21 +16,21 @@ struct SwipeCompactHeaderCard<Content: View>: View {
 
     var body: some View {
         content
-            .padding(.horizontal, ScoutSpacing.md)
-            .padding(.vertical, ScoutSpacing.sm)
+            .padding(.horizontal, ScoutLayout.Spacing.md)
+            .padding(.vertical, ScoutLayout.Spacing.sm)
             .background(background)
             .overlay(stroke)
-            .shadow(color: Color.black.opacity(0.12), radius: 16, y: 8)
+            .shadow(color: Color.scoutShadowSoft, radius: 16, y: 8)
     }
 
     private var background: some View {
-        RoundedRectangle(cornerRadius: ScoutRadius.xl, style: .continuous)
+        RoundedRectangle(cornerRadius: ScoutLayout.Radius.xl, style: .continuous)
             .fill(Color.scoutGlassFill)
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: ScoutRadius.xl, style: .continuous))
+            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: ScoutLayout.Radius.xl, style: .continuous))
     }
 
     private var stroke: some View {
-        RoundedRectangle(cornerRadius: ScoutRadius.xl, style: .continuous)
-            .stroke(Color.scoutGlassStroke, lineWidth: ScoutStroke.hairline)
+        RoundedRectangle(cornerRadius: ScoutLayout.Radius.xl, style: .continuous)
+            .stroke(Color.scoutGlassStroke, lineWidth: ScoutLayout.Stroke.hairline)
     }
 }

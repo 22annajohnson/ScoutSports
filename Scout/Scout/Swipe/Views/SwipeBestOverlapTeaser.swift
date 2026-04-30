@@ -12,15 +12,15 @@ struct SwipeBestOverlapTeaser: View {
 
     private var bodyContent: some View {
         ViewThatFits(in: .horizontal) {
-            HStack(alignment: .bottom, spacing: ScoutSpacing.lg) {
+            HStack(alignment: .bottom, spacing: ScoutLayout.Spacing.lg) {
                 tagRow
 
-                Spacer(minLength: ScoutSpacing.md)
+                Spacer(minLength: ScoutLayout.Spacing.md)
 
                 scoreValue
             }
 
-            VStack(alignment: .leading, spacing: ScoutSpacing.lg) {
+            VStack(alignment: .leading, spacing: ScoutLayout.Spacing.lg) {
                 tagRow
                 scoreValue
             }
@@ -28,8 +28,8 @@ struct SwipeBestOverlapTeaser: View {
     }
 
     var body: some View {
-        GlassCard(padding: ScoutSpacing.xl) {
-            VStack(alignment: .leading, spacing: ScoutSpacing.lg) {
+        GlassCard(padding: ScoutLayout.Spacing.xl) {
+            VStack(alignment: .leading, spacing: ScoutLayout.Spacing.lg) {
                 Text(model.title.uppercased())
                     .font(.scoutLabelCaps)
                     .tracking(6)
@@ -44,7 +44,7 @@ struct SwipeBestOverlapTeaser: View {
     }
 
     private var tagRow: some View {
-        HStack(spacing: ScoutSpacing.md) {
+        HStack(spacing: ScoutLayout.Spacing.md) {
             ForEach(model.tags) { tag in
                 SwipeTagPill(item: tag)
             }
@@ -57,22 +57,22 @@ struct SwipeBestOverlapTeaser: View {
             .foregroundStyle(Color.scoutTextPrimary)
             .lineLimit(1)
             .minimumScaleFactor(0.82)
-            .shadow(color: Color.black.opacity(0.2), radius: 12, y: 3)
+            .shadow(color: Color.scoutShadowSoft, radius: 12, y: 3)
     }
 
     private var overlapChart: some View {
-        HStack(alignment: .bottom, spacing: ScoutSpacing.md) {
+        HStack(alignment: .bottom, spacing: ScoutLayout.Spacing.md) {
             ForEach(model.bars) { bar in
-                VStack(spacing: ScoutSpacing.sm) {
-                    RoundedRectangle(cornerRadius: ScoutRadius.sm, style: .continuous)
+                VStack(spacing: ScoutLayout.Spacing.sm) {
+                    RoundedRectangle(cornerRadius: ScoutLayout.Radius.sm, style: .continuous)
                         .fill(Color.scoutSwipeOverlayTrack.opacity(0.45))
                         .frame(height: 86)
                         .overlay(alignment: .bottom) {
-                            RoundedRectangle(cornerRadius: ScoutRadius.sm, style: .continuous)
+                            RoundedRectangle(cornerRadius: ScoutLayout.Radius.sm, style: .continuous)
                                 .fill(ScoutTheme.accentGradient)
                                 .frame(height: max(12, 72 * bar.value))
-                                .padding(.horizontal, ScoutSpacing.xxs)
-                                .padding(.bottom, ScoutSpacing.xxs)
+                                .padding(.horizontal, ScoutLayout.Spacing.xxs)
+                                .padding(.bottom, ScoutLayout.Spacing.xxs)
                         }
 
                     Text(bar.label)
@@ -98,6 +98,16 @@ extension SwipeBestOverlapTeaser {
     ZStack {
         ScoutTheme.screenBackground.ignoresSafeArea()
 
+        let previewBars: [(String, CGFloat)] = [
+            ("M", 0.42),
+            ("T", 0.14),
+            ("W", 0.26),
+            ("T", 0.86),
+            ("F", 0.72),
+            ("S", 0.12),
+            ("S", 0.36)
+        ]
+
         SwipeBestOverlapTeaser(
             model: .init(
                 title: "Best Overlap",
@@ -106,15 +116,9 @@ extension SwipeBestOverlapTeaser {
                     SwipeCardTagItem(title: "Late Night")
                 ],
                 value: "92%",
-                bars: [
-                    SwipeOverlapBar(label: "M", value: 0.42),
-                    SwipeOverlapBar(label: "T", value: 0.14),
-                    SwipeOverlapBar(label: "W", value: 0.26),
-                    SwipeOverlapBar(label: "T", value: 0.86),
-                    SwipeOverlapBar(label: "F", value: 0.72),
-                    SwipeOverlapBar(label: "S", value: 0.12),
-                    SwipeOverlapBar(label: "S", value: 0.36)
-                ]
+                bars: previewBars.enumerated().map { index, bar in
+                    SwipeOverlapBar(label: bar.0, value: bar.1, position: index)
+                }
             )
         )
         .padding()

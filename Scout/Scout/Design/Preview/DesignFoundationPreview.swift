@@ -10,19 +10,19 @@ import SwiftUI
 private struct DesignFoundationPreview: View {
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: ScoutSpacing.xl) {
+            VStack(alignment: .leading, spacing: ScoutLayout.Spacing.xl) {
                 titleBlock
                 colorSection
                 typeSection
                 spacingSection
             }
-            .padding(ScoutSpacing.xl)
+            .padding(ScoutLayout.Spacing.xl)
         }
         .background(ScoutTheme.screenBackground.ignoresSafeArea())
     }
 
     private var titleBlock: some View {
-        VStack(alignment: .leading, spacing: ScoutSpacing.sm) {
+        VStack(alignment: .leading, spacing: ScoutLayout.Spacing.sm) {
             Text("SCOUT DESIGN")
                 .font(.scoutLabelCaps)
                 .tracking(3)
@@ -41,25 +41,25 @@ private struct DesignFoundationPreview: View {
                 .frame(width: 140, height: 10)
                 .overlay {
                     Capsule()
-                        .stroke(Color.scoutGlassStroke, lineWidth: ScoutStroke.hairline)
+                        .stroke(Color.scoutGlassStroke, lineWidth: ScoutLayout.Stroke.hairline)
                 }
         }
-        .padding(ScoutSpacing.lg)
+        .padding(ScoutLayout.Spacing.lg)
         .background(
-            RoundedRectangle(cornerRadius: ScoutRadius.lg, style: .continuous)
+            RoundedRectangle(cornerRadius: ScoutLayout.Radius.lg, style: .continuous)
                 .fill(Color.scoutGlassFill)
         )
         .overlay {
-            RoundedRectangle(cornerRadius: ScoutRadius.lg, style: .continuous)
-                .stroke(Color.scoutGlassStroke, lineWidth: ScoutStroke.hairline)
+            RoundedRectangle(cornerRadius: ScoutLayout.Radius.lg, style: .continuous)
+                .stroke(Color.scoutGlassStroke, lineWidth: ScoutLayout.Stroke.hairline)
         }
     }
 
     private var colorSection: some View {
-        VStack(alignment: .leading, spacing: ScoutSpacing.md) {
+        VStack(alignment: .leading, spacing: ScoutLayout.Spacing.md) {
             sectionLabel("Color Tokens")
 
-            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: ScoutSpacing.md) {
+            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: ScoutLayout.Spacing.md) {
                 colorSwatch(name: "Background", color: .scoutBackground)
                 colorSwatch(name: "Surface", color: .scoutSurface)
                 colorSwatch(name: "Glass Fill", color: .scoutGlassFill)
@@ -75,7 +75,7 @@ private struct DesignFoundationPreview: View {
     }
 
     private var typeSection: some View {
-        VStack(alignment: .leading, spacing: ScoutSpacing.md) {
+        VStack(alignment: .leading, spacing: ScoutLayout.Spacing.md) {
             sectionLabel("Type Scale")
 
             typeRow(name: "Display", sample: "Find your next match", font: .scoutDisplayCompact)
@@ -90,19 +90,19 @@ private struct DesignFoundationPreview: View {
     }
 
     private var spacingSection: some View {
-        VStack(alignment: .leading, spacing: ScoutSpacing.md) {
+        VStack(alignment: .leading, spacing: ScoutLayout.Spacing.md) {
             sectionLabel("Spacing + Radius")
 
-            HStack(alignment: .bottom, spacing: ScoutSpacing.md) {
-                spacingPill(label: "12", width: ScoutSpacing.sm * 6)
-                spacingPill(label: "16", width: ScoutSpacing.md * 6)
-                spacingPill(label: "24", width: ScoutSpacing.xl * 4)
+            HStack(alignment: .bottom, spacing: ScoutLayout.Spacing.md) {
+                spacingPill(label: "12", width: ScoutLayout.Spacing.sm * 6)
+                spacingPill(label: "16", width: ScoutLayout.Spacing.md * 6)
+                spacingPill(label: "24", width: ScoutLayout.Spacing.xl * 4)
             }
 
-            HStack(spacing: ScoutSpacing.md) {
-                radiusCard(label: "18", radius: ScoutRadius.md)
-                radiusCard(label: "24", radius: ScoutRadius.lg)
-                radiusCard(label: "32", radius: ScoutRadius.xl)
+            HStack(spacing: ScoutLayout.Spacing.md) {
+                radiusCard(label: "18", radius: ScoutLayout.Radius.md)
+                radiusCard(label: "24", radius: ScoutLayout.Radius.lg)
+                radiusCard(label: "32", radius: ScoutLayout.Radius.xl)
             }
         }
     }
@@ -115,32 +115,32 @@ private struct DesignFoundationPreview: View {
     }
 
     private func colorSwatch(name: String, color: Color) -> some View {
-        VStack(alignment: .leading, spacing: ScoutSpacing.sm) {
-            RoundedRectangle(cornerRadius: ScoutRadius.md, style: .continuous)
+        VStack(alignment: .leading, spacing: ScoutLayout.Spacing.sm) {
+            RoundedRectangle(cornerRadius: ScoutLayout.Radius.md, style: .continuous)
                 .fill(color)
                 .frame(height: 88)
                 .overlay {
-                    RoundedRectangle(cornerRadius: ScoutRadius.md, style: .continuous)
-                        .stroke(Color.scoutGlassStroke, lineWidth: ScoutStroke.hairline)
+                    RoundedRectangle(cornerRadius: ScoutLayout.Radius.md, style: .continuous)
+                        .stroke(Color.scoutGlassStroke, lineWidth: ScoutLayout.Stroke.hairline)
                 }
 
             Text(name)
                 .font(.scoutLabel)
                 .foregroundStyle(Color.scoutTextPrimary)
         }
-        .padding(ScoutSpacing.md)
+        .padding(ScoutLayout.Spacing.md)
         .background(
-            RoundedRectangle(cornerRadius: ScoutRadius.lg, style: .continuous)
+            RoundedRectangle(cornerRadius: ScoutLayout.Radius.lg, style: .continuous)
                 .fill(Color.scoutGlassFill)
         )
         .overlay {
-            RoundedRectangle(cornerRadius: ScoutRadius.lg, style: .continuous)
-                .stroke(Color.scoutGlassStroke, lineWidth: ScoutStroke.hairline)
+            RoundedRectangle(cornerRadius: ScoutLayout.Radius.lg, style: .continuous)
+                .stroke(Color.scoutGlassStroke, lineWidth: ScoutLayout.Stroke.hairline)
         }
     }
 
     private func typeRow(name: String, sample: String, font: Font) -> some View {
-        VStack(alignment: .leading, spacing: ScoutSpacing.xs) {
+        VStack(alignment: .leading, spacing: ScoutLayout.Spacing.xs) {
             Text(name.uppercased())
                 .font(.scoutMicro)
                 .tracking(2)
@@ -153,19 +153,19 @@ private struct DesignFoundationPreview: View {
                 .minimumScaleFactor(0.8)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(ScoutSpacing.md)
+        .padding(ScoutLayout.Spacing.md)
         .background(
-            RoundedRectangle(cornerRadius: ScoutRadius.md, style: .continuous)
+            RoundedRectangle(cornerRadius: ScoutLayout.Radius.md, style: .continuous)
                 .fill(Color.scoutGlassFill)
         )
         .overlay {
-            RoundedRectangle(cornerRadius: ScoutRadius.md, style: .continuous)
-                .stroke(Color.scoutGlassStroke, lineWidth: ScoutStroke.hairline)
+            RoundedRectangle(cornerRadius: ScoutLayout.Radius.md, style: .continuous)
+                .stroke(Color.scoutGlassStroke, lineWidth: ScoutLayout.Stroke.hairline)
         }
     }
 
     private func spacingPill(label: String, width: CGFloat) -> some View {
-        VStack(alignment: .leading, spacing: ScoutSpacing.xs) {
+        VStack(alignment: .leading, spacing: ScoutLayout.Spacing.xs) {
             Capsule()
                 .fill(ScoutTheme.accentGradient)
                 .frame(width: width, height: 18)
@@ -176,13 +176,13 @@ private struct DesignFoundationPreview: View {
     }
 
     private func radiusCard(label: String, radius: CGFloat) -> some View {
-        VStack(spacing: ScoutSpacing.sm) {
+        VStack(spacing: ScoutLayout.Spacing.sm) {
             RoundedRectangle(cornerRadius: radius, style: .continuous)
                 .fill(Color.scoutSurfaceElevated)
                 .frame(width: 88, height: 64)
                 .overlay {
                     RoundedRectangle(cornerRadius: radius, style: .continuous)
-                        .stroke(Color.scoutGlassStroke, lineWidth: ScoutStroke.hairline)
+                        .stroke(Color.scoutGlassStroke, lineWidth: ScoutLayout.Stroke.hairline)
                 }
 
             Text(label)

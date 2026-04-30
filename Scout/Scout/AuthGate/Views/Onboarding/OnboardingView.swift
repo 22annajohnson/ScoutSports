@@ -63,7 +63,7 @@ struct OnboardingView: View {
     // MARK: - Header / Footer
 
     private var header: some View {
-        VStack(alignment: .leading, spacing: ScoutSpacing.md) {
+        VStack(alignment: .leading, spacing: ScoutLayout.Spacing.md) {
             ScoutPageHeader(
                 eyebrow: "Onboarding",
                 title: headerTitle,
@@ -118,7 +118,7 @@ struct OnboardingView: View {
                 title: "Tell us about you",
                 subtitle: "This helps other people feel confident swiping and setting up a game."
             ) {
-                VStack(spacing: ScoutSpacing.md) {
+                VStack(spacing: ScoutLayout.Spacing.md) {
                     field(title: "Name") {
                         TextField("Your first name", text: $vm.form.name)
                             .textContentType(.name)
@@ -135,7 +135,7 @@ struct OnboardingView: View {
     }
 
     private var locationStep: some View {
-        VStack(spacing: ScoutSpacing.lg) {
+        VStack(spacing: ScoutLayout.Spacing.lg) {
             GlassCard {
                 ScoutSection(
                     eyebrow: "Nearby Matches",
@@ -148,7 +148,7 @@ struct OnboardingView: View {
 
             GlassCard {
                 ScoutSection(title: "Permission") {
-                    VStack(alignment: .leading, spacing: ScoutSpacing.md) {
+                    VStack(alignment: .leading, spacing: ScoutLayout.Spacing.md) {
                         Button {
                             vm.requestLocation()
                         } label: {
@@ -174,7 +174,7 @@ struct OnboardingView: View {
                 title: "Choose a sport",
                 subtitle: "We’re starting with pickleball. More sports are coming soon."
             ) {
-                VStack(spacing: ScoutSpacing.md) {
+                VStack(spacing: ScoutLayout.Spacing.md) {
                     SportCard(
                         title: "Pickleball",
                         subtitle: "Available now",
@@ -198,14 +198,14 @@ struct OnboardingView: View {
     }
 
     private var photosStep: some View {
-        VStack(spacing: ScoutSpacing.lg) {
+        VStack(spacing: ScoutLayout.Spacing.lg) {
             GlassCard {
                 ScoutSection(
                     eyebrow: "Photos",
                     title: "Add a few photos",
                     subtitle: "Profiles with photos get more matches. Pick up to 3 for now."
                 ) {
-                    VStack(spacing: ScoutSpacing.md) {
+                    VStack(spacing: ScoutLayout.Spacing.md) {
                         Button {
                             // handled by PhotosPicker label below
                         } label: {
@@ -232,7 +232,7 @@ struct OnboardingView: View {
             GlassCard {
                 ScoutSection(title: "Selected Photos", subtitle: vm.photos.isEmpty ? "No photos selected yet." : "Your first photo will do the most work on your profile.") {
                     if vm.photos.isEmpty {
-                        HStack(spacing: ScoutSpacing.sm) {
+                        HStack(spacing: ScoutLayout.Spacing.sm) {
                             Image(systemName: "photo")
                                 .font(.system(size: 22, weight: .semibold))
                                 .foregroundStyle(Color.scoutTextSecondary)
@@ -242,15 +242,15 @@ struct OnboardingView: View {
                                 .foregroundStyle(Color.scoutTextSecondary)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.vertical, ScoutSpacing.sm)
+                        .padding(.vertical, ScoutLayout.Spacing.sm)
                     } else {
                         ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: ScoutSpacing.md) {
+                            HStack(spacing: ScoutLayout.Spacing.md) {
                                 ForEach(Array(vm.photos.enumerated()), id: \.offset) { index, img in
                                     photoPreview(image: img, index: index)
                                 }
                             }
-                            .padding(.vertical, ScoutSpacing.xs)
+                            .padding(.vertical, ScoutLayout.Spacing.xs)
                         }
                     }
                 }
@@ -272,7 +272,7 @@ struct OnboardingView: View {
         .frame(height: 10)
         .overlay {
             Capsule()
-                .stroke(Color.scoutGlassStroke, lineWidth: ScoutStroke.hairline)
+                .stroke(Color.scoutGlassStroke, lineWidth: ScoutLayout.Stroke.hairline)
         }
     }
 
@@ -307,7 +307,7 @@ struct OnboardingView: View {
     }
 
     private func field<Content: View>(title: String, @ViewBuilder content: () -> Content) -> some View {
-        VStack(alignment: .leading, spacing: ScoutSpacing.xs) {
+        VStack(alignment: .leading, spacing: ScoutLayout.Spacing.xs) {
             Text(title.uppercased())
                 .font(.scoutLabelCaps)
                 .tracking(2.5)
@@ -316,15 +316,15 @@ struct OnboardingView: View {
             content()
                 .font(.scoutBody)
                 .foregroundStyle(Color.scoutTextPrimary)
-                .padding(.horizontal, ScoutSpacing.md)
-                .padding(.vertical, ScoutSpacing.md)
+                .padding(.horizontal, ScoutLayout.Spacing.md)
+                .padding(.vertical, ScoutLayout.Spacing.md)
                 .background(
-                    RoundedRectangle(cornerRadius: ScoutRadius.md, style: .continuous)
+                    RoundedRectangle(cornerRadius: ScoutLayout.Radius.md, style: .continuous)
                         .fill(Color.scoutSurfaceElevated)
                 )
                 .overlay(
-                    RoundedRectangle(cornerRadius: ScoutRadius.md, style: .continuous)
-                        .stroke(Color.scoutGlassStroke, lineWidth: ScoutStroke.hairline)
+                    RoundedRectangle(cornerRadius: ScoutLayout.Radius.md, style: .continuous)
+                        .stroke(Color.scoutGlassStroke, lineWidth: ScoutLayout.Stroke.hairline)
                 )
         }
     }
@@ -334,14 +334,14 @@ struct OnboardingView: View {
             .resizable()
             .scaledToFill()
             .frame(width: 116, height: 150)
-            .clipShape(RoundedRectangle(cornerRadius: ScoutRadius.md, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: ScoutLayout.Radius.md, style: .continuous))
             .overlay(alignment: .bottomLeading) {
                 GlassChip(title: index == 0 ? "Primary" : "Photo \(index + 1)")
-                    .padding(ScoutSpacing.sm)
+                    .padding(ScoutLayout.Spacing.sm)
             }
             .overlay(
-                RoundedRectangle(cornerRadius: ScoutRadius.md, style: .continuous)
-                    .stroke(Color.scoutGlassStroke, lineWidth: ScoutStroke.hairline)
+                RoundedRectangle(cornerRadius: ScoutLayout.Radius.md, style: .continuous)
+                    .stroke(Color.scoutGlassStroke, lineWidth: ScoutLayout.Stroke.hairline)
             )
     }
 }

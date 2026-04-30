@@ -26,9 +26,9 @@ struct PlayerBackgroundView: View {
                             .overlay {
                                 LinearGradient(
                                     colors: [
-                                        Color.black.opacity(0.10),
+                                        Color.scoutImageOverlayTop,
                                         Color.clear,
-                                        Color.black.opacity(0.34)
+                                        Color.scoutImageOverlayBottom
                                     ],
                                     startPoint: .top,
                                     endPoint: .bottom
@@ -59,7 +59,7 @@ struct PlayerBackgroundView: View {
 
                 LinearGradient(
                     colors: [
-                        Color.black.opacity(0.18),
+                        Color.scoutScrimMedium,
                         Color.clear,
                         color.opacity(0.30)
                     ],

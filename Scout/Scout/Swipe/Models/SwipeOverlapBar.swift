@@ -12,9 +12,13 @@ struct SwipeOverlapBar: Identifiable {
     let label: String
     let value: CGFloat
 
-    init(label: String, value: CGFloat) {
-        self.id = label
+    init(id: String, label: String, value: CGFloat) {
+        self.id = id
         self.label = label
         self.value = value
+    }
+
+    init(label: String, value: CGFloat, position: Int) {
+        self.init(id: "\(label)-\(position)", label: label, value: value)
     }
 }

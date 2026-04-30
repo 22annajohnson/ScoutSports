@@ -12,9 +12,9 @@ struct SwipeCardTagCluster: View {
 
     var body: some View {
         LazyVGrid(
-            columns: [GridItem(.adaptive(minimum: 118), spacing: ScoutSpacing.sm)],
+            columns: [GridItem(.adaptive(minimum: 118), spacing: ScoutLayout.Spacing.sm)],
             alignment: .leading,
-            spacing: ScoutSpacing.sm
+            spacing: ScoutLayout.Spacing.sm
         ) {
             ForEach(tags) { tag in
                 SwipeTagPill(item: tag)

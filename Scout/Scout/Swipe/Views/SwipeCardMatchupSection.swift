@@ -14,24 +14,24 @@ struct SwipeCardMatchupSection: View {
 
     var body: some View {
         GlassCard {
-            VStack(alignment: .leading, spacing: ScoutSpacing.lg) {
+            VStack(alignment: .leading, spacing: ScoutLayout.Spacing.lg) {
                 ViewThatFits(in: .horizontal) {
-                    HStack(alignment: .firstTextBaseline, spacing: ScoutSpacing.md) {
+                    HStack(alignment: .firstTextBaseline, spacing: ScoutLayout.Spacing.md) {
                         scoreBlock
-                        Spacer(minLength: ScoutSpacing.md)
+                        Spacer(minLength: ScoutLayout.Spacing.md)
                         GlassChip(title: fitLabel, systemImage: "sparkles", style: .selected)
                     }
 
-                    VStack(alignment: .leading, spacing: ScoutSpacing.md) {
+                    VStack(alignment: .leading, spacing: ScoutLayout.Spacing.md) {
                         scoreBlock
                         GlassChip(title: fitLabel, systemImage: "sparkles", style: .selected)
                     }
                 }
 
                 LazyVGrid(
-                    columns: [GridItem(.adaptive(minimum: 132), spacing: ScoutSpacing.md)],
+                    columns: [GridItem(.adaptive(minimum: 132), spacing: ScoutLayout.Spacing.md)],
                     alignment: .leading,
-                    spacing: ScoutSpacing.md
+                    spacing: ScoutLayout.Spacing.md
                 ) {
                     ForEach(tiles) { tile in
                         summaryTile(tile)
@@ -42,7 +42,7 @@ struct SwipeCardMatchupSection: View {
     }
 
     private var scoreBlock: some View {
-        VStack(alignment: .leading, spacing: ScoutSpacing.xs) {
+        VStack(alignment: .leading, spacing: ScoutLayout.Spacing.xs) {
             Text("MATCHUP")
                 .font(.scoutLabelCaps)
                 .tracking(3)
@@ -57,7 +57,7 @@ struct SwipeCardMatchupSection: View {
     }
 
     private func summaryTile(_ tile: SwipeCardMatchupTile) -> some View {
-        VStack(alignment: .leading, spacing: ScoutSpacing.xxs) {
+        VStack(alignment: .leading, spacing: ScoutLayout.Spacing.xxs) {
             Text(tile.title.uppercased())
                 .font(.scoutMicro)
                 .tracking(1.5)
@@ -73,14 +73,14 @@ struct SwipeCardMatchupSection: View {
                 .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity, minHeight: 84, alignment: .leading)
-        .padding(ScoutSpacing.md)
+        .padding(ScoutLayout.Spacing.md)
         .background(
-            RoundedRectangle(cornerRadius: ScoutRadius.md, style: .continuous)
+            RoundedRectangle(cornerRadius: ScoutLayout.Radius.md, style: .continuous)
                 .fill(Color.scoutSurfaceElevated)
         )
         .overlay(
-            RoundedRectangle(cornerRadius: ScoutRadius.md, style: .continuous)
-                .stroke(Color.scoutGlassStroke, lineWidth: ScoutStroke.hairline)
+            RoundedRectangle(cornerRadius: ScoutLayout.Radius.md, style: .continuous)
+                .stroke(Color.scoutGlassStroke, lineWidth: ScoutLayout.Stroke.hairline)
         )
     }
 }

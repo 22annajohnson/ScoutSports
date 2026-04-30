@@ -22,12 +22,12 @@ struct ScoutPrimaryButtonStyle: ButtonStyle {
                 .foregroundStyle(Color.scoutTextOnAccent.opacity(isEnabled ? 1 : 0.82))
                 .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
                 .frame(maxWidth: .infinity)
-                .padding(.horizontal, ScoutSpacing.lg)
-                .padding(.vertical, ScoutSpacing.md)
+                .padding(.horizontal, ScoutLayout.Spacing.lg)
+                .padding(.vertical, ScoutLayout.Spacing.md)
                 .background(background(isPressed: configuration.isPressed))
                 .overlay(
                     Capsule()
-                        .stroke(Color.white.opacity(isEnabled ? 0.18 : 0.12), lineWidth: ScoutStroke.hairline)
+                        .stroke((isEnabled ? Color.scoutOnImageStroke : Color.scoutGlassHighlight), lineWidth: ScoutLayout.Stroke.hairline)
                 )
                 .scoutInteractiveScale(isPressed: isEnabled && configuration.isPressed)
                 .opacity(configuration.role == .destructive ? 0.92 : 1)
@@ -39,14 +39,14 @@ struct ScoutPrimaryButtonStyle: ButtonStyle {
                 .overlay {
                     if isPressed && isEnabled {
                         Capsule()
-                            .fill(Color.black.opacity(0.12))
+                            .fill(Color.scoutScrimSoft)
                     } else if !isEnabled {
                         Capsule()
-                            .fill(Color.black.opacity(0.28))
+                            .fill(Color.scoutScrimStrong)
                     }
                 }
                 .saturation(isEnabled ? 1 : 0.2)
-                .shadow(color: isEnabled ? ScoutShadow.glow : .clear, radius: 18, x: 0, y: 8)
+                .shadow(color: isEnabled ? Color.scoutShadowGlow : .clear, radius: 18, x: 0, y: 8)
         }
     }
 }
@@ -66,8 +66,8 @@ struct ScoutSecondaryGlassButtonStyle: ButtonStyle {
                 .foregroundStyle(Color.scoutTextPrimary.opacity(isEnabled ? 1 : 0.7))
                 .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
                 .frame(maxWidth: .infinity)
-                .padding(.horizontal, ScoutSpacing.lg)
-                .padding(.vertical, ScoutSpacing.md)
+                .padding(.horizontal, ScoutLayout.Spacing.lg)
+                .padding(.vertical, ScoutLayout.Spacing.md)
                 .background(
                     Capsule()
                         .fill(Color.scoutGlassFill.opacity(configuration.isPressed && isEnabled ? 0.82 : (isEnabled ? 1 : 0.65)))
@@ -75,7 +75,7 @@ struct ScoutSecondaryGlassButtonStyle: ButtonStyle {
                 )
                 .overlay(
                     Capsule()
-                        .stroke(Color.scoutGlassStroke.opacity(isEnabled ? 1 : 0.6), lineWidth: ScoutStroke.hairline)
+                        .stroke(Color.scoutGlassStroke.opacity(isEnabled ? 1 : 0.6), lineWidth: ScoutLayout.Stroke.hairline)
                 )
                 .scoutInteractiveScale(isPressed: isEnabled && configuration.isPressed)
                 .scoutPulseHighlight(isActive: isEnabled && configuration.isPressed)
@@ -87,7 +87,7 @@ struct ScoutSecondaryGlassButtonStyle: ButtonStyle {
     ZStack {
         ScoutTheme.screenBackground.ignoresSafeArea()
 
-        VStack(spacing: ScoutSpacing.md) {
+        VStack(spacing: ScoutLayout.Spacing.md) {
             Button("Next") {}
                 .buttonStyle(ScoutPrimaryButtonStyle())
 

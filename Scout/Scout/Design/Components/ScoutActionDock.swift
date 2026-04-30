@@ -23,7 +23,7 @@ struct ScoutActionDock: View {
     }
 
     var body: some View {
-        HStack(spacing: ScoutSpacing.lg) {
+        HStack(spacing: ScoutLayout.Spacing.lg) {
             actionButton(systemImage: "xmark", size: 68, action: onPass)
 
             Button(action: onBoost) {
@@ -37,16 +37,16 @@ struct ScoutActionDock: View {
                     )
                     .overlay(
                         Circle()
-                            .stroke(Color.white.opacity(0.18), lineWidth: ScoutStroke.hairline)
+                            .stroke(Color.scoutOnImageStroke, lineWidth: ScoutLayout.Stroke.hairline)
                     )
-                    .shadow(color: ScoutShadow.glow, radius: 22, x: 0, y: 10)
+                    .shadow(color: Color.scoutShadowGlow, radius: 22, x: 0, y: 10)
             }
             .buttonStyle(ScoutDockButtonStyle())
 
             actionButton(systemImage: "heart", size: 68, action: onLike)
         }
-        .padding(.horizontal, ScoutSpacing.xl)
-        .padding(.vertical, ScoutSpacing.md)
+        .padding(.horizontal, ScoutLayout.Spacing.xl)
+        .padding(.vertical, ScoutLayout.Spacing.md)
         .background(
             Capsule()
                 .fill(Color.scoutGlassFill)
@@ -54,9 +54,9 @@ struct ScoutActionDock: View {
         )
         .overlay(
             Capsule()
-                .stroke(Color.scoutGlassStroke, lineWidth: ScoutStroke.hairline)
+                .stroke(Color.scoutGlassStroke, lineWidth: ScoutLayout.Stroke.hairline)
         )
-        .shadow(color: Color.black.opacity(0.12), radius: 18, y: 10)
+        .shadow(color: Color.scoutShadowSoft, radius: ScoutLayout.Shadow.raisedRadius, y: ScoutLayout.Shadow.raisedY)
     }
 
     private func actionButton(systemImage: String, size: CGFloat, action: @escaping () -> Void) -> some View {
@@ -72,7 +72,7 @@ struct ScoutActionDock: View {
                 )
                 .overlay(
                     Circle()
-                        .stroke(Color.scoutSwipeOverlayStroke, lineWidth: ScoutStroke.hairline)
+                        .stroke(Color.scoutSwipeOverlayStroke, lineWidth: ScoutLayout.Stroke.hairline)
                 )
         }
         .buttonStyle(ScoutDockButtonStyle())

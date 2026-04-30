@@ -17,7 +17,7 @@ struct RatingsView: View {
                 title: "Player snapshot",
                 subtitle: "A quick look at how this player tends to show up in matches."
             ) {
-                VStack(spacing: ScoutSpacing.md) {
+                VStack(spacing: ScoutLayout.Spacing.md) {
                     ForEach(Array(stats.enumerated()), id: \.element.id) { index, stat in
                         ratingRow(for: stat)
 
@@ -33,8 +33,8 @@ struct RatingsView: View {
     }
 
     private func ratingRow(for stat: StatsViewModel) -> some View {
-        HStack(alignment: .center, spacing: ScoutSpacing.md) {
-            VStack(alignment: .leading, spacing: ScoutSpacing.xxs) {
+        HStack(alignment: .center, spacing: ScoutLayout.Spacing.md) {
+            VStack(alignment: .leading, spacing: ScoutLayout.Spacing.xxs) {
                 Text(getStatTypeString(stat.statType).uppercased())
                     .font(.scoutLabelCaps)
                     .tracking(2.5)
@@ -47,7 +47,7 @@ struct RatingsView: View {
 
             Spacer()
 
-            HStack(spacing: ScoutSpacing.xxs) {
+            HStack(spacing: ScoutLayout.Spacing.xxs) {
                 ForEach(0..<5, id: \.self) { index in
                     Image(systemName: index < stat.rating ? "star.fill" : "star")
                         .font(.system(size: 14, weight: .semibold))

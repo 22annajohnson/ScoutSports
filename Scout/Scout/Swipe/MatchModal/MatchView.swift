@@ -24,7 +24,7 @@ struct MatchView: View {
         ZStack {
             // Background
             LinearGradient(
-                colors: [accent.opacity(0.35), Color.black.opacity(0.95)],
+                colors: [accent.opacity(0.35), Color.scoutScrimModal],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
@@ -37,11 +37,11 @@ struct MatchView: View {
                 VStack(spacing: 10) {
                     Text("IT’S A MATCH!")
                         .font(.system(size: 34, weight: .black, design: .rounded))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Color.scoutOnImageTextPrimary)
 
                     Text("You and \(model.matchedUserName) both swiped right.")
                         .font(.system(size: 15, weight: .semibold))
-                        .foregroundStyle(.white.opacity(0.85))
+                        .foregroundStyle(Color.scoutOnImageTextSoft)
                         .multilineTextAlignment(.center)
                 }
                 .padding(.top, 10)
@@ -56,7 +56,7 @@ struct MatchView: View {
 
                     Image(systemName: "figure.pickleball")
                         .font(.system(size: 26, weight: .bold))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Color.scoutOnImageTextPrimary)
                         .padding(10)
                         .background(
                             Circle().fill(accent.opacity(0.95))
@@ -74,11 +74,11 @@ struct MatchView: View {
                 VStack(spacing: 6) {
                     Text("Propose a time to play")
                         .font(.system(size: 18, weight: .bold, design: .rounded))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Color.scoutOnImageTextPrimary)
 
                     Text("Pickleball, tonight? Or lock in a time this week.")
                         .font(.system(size: 14, weight: .medium))
-                        .foregroundStyle(.white.opacity(0.8))
+                        .foregroundStyle(Color.scoutOnImageTextSoft)
                         .multilineTextAlignment(.center)
                 }
                 .padding(.top, 10)
@@ -129,7 +129,7 @@ struct MatchView: View {
                 } label: {
                     Text("Keep Swiping")
                         .font(.system(size: 15, weight: .semibold))
-                        .foregroundStyle(.white.opacity(0.85))
+                        .foregroundStyle(Color.scoutOnImageTextSoft)
                         .padding(.vertical, 10)
                         .frame(maxWidth: .infinity)
                 }
@@ -147,9 +147,9 @@ struct MatchView: View {
                     } label: {
                         Image(systemName: "xmark")
                             .font(.system(size: 14, weight: .bold))
-                            .foregroundStyle(.white)
+                            .foregroundStyle(Color.scoutOnImageTextPrimary)
                             .padding(10)
-                            .background(Circle().fill(Color.white.opacity(0.12)))
+                            .background(Circle().fill(Color.scoutGlassHighlight))
                     }
                     .padding(.top, 14)
                     .padding(.trailing, 14)
@@ -188,7 +188,7 @@ private struct MatchAvatarView: View {
     var body: some View {
         ZStack {
             Circle()
-                .fill(Color.white.opacity(0.12))
+                .fill(Color.scoutGlassHighlight)
 
             if let imageURL {
                 AsyncImage(url: imageURL) { phase in
@@ -199,21 +199,21 @@ private struct MatchAvatarView: View {
                             .scaledToFill()
                     case .empty:
                         ProgressView()
-                            .tint(.white)
+                            .tint(Color.scoutOnImageTextPrimary)
                     case .failure:
                         Text(fallbackInitials)
                             .font(.system(size: 26, weight: .bold, design: .rounded))
-                            .foregroundStyle(.white)
+                            .foregroundStyle(Color.scoutOnImageTextPrimary)
                     @unknown default:
                         Text(fallbackInitials)
                             .font(.system(size: 26, weight: .bold, design: .rounded))
-                            .foregroundStyle(.white)
+                            .foregroundStyle(Color.scoutOnImageTextPrimary)
                     }
                 }
             } else {
                 Text(fallbackInitials)
                     .font(.system(size: 26, weight: .bold, design: .rounded))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Color.scoutOnImageTextPrimary)
             }
         }
         .frame(width: 112, height: 112)
@@ -221,7 +221,7 @@ private struct MatchAvatarView: View {
         .overlay(
             Circle().stroke(ringColor.opacity(0.95), lineWidth: 4)
         )
-        .shadow(color: .black.opacity(0.25), radius: 14, x: 0, y: 8)
+        .shadow(color: .scoutShadowStrong, radius: 14, x: 0, y: 8)
     }
 }
 

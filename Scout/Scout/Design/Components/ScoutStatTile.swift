@@ -13,8 +13,8 @@ struct ScoutStatTile: View {
     var detail: String? = nil
 
     var body: some View {
-        GlassCard(padding: ScoutSpacing.md) {
-            VStack(alignment: .leading, spacing: ScoutSpacing.xs) {
+        GlassCard(padding: ScoutLayout.Spacing.md) {
+            VStack(alignment: .leading, spacing: ScoutLayout.Spacing.xs) {
                 Text(title.uppercased())
                     .font(.scoutLabelCaps)
                     .tracking(2.5)
@@ -39,7 +39,7 @@ struct ScoutStatTile: View {
     ZStack {
         ScoutTheme.screenBackground.ignoresSafeArea()
 
-        HStack(spacing: ScoutSpacing.md) {
+        HStack(spacing: ScoutLayout.Spacing.md) {
             ScoutStatTile(title: "Skill", value: "4.3")
             ScoutStatTile(title: "Win Rate", value: "71%")
             ScoutStatTile(title: "Matches", value: "38")

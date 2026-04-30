@@ -35,7 +35,7 @@ struct PlayerSwipeScrollView: View {
         } topBar: { mergeProgress in
             heroTopBar(mergeProgress: mergeProgress)
         } content: {
-            VStack(spacing: ScoutSpacing.lg) {
+            VStack(spacing: ScoutLayout.Spacing.lg) {
                 identityPanel
                 bestOverlapTeaser
             }

@@ -12,7 +12,7 @@ struct LocationStatusRow: View {
     let status: CLAuthorizationStatus
 
     var body: some View {
-        HStack(spacing: ScoutSpacing.sm) {
+        HStack(spacing: ScoutLayout.Spacing.sm) {
             Image(systemName: icon)
                 .font(.system(size: 18, weight: .semibold))
                 .foregroundStyle(color)
@@ -34,14 +34,14 @@ struct LocationStatusRow: View {
 
             Spacer()
         }
-        .padding(ScoutSpacing.md)
+        .padding(ScoutLayout.Spacing.md)
         .background(
-            RoundedRectangle(cornerRadius: ScoutRadius.md, style: .continuous)
+            RoundedRectangle(cornerRadius: ScoutLayout.Radius.md, style: .continuous)
                 .fill(Color.scoutSurfaceElevated)
         )
         .overlay(
-            RoundedRectangle(cornerRadius: ScoutRadius.md, style: .continuous)
-                .stroke(Color.scoutGlassStroke, lineWidth: ScoutStroke.hairline)
+            RoundedRectangle(cornerRadius: ScoutLayout.Radius.md, style: .continuous)
+                .stroke(Color.scoutGlassStroke, lineWidth: ScoutLayout.Stroke.hairline)
         )
     }
 
