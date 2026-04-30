@@ -33,7 +33,7 @@ struct ScoutBottomNavigationBar: View {
             .frame(width: containerWidth(availableWidth: geo.size.width), height: containerHeight)
             .background(glassBackground(shape: containerShape))
             .overlay(glassStroke(shape: containerShape))
-            .shadow(color: Color.black.opacity(0.22), radius: 20, y: 10)
+            .shadow(color: Color.scoutShadowStrong.opacity(0.88), radius: 20, y: 10)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: isBubble ? .bottomTrailing : .bottom)
             .offset(y: visibility == .hidden ? 120 : (chromeMode == .condensed && navigationStyle == .bar ? 8 : 0))
             .opacity(visibility == .hidden ? 0 : 1)
@@ -63,7 +63,7 @@ struct ScoutBottomNavigationBar: View {
                         .font(.system(size: 14, weight: .bold))
                         .foregroundStyle(Color.scoutTextPrimary)
                         .frame(width: 42, height: 42)
-                        .background(Color.white.opacity(0.04), in: Circle())
+                        .background(Color.scoutGlassFill.opacity(0.68), in: Circle())
                         .overlay(
                             Circle()
                                 .stroke(Color.scoutGlassStroke.opacity(0.9), lineWidth: ScoutLayout.Stroke.hairline)
@@ -108,14 +108,14 @@ struct ScoutBottomNavigationBar: View {
                 .fill(ScoutTheme.accentGradient)
         } else {
             Capsule()
-                .fill(Color.white.opacity(0.04))
+                .fill(Color.scoutGlassFill.opacity(0.68))
         }
     }
 
     private func buttonStroke(isSelected: Bool) -> some View {
         Capsule()
             .stroke(
-                isSelected ? Color.white.opacity(0.16) : Color.scoutGlassStroke.opacity(0.9),
+                isSelected ? Color.scoutGlassHighlightSoft : Color.scoutGlassStroke.opacity(0.9),
                 lineWidth: ScoutLayout.Stroke.hairline
             )
     }
@@ -129,8 +129,8 @@ struct ScoutBottomNavigationBar: View {
                     .fill(
                         LinearGradient(
                             colors: [
-                                Color.white.opacity(0.16),
-                                Color.white.opacity(0.03),
+                                Color.scoutGlassHighlightSoft,
+                                Color.scoutGlassFill.opacity(0.45),
                                 Color.scoutAccentStart.opacity(0.10)
                             ],
                             startPoint: .topLeading,
@@ -159,7 +159,7 @@ struct ScoutBottomNavigationBar: View {
             .stroke(
                 LinearGradient(
                     colors: [
-                        Color.white.opacity(0.24),
+                        Color.scoutGlassHighlightStrong,
                         Color.scoutGlassStroke,
                         Color.scoutAccentStart.opacity(0.16)
                     ],

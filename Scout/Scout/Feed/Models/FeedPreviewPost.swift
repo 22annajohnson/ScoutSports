@@ -93,21 +93,21 @@ struct FeedPreviewPost: Identifiable, Equatable {
         var colors: [Color] {
             switch self {
             case .violetCyan:
-                return [Color(red: 0.58, green: 0.35, blue: 1.0), Color(red: 0.17, green: 0.85, blue: 1.0)]
+                return [Color.scoutGradientViolet, Color.scoutGradientCyan]
             case .emeraldCyan:
-                return [Color(red: 0.24, green: 0.90, blue: 0.60), Color(red: 0.22, green: 0.84, blue: 1.0)]
+                return [Color.scoutGradientEmerald, Color.scoutGradientSky]
             case .fuchsiaViolet:
-                return [Color(red: 0.92, green: 0.28, blue: 0.80), Color(red: 0.57, green: 0.36, blue: 1.0)]
+                return [Color.scoutGradientFuchsia, Color.scoutGradientViolet]
             case .cyanBlue:
-                return [Color(red: 0.25, green: 0.87, blue: 1.0), Color(red: 0.24, green: 0.50, blue: 1.0)]
+                return [Color.scoutGradientCyan, Color.scoutGradientBlue]
             case .orangePink:
-                return [Color(red: 1.0, green: 0.70, blue: 0.35), Color(red: 1.0, green: 0.35, blue: 0.64)]
+                return [Color.scoutGradientOrange, Color.scoutGradientPink]
             case .amberOrange:
-                return [Color(red: 1.0, green: 0.82, blue: 0.36), Color(red: 1.0, green: 0.55, blue: 0.22)]
+                return [Color.scoutGradientAmber, Color.scoutGradientTangerine]
             case .blueViolet:
-                return [Color(red: 0.32, green: 0.65, blue: 1.0), Color(red: 0.57, green: 0.36, blue: 1.0)]
+                return [Color.scoutGradientPeriwinkle, Color.scoutGradientViolet]
             case .redFuchsia:
-                return [Color(red: 1.0, green: 0.38, blue: 0.45), Color(red: 0.92, green: 0.28, blue: 0.80)]
+                return [Color.scoutGradientCoral, Color.scoutGradientFuchsia]
             }
         }
     }

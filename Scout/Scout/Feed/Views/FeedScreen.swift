@@ -139,7 +139,7 @@ private struct FeedCollapsibleHeaderView: View {
                         RoundedRectangle(cornerRadius: ScoutLayout.Radius.lg, style: .continuous)
                             .fill(
                                 LinearGradient(
-                                    colors: [Color(red: 0.58, green: 0.35, blue: 1.0), Color(red: 0.17, green: 0.85, blue: 1.0)],
+                                    colors: [Color.scoutGradientViolet, Color.scoutGradientCyan],
                                     startPoint: .topLeading,
                                     endPoint: .bottomTrailing
                                 )
@@ -147,7 +147,7 @@ private struct FeedCollapsibleHeaderView: View {
 
                         Text("S")
                             .font(.system(size: 20, weight: .black, design: .rounded))
-                            .foregroundStyle(Color.white)
+                            .foregroundStyle(Color.scoutOnImageTextPrimary)
                     }
                     .frame(width: 44, height: 44)
                 }
@@ -173,7 +173,7 @@ private struct FeedCollapsibleHeaderView: View {
             .background(glassPanel)
             .overlay(glassStroke)
             .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
-            .shadow(color: Color.black.opacity(0.22), radius: 24, y: 14)
+            .shadow(color: Color.scoutShadowStrong.opacity(0.88), radius: 24, y: 14)
         }
         .padding(.horizontal, ScoutLayout.Spacing.lg)
         .padding(.top, ScoutLayout.Spacing.sm)
@@ -208,8 +208,8 @@ private struct FeedCollapsibleHeaderView: View {
                     .fill(
                         LinearGradient(
                             colors: [
-                                Color.white.opacity(0.18),
-                                Color.white.opacity(0.04),
+                                Color.scoutGlassHighlightStrong,
+                                Color.scoutGlassHighlightSoft.opacity(0.28),
                                 Color.scoutAccentStart.opacity(0.10)
                             ],
                             startPoint: .topLeading,
@@ -238,7 +238,7 @@ private struct FeedCollapsibleHeaderView: View {
             .stroke(
                 LinearGradient(
                     colors: [
-                        Color.white.opacity(0.24),
+                        Color.scoutGlassHighlightStrong.opacity(1.1),
                         Color.scoutGlassStroke,
                         Color.scoutAccentStart.opacity(0.18)
                     ],
@@ -256,10 +256,10 @@ private struct FeedCategoryFilterButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.scoutMicro)
-            .foregroundStyle(isSelected ? Color.black : Color.scoutTextPrimary.opacity(0.68))
+            .foregroundStyle(isSelected ? Color.scoutBackground : Color.scoutTextPrimary.opacity(0.68))
             .padding(.horizontal, ScoutLayout.Spacing.md)
             .padding(.vertical, ScoutLayout.Spacing.sm)
-            .background(isSelected ? Color.white : Color.white.opacity(0.07), in: Capsule())
+            .background(isSelected ? Color.scoutOnImageTextPrimary : Color.scoutGlassFill.opacity(0.9), in: Capsule())
             .scaleEffect(configuration.isPressed ? 0.97 : 1)
             .animation(ScoutMotion.press, value: configuration.isPressed)
     }
