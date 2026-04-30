@@ -40,8 +40,9 @@ struct RootView: View {
                         vm: appEnvironment.makeOnboardingViewModel()
                     )
                 } else {
-                    SwipeDeckScreen(
-                        vm: appEnvironment.makeSwipeDeckViewModel(session: session)
+                    ScoutHomeScreen(
+                        swipeViewModel: appEnvironment.makeSwipeDeckViewModel(session: session),
+                        feedViewModel: appEnvironment.makeFeedViewModel()
                     )
                         .environment(session)
                 }

@@ -9,6 +9,8 @@ import SwiftUI
 
 struct PlayerSwipeScrollView: View {
     let model: CardViewModel
+    let bottomContentInset: CGFloat
+    let onScrollOffsetChange: (CGFloat) -> Void
     let onPass: () -> Void
     let onBoost: () -> Void
     let onLike: () -> Void
@@ -16,11 +18,15 @@ struct PlayerSwipeScrollView: View {
 
     init(
         model: CardViewModel,
+        bottomContentInset: CGFloat = 0,
+        onScrollOffsetChange: @escaping (CGFloat) -> Void = { _ in },
         onPass: @escaping () -> Void = {},
         onBoost: @escaping () -> Void = {},
         onLike: @escaping () -> Void = {}
     ) {
         self.model = model
+        self.bottomContentInset = bottomContentInset
+        self.onScrollOffsetChange = onScrollOffsetChange
         self.onPass = onPass
         self.onBoost = onBoost
         self.onLike = onLike
@@ -30,7 +36,9 @@ struct PlayerSwipeScrollView: View {
     private let accent = Color.scoutAccentStart
 
     var body: some View {
-        SwipeCardOverlayScrollLayout {
+        SwipeCardOverlayScrollLayout(
+            bottomContentInset: bottomContentInset
+        ) {
             PlayerBackgroundView(imageURL: viewModel.heroImageURL, color: accent)
         } topBar: { mergeProgress in
             heroTopBar(mergeProgress: mergeProgress)
@@ -41,6 +49,8 @@ struct PlayerSwipeScrollView: View {
             }
         } dock: {
             ScoutActionDock(onPass: onPass, onBoost: onBoost, onLike: onLike)
+        } onScrollOffsetChange: { offsetY in
+            onScrollOffsetChange(offsetY)
         }
         .onAppear {
             UIScrollView.appearance().bounces = false
