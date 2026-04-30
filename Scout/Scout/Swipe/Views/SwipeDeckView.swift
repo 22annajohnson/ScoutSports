@@ -9,6 +9,8 @@ import SwiftUI
 
 struct SwipeDeckView: View {
     let vm: SwipeDeckViewModel
+    let bottomContentInset: CGFloat
+    let onScrollOffsetChange: (CGFloat) -> Void
 
     @State private var interaction = SwipeDeckInteractionViewModel()
 
@@ -41,6 +43,8 @@ struct SwipeDeckView: View {
                     // CURRENT card on top
                     PlayerSwipeScrollView(
                         model: currentModel,
+                        bottomContentInset: bottomContentInset,
+                        onScrollOffsetChange: onScrollOffsetChange,
                         onPass: { interaction.triggerDockSwipe(.pass, cardWidth: geo.size.width, currentCard: currentModel) },
                         onBoost: { interaction.triggerDockSwipe(.like, cardWidth: geo.size.width, currentCard: currentModel) },
                         onLike: { interaction.triggerDockSwipe(.like, cardWidth: geo.size.width, currentCard: currentModel) }

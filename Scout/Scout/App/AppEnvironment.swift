@@ -80,6 +80,11 @@ final class AppEnvironment {
       session: session
     )
   }
+
+  @MainActor
+  func makeFeedViewModel() -> FeedViewModel {
+    FeedViewModel()
+  }
 }
 
 extension AppEnvironment {

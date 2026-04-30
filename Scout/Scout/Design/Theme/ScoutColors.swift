@@ -49,4 +49,11 @@ extension Color {
     static let scoutShadowSoft = Color.black.opacity(0.18)
     static let scoutShadowStrong = Color.black.opacity(0.25)
     static let scoutShadowGlow = Color.scoutAccentEnd.opacity(0.35)
+    static let scoutFeedHeaderBackground = Color(red: 0.02, green: 0.02, blue: 0.05)
+    static let scoutFeedCardFill = Color.white.opacity(0.075)
+    static let scoutFeedCardStroke = Color.white.opacity(0.10)
+    static let scoutFeedFilterFill = Color.white.opacity(0.06)
+    static let scoutFeedSelectedFill = Color(red: 0.17, green: 0.85, blue: 1.0).opacity(0.12)
+    static let scoutFeedSelectedStroke = Color(red: 0.50, green: 0.86, blue: 1.0).opacity(0.50)
+    static let scoutFeedImagePlaceholder = Color(red: 0.12, green: 0.13, blue: 0.22)
 }

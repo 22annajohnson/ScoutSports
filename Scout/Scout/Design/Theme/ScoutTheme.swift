@@ -31,3 +31,9 @@ enum ScoutTheme {
         endPoint: .bottom
     )
 }
+
+enum ScoutChrome {
+    static let bottomBarExpandedHeight: CGFloat = 74
+    static let bottomBarCondensedHeight: CGFloat = 56
+    static let bottomBarReservedHeight: CGFloat = 112
+}
