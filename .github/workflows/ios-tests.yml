@@ -9,6 +9,9 @@ on:
 jobs:
   test:
     runs-on: macos-15
+    defaults:
+      run:
+        working-directory: Scout
 
     steps:
       - name: Checkout
