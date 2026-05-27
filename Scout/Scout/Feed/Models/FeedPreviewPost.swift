@@ -7,7 +7,6 @@
 
 import Foundation
 import SwiftUI
-import ScoutDesign
 
 enum FeedPostCategory: String, CaseIterable, Identifiable {
     case all
@@ -133,15 +132,11 @@ struct FeedPreviewPost: Identifiable, Equatable {
     let accent: AccentStyle
     let kind: Kind
     let isSponsored: Bool
-    let sport: FeedSportFilter
-    let location: FeedLocationFilter
-    let relationshipContext: FeedRelationshipContext
-    let relatedProfiles: [FeedProfileSnippet]
-    let returnStrength: Int
-    let venueName: String?
 }
 
 extension FeedPreviewPost {
+    static let activeFilters = ["Pickleball", "Portland", "Beginner+", "Doubles"]
+
     private static let players: [String: FeedProfileSnippet] = [
         "anna": .init(
             name: "Anna",
@@ -173,12 +168,6 @@ extension FeedPreviewPost {
         return player
     }
 
-    static let innerCircleProfiles: [FeedProfileSnippet] = [
-        player("anna"),
-        player("mia"),
-        player("noah")
-    ]
-
     static let mockPosts: [FeedPreviewPost] = [
         FeedPreviewPost(
             id: "matchup",
@@ -196,13 +185,7 @@ extension FeedPreviewPost {
                 ],
                 featuredPlayers: [player("anna"), player("noah"), player("mia"), player("jake")]
             ),
-            isSponsored: false,
-            sport: .pickleball,
-            location: .portland,
-            relationshipContext: .innerCircle,
-            relatedProfiles: [player("anna"), player("noah"), player("mia")],
-            returnStrength: 95,
-            venueName: "Irving Park"
+            isSponsored: false
         ),
         FeedPreviewPost(
             id: "ad-court",
@@ -219,13 +202,7 @@ extension FeedPreviewPost {
                 ctaTitle: "Book court",
                 relevanceLabel: "Relevant to pickleball"
             ),
-            isSponsored: true,
-            sport: .pickleball,
-            location: .eastSide,
-            relationshipContext: .sponsored,
-            relatedProfiles: [],
-            returnStrength: 64,
-            venueName: "Baseline Social"
+            isSponsored: true
         ),
         FeedPreviewPost(
             id: "gear",
@@ -242,13 +219,7 @@ extension FeedPreviewPost {
                 ctaTitle: nil,
                 relevanceLabel: "Equipment"
             ),
-            isSponsored: false,
-            sport: .pickleball,
-            location: .portland,
-            relationshipContext: .innerCircle,
-            relatedProfiles: [player("anna")],
-            returnStrength: 58,
-            venueName: nil
+            isSponsored: false
         ),
         FeedPreviewPost(
             id: "match-update",
@@ -264,13 +235,7 @@ extension FeedPreviewPost {
                 loser: player("jake"),
                 score: "11-8 · 11-6"
             ),
-            isSponsored: false,
-            sport: .pickleball,
-            location: .downtown,
-            relationshipContext: .innerCircle,
-            relatedProfiles: [player("mia"), player("jake")],
-            returnStrength: 88,
-            venueName: "Baseline Social"
+            isSponsored: false
         ),
         FeedPreviewPost(
             id: "ad-restaurant",
@@ -287,13 +252,7 @@ extension FeedPreviewPost {
                 ctaTitle: "Claim offer",
                 relevanceLabel: "Relevant nearby"
             ),
-            isSponsored: true,
-            sport: .pickleball,
-            location: .downtown,
-            relationshipContext: .sponsored,
-            relatedProfiles: [],
-            returnStrength: 46,
-            venueName: "Smoothie Bar"
+            isSponsored: true
         ),
         FeedPreviewPost(
             id: "achievement",
@@ -305,13 +264,7 @@ extension FeedPreviewPost {
             tag: "25 courts",
             accent: .amberOrange,
             kind: .achievement(symbol: "⌖", progress: 25, next: 50),
-            isSponsored: false,
-            sport: .pickleball,
-            location: .waterfront,
-            relationshipContext: .innerCircle,
-            relatedProfiles: [player("anna")],
-            returnStrength: 74,
-            venueName: nil
+            isSponsored: false
         ),
         FeedPreviewPost(
             id: "stat",
@@ -327,13 +280,7 @@ extension FeedPreviewPost {
                 .init(label: "Score", value: "+4"),
                 .init(label: "Games", value: "18")
             ]),
-            isSponsored: false,
-            sport: .pickleball,
-            location: .portland,
-            relationshipContext: .innerCircle,
-            relatedProfiles: [player("anna")],
-            returnStrength: 82,
-            venueName: nil
+            isSponsored: false
         ),
         FeedPreviewPost(
             id: "ad-store",
@@ -350,13 +297,7 @@ extension FeedPreviewPost {
                 ctaTitle: "Shop deal",
                 relevanceLabel: "Recommended gear"
             ),
-            isSponsored: true,
-            sport: .pickleball,
-            location: .portland,
-            relationshipContext: .sponsored,
-            relatedProfiles: [],
-            returnStrength: 38,
-            venueName: "PaddlePro"
+            isSponsored: true
         ),
         FeedPreviewPost(
             id: "rivalry",
@@ -371,13 +312,7 @@ extension FeedPreviewPost {
                 .init(player: player("anna"), record: "Anna 4"),
                 .init(player: player("mia"), record: "Mia 4")
             ]),
-            isSponsored: false,
-            sport: .pickleball,
-            location: .eastSide,
-            relationshipContext: .innerCircle,
-            relatedProfiles: [player("anna"), player("mia")],
-            returnStrength: 77,
-            venueName: nil
+            isSponsored: false
         ),
         FeedPreviewPost(
             id: "hotspot",
@@ -389,13 +324,7 @@ extension FeedPreviewPost {
             tag: "Hotspot live",
             accent: .emeraldCyan,
             kind: .hotspot(pills: ["6 checked in", "2 courts open", "Beginner+"]),
-            isSponsored: false,
-            sport: .pickleball,
-            location: .waterfront,
-            relationshipContext: .localScene,
-            relatedProfiles: [player("noah")],
-            returnStrength: 91,
-            venueName: "Eastern Prom"
+            isSponsored: false
         )
     ]
 }

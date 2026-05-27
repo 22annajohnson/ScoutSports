@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import ScoutDesign
 
 struct FeedMatchUpdatePost: View {
     let post: FeedPreviewPost
@@ -31,11 +30,9 @@ struct FeedMatchUpdatePost: View {
                 }
 
                 Text(score)
-                    .font(.scoutNumberM)
+                    .font(.system(size: 30, weight: .black, design: .rounded))
                     .foregroundStyle(Color.scoutTextPrimary)
                     .frame(maxWidth: .infinity)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.8)
                     .padding(.vertical, ScoutLayout.Spacing.lg)
                     .background(Color.scoutScrimStrong.opacity(0.86), in: RoundedRectangle(cornerRadius: ScoutLayout.Radius.lg, style: .continuous))
             }

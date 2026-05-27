@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import ScoutDesign
 
 struct FeedUpcomingMatchupPost: View {
     @State private var selectedTeamID: FeedPreviewPost.Team.ID?

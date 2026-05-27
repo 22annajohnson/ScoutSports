@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import ScoutDesign
 
 struct FeedStatPost: View {
     let post: FeedPreviewPost

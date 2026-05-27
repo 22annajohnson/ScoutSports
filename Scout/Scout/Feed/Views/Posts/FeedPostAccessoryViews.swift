@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import ScoutDesign
 
 struct FeedProfileChip: View {
     let profile: FeedProfileSnippet
@@ -20,7 +19,7 @@ struct FeedProfileChip: View {
                     .font(.scoutLabel)
                     .foregroundStyle(Color.scoutTextPrimary)
                 Text("Scout \(profile.score)")
-                    .font(.scoutMicro)
+                    .font(.system(size: 11, weight: .medium, design: .default))
                     .foregroundStyle(Color.scoutTextSecondary)
             }
         }
@@ -65,7 +64,7 @@ struct FeedRemoteImage: View {
                 )
                 .overlay {
                     Image(systemName: "photo.fill")
-                        .font(.scoutTitleCompact)
+                        .font(.system(size: 26, weight: .bold))
                         .foregroundStyle(Color.scoutOnImageTextSoft.opacity(0.55))
                 }
             }

@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import ScoutDesign
 
 struct FeedAchievementPost: View {
     let post: FeedPreviewPost
@@ -22,7 +21,7 @@ struct FeedAchievementPost: View {
                         .fill(post.accent.gradient)
 
                     Text(symbol)
-                        .font(.scoutNumberM)
+                        .font(.system(size: 34, weight: .bold, design: .rounded))
                         .foregroundStyle(Color.scoutBackground)
                 }
                 .frame(width: 80, height: 80)
@@ -32,8 +31,6 @@ struct FeedAchievementPost: View {
                     Text("\(progress) / \(next) courts")
                         .font(.scoutBodyEmphasis)
                         .foregroundStyle(Color.scoutAchievementCream)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.85)
 
                     GeometryReader { geo in
                         ZStack(alignment: .leading) {
