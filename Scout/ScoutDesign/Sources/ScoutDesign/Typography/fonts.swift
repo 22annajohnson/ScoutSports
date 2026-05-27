@@ -9,7 +9,7 @@ import SwiftUI
 
 // MARK: - Scout Typography
 
-extension Font {
+public extension Font {
     static let scoutDisplay = Font.system(size: 52, weight: .black, design: .rounded)
     static let scoutDisplayCompact = Font.system(size: 40, weight: .black, design: .rounded)
     static let scoutHeroTitle = Font.system(size: 34, weight: .bold, design: .rounded)

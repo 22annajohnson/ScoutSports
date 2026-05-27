@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import ScoutDesign
 
 struct FeedPostShell<Content: View>: View {
     let post: FeedPreviewPost
@@ -55,14 +56,17 @@ struct FeedPostShell<Content: View>: View {
                     .foregroundStyle(Color.scoutTextSecondary.opacity(0.8))
 
                 Text(post.title)
-                    .font(.system(size: 28, weight: .black, design: .rounded))
+                    .font(.scoutTitle)
                     .foregroundStyle(Color.scoutTextPrimary)
                     .lineSpacing(1)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.86)
 
                 Text(post.description)
                     .font(.scoutBody)
                     .foregroundStyle(Color.scoutTextSecondary)
-                    .fixedSize(horizontal: false, vertical: true)
+                    .lineLimit(4)
+                    .minimumScaleFactor(0.92)
             }
 
             Button(action: {}) {

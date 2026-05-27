@@ -7,12 +7,18 @@
 
 import SwiftUI
 
-struct ScoutSelectionRow: View {
+public struct ScoutSelectionRow: View {
     let title: String
     var subtitle: String? = nil
     var isSelected: Bool
 
-    var body: some View {
+    public init(title: String, subtitle: String? = nil, isSelected: Bool) {
+        self.title = title
+        self.subtitle = subtitle
+        self.isSelected = isSelected
+    }
+
+    public var body: some View {
         HStack(spacing: ScoutLayout.Spacing.md) {
             VStack(alignment: .leading, spacing: ScoutLayout.Spacing.xxs) {
                 Text(title)

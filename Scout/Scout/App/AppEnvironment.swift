@@ -8,6 +8,7 @@
 import Foundation
 import Supabase
 import SwiftUI
+import ScoutDesign
 
 final class AppEnvironment {
   static let shared = AppEnvironment()
@@ -19,6 +20,7 @@ final class AppEnvironment {
   let profileRelationshipsRepository: PlayerProfileRelationshipsProviding
   let imageUploadService: ImageUploadProviding
   let swipeCardProvider: SwipeCardProviding
+  let feedProvider: FeedProviding
 
   private init() {
       let options = SupabaseClientOptions(
@@ -43,6 +45,7 @@ final class AppEnvironment {
       bucket: "profile-photos"
     )
     swipeCardProvider = MockSwipeCardProvider()
+    feedProvider = MockFeedProvider()
   }
 
   func makeSessionStore() -> SessionStore {
@@ -83,7 +86,7 @@ final class AppEnvironment {
 
   @MainActor
   func makeFeedViewModel() -> FeedViewModel {
-    FeedViewModel()
+    FeedViewModel(feedProvider: feedProvider)
   }
 }
 

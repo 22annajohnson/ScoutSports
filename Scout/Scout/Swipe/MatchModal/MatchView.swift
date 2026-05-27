@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import ScoutDesign
 
 struct MatchView: View {
     // MARK: - Inputs
@@ -94,7 +95,7 @@ struct MatchView: View {
                             Text("Propose Match Time")
                                 .font(.system(size: 17, weight: .bold, design: .rounded))
                         }
-                        .foregroundStyle(Color.contrastText)
+                        .foregroundStyle(Color.scoutTextOnAccent)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 50)
                         .background(
@@ -112,12 +113,12 @@ struct MatchView: View {
                             Text("Send a Message")
                                 .font(.system(size: 17, weight: .bold, design: .rounded))
                         }
-                        .foregroundStyle(.primaryText)
+                        .foregroundStyle(Color.scoutTextPrimary)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 14)
                         .background(
                             RoundedRectangle(cornerRadius: 16, style: .continuous)
-                                .fill(Color.background)
+                                .fill(Color.scoutBackground)
                         )
                     }
                 }

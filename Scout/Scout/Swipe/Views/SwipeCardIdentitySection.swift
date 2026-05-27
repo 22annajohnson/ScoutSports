@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import ScoutDesign
 
 struct SwipeCardIdentitySection: View {
     let model: Model

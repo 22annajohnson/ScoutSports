@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import ScoutDesign
 
 struct SwipeArcOverlay: View {
     let side: SwipeArcShape.Side

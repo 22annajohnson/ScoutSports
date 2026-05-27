@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import ScoutDesign
 
 struct ScoutHomeScreen: View {
     @State private var vm = ScoutHomeViewModel()

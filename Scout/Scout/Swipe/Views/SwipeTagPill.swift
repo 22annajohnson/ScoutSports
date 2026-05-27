@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import ScoutDesign
 
 struct SwipeTagPill: View {
     let item: SwipeCardTagItem

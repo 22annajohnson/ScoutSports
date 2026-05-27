@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import ScoutDesign
 
 struct SwipeStatHighlightsSection: View {
     let tiles: [SwipeHighlightTile]

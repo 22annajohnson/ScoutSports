@@ -7,12 +7,12 @@
 
 import SwiftUI
 
-struct ScoutActionDock: View {
+public struct ScoutActionDock: View {
     let onPass: () -> Void
     let onBoost: () -> Void
     let onLike: () -> Void
 
-    init(
+    public init(
         onPass: @escaping () -> Void = {},
         onBoost: @escaping () -> Void = {},
         onLike: @escaping () -> Void = {}
@@ -22,7 +22,7 @@ struct ScoutActionDock: View {
         self.onLike = onLike
     }
 
-    var body: some View {
+    public var body: some View {
         HStack(spacing: ScoutLayout.Spacing.lg) {
             actionButton(systemImage: "xmark", size: 68, action: onPass)
 

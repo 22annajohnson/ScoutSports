@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import ScoutDesign
 
 struct StarStatView: View {
     var starCount: Int
@@ -19,7 +20,7 @@ struct StarStatView: View {
         HStack {
             Text(getStatTypeString(starType).uppercased())
                 .font(.scoutSectionSubheader)
-                .foregroundStyle(Color.primaryText)
+                .foregroundStyle(Color.scoutTextPrimary)
             Spacer()
             starImageView
         }
@@ -33,12 +34,14 @@ struct StarStatView: View {
             if starCount > 0 {
                 ForEach(1...starCount, id: \.self) { _ in
                     Image(systemName: "star.fill")
-                    .foregroundStyle(Color.primaryText)                }
+                        .foregroundStyle(Color.scoutTextPrimary)
+                }
             }
             if starCount < 5 {
                 ForEach(1...(5-starCount), id: \.self) { _ in
                     Image(systemName: "star")
-                    .foregroundStyle(Color.primaryText)                }
+                        .foregroundStyle(Color.scoutTextPrimary)
+                }
             }
         }
     }

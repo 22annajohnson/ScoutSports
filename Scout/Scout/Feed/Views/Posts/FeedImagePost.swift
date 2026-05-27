@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import ScoutDesign
 
 struct FeedImagePost: View {
     let post: FeedPreviewPost
@@ -39,13 +40,17 @@ struct FeedImagePost: View {
                 HStack(alignment: .center, spacing: ScoutLayout.Spacing.md) {
                     VStack(alignment: .leading, spacing: ScoutLayout.Spacing.xxs) {
                         Text(relevanceLabel.uppercased())
-                            .font(.system(size: 10, weight: .bold, design: .default))
-                            .tracking(2.2)
+                            .font(.scoutMicro)
+                            .tracking(ScoutLayout.Tracking.micro)
                             .foregroundStyle(Color.scoutTextSecondary)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.9)
 
                         Text(statLabel)
                             .font(.scoutBodyEmphasis)
                             .foregroundStyle(Color.scoutTextPrimary)
+                            .lineLimit(2)
+                            .minimumScaleFactor(0.9)
                     }
 
                     Spacer()

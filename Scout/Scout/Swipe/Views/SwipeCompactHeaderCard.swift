@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import ScoutDesign
 
 struct SwipeCompactHeaderCard<Content: View>: View {
     private let content: Content

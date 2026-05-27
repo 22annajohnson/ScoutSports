@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-struct ScoutStateCard: View {
-    enum State {
+public struct ScoutStateCard: View {
+    public enum State {
         case loading
         case empty
         case error
@@ -20,7 +20,21 @@ struct ScoutStateCard: View {
     var actionTitle: String? = nil
     var action: (() -> Void)? = nil
 
-    var body: some View {
+    public init(
+        state: State,
+        title: String,
+        message: String,
+        actionTitle: String? = nil,
+        action: (() -> Void)? = nil
+    ) {
+        self.state = state
+        self.title = title
+        self.message = message
+        self.actionTitle = actionTitle
+        self.action = action
+    }
+
+    public var body: some View {
         GlassCard {
             VStack(alignment: .leading, spacing: ScoutLayout.Spacing.md) {
                 HStack(spacing: ScoutLayout.Spacing.md) {

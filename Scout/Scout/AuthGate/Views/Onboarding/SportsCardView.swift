@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import ScoutDesign
 // MARK: - Sport Card
 
 struct SportCard: View {

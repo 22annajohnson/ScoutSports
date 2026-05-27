@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import ScoutDesign
 
 struct SwipeCardMatchupSection: View {
     let matchupScore: Int

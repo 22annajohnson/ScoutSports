@@ -1,5 +1,5 @@
 //
-//  ScoutSection.swift
+//  ScoutPageHeader.swift
 //  Scout
 //
 //  Created by Codex on 4/1/26.
@@ -7,27 +7,27 @@
 
 import SwiftUI
 
-struct ScoutSection<Content: View>: View {
+public struct ScoutPageHeader<Trailing: View>: View {
     let eyebrow: String?
     let title: String
     let subtitle: String?
-    let content: Content
+    @ViewBuilder let trailing: Trailing
 
-    init(
+    public init(
         eyebrow: String? = nil,
         title: String,
         subtitle: String? = nil,
-        @ViewBuilder content: () -> Content
+        @ViewBuilder trailing: () -> Trailing = { EmptyView() }
     ) {
         self.eyebrow = eyebrow
         self.title = title
         self.subtitle = subtitle
-        self.content = content()
+        self.trailing = trailing()
     }
 
-    var body: some View {
-        VStack(alignment: .leading, spacing: ScoutLayout.Spacing.md) {
-            VStack(alignment: .leading, spacing: ScoutLayout.Spacing.xs) {
+    public var body: some View {
+        HStack(alignment: .top, spacing: ScoutLayout.Spacing.md) {
+            VStack(alignment: .leading, spacing: ScoutLayout.Spacing.sm) {
                 if let eyebrow {
                     Text(eyebrow.uppercased())
                         .font(.scoutLabelCaps)
@@ -36,35 +36,35 @@ struct ScoutSection<Content: View>: View {
                 }
 
                 Text(title)
-                    .font(.scoutSectionTitle)
+                    .font(.scoutTitle)
                     .foregroundStyle(Color.scoutTextPrimary)
 
                 if let subtitle {
                     Text(subtitle)
-                        .font(.scoutCaption)
+                        .font(.scoutBody)
                         .foregroundStyle(Color.scoutTextSecondary)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
             }
 
-            content
+            Spacer(minLength: 0)
+
+            trailing
         }
     }
 }
 
-#Preview("Section") {
+#Preview("Page Header") {
     ZStack {
         ScoutTheme.screenBackground.ignoresSafeArea()
 
         GlassCard {
-            ScoutSection(
-                eyebrow: "Your Match Style",
-                title: "How you show up",
-                subtitle: "Use shared section spacing and headings before introducing screen-specific polish."
+            ScoutPageHeader(
+                eyebrow: "Onboarding",
+                title: "Play Style",
+                subtitle: "Choose the way you like to show up so Scout can build better pairings."
             ) {
-                VStack(spacing: ScoutLayout.Spacing.sm) {
-                    ScoutSelectionRow(title: "Competitive", subtitle: "Looking for strong games", isSelected: true)
-                    ScoutSelectionRow(title: "Casual", subtitle: "Fun-first and flexible", isSelected: false)
-                }
+                GlassChip(title: "2/4")
             }
         }
         .padding()

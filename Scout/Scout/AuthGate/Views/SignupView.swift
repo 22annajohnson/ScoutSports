@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import ScoutDesign
 
 struct SignupView: View {
     @State private var vm: SignupViewModel

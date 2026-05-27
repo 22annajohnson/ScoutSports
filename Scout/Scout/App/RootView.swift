@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import ScoutDesign
 
 struct RootView: View {
     @Environment(\.appEnvironment) private var appEnvironment

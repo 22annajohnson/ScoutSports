@@ -7,10 +7,10 @@
 
 import SwiftUI
 
-enum ScoutMotion {
-    static let press = Animation.spring(response: 0.22, dampingFraction: 0.88)
-    static let selection = Animation.spring(response: 0.28, dampingFraction: 0.84)
-    static let emphasis = Animation.easeInOut(duration: 0.18)
+public enum ScoutMotion {
+    public static let press = Animation.spring(response: 0.22, dampingFraction: 0.88)
+    public static let selection = Animation.spring(response: 0.28, dampingFraction: 0.84)
+    public static let emphasis = Animation.easeInOut(duration: 0.18)
 }
 
 struct ScoutInteractiveScale: ViewModifier {
@@ -41,7 +41,7 @@ struct ScoutPulseHighlight: ViewModifier {
     }
 }
 
-extension View {
+public extension View {
     func scoutInteractiveScale(isPressed: Bool, pressedScale: CGFloat = 0.98) -> some View {
         modifier(ScoutInteractiveScale(isPressed: isPressed, pressedScale: pressedScale))
     }

@@ -7,13 +7,13 @@
 
 import SwiftUI
 
-struct ScoutHeroLayout<Background: View, TopBar: View, Overlay: View, Bottom: View>: View {
+public struct ScoutHeroLayout<Background: View, TopBar: View, Overlay: View, Bottom: View>: View {
     let background: Background
     let topBar: TopBar
     let overlay: Overlay
     let bottom: Bottom
 
-    init(
+    public init(
         @ViewBuilder background: () -> Background,
         @ViewBuilder topBar: () -> TopBar,
         @ViewBuilder overlay: () -> Overlay,
@@ -25,7 +25,7 @@ struct ScoutHeroLayout<Background: View, TopBar: View, Overlay: View, Bottom: Vi
         self.bottom = bottom()
     }
 
-    var body: some View {
+    public var body: some View {
         VStack(spacing: 0) {
             ZStack(alignment: .top) {
                 background

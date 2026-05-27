@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import ScoutDesign
 import PhotosUI
 
 // MARK: - Profile Builder View

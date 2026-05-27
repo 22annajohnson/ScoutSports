@@ -7,8 +7,10 @@
 
 import SwiftUI
 
-struct ScoutPrimaryButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
+public struct ScoutPrimaryButtonStyle: ButtonStyle {
+    public init() {}
+
+    public func makeBody(configuration: Configuration) -> some View {
         ScoutPrimaryButton(configuration: configuration)
     }
 
@@ -51,8 +53,10 @@ struct ScoutPrimaryButtonStyle: ButtonStyle {
     }
 }
 
-struct ScoutSecondaryGlassButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
+public struct ScoutSecondaryGlassButtonStyle: ButtonStyle {
+    public init() {}
+
+    public func makeBody(configuration: Configuration) -> some View {
         ScoutSecondaryButton(configuration: configuration)
     }
 

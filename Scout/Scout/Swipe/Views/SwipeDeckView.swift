@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import ScoutDesign
 
 struct SwipeDeckView: View {
     let vm: SwipeDeckViewModel

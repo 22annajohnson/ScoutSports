@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import ScoutDesign
 import CoreLocation
 
 struct LocationStatusRow: View {

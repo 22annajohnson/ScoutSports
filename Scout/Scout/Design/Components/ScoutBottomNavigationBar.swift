@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import ScoutDesign
 
 struct ScoutBottomNavigationBar: View {
     let selectedTab: ScoutHomeTab

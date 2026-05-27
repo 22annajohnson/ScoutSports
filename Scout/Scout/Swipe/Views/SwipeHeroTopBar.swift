@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import ScoutDesign
 
 struct SwipeHeroTopBar: View {
     let viewModel: SwipeHeroTopBarViewModel

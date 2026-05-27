@@ -6,11 +6,12 @@
 //
 
 import SwiftUI
+import ScoutDesign
 
 private enum FeedHeaderMetrics {
-    static let expandedHeight: CGFloat = 196
+    static let expandedHeight: CGFloat = 144
     static let collapsedHeight: CGFloat = 92
-    static let collapseRange: CGFloat = 110
+    static let collapseRange: CGFloat = 120
 }
 
 struct FeedScreen: View {
@@ -55,18 +56,26 @@ struct FeedScreen: View {
                     .padding(.horizontal, ScoutLayout.Spacing.lg)
                 case .loaded:
                     feedContent(
+                        returnSignals: vm.returnSignals,
                         visiblePosts: vm.visiblePosts,
-                        selectedCategory: vm.selectedCategory,
-                        availableCategories: vm.availableCategories,
-                        onSelectCategory: vm.selectCategory(_:)
+                        innerCircleProfiles: vm.innerCircleProfiles,
+                        innerCirclePosts: vm.innerCirclePosts,
+                        hasInnerCircleSection: vm.hasInnerCircleSection,
+                        selectedSport: vm.filterState.sport,
+                        selectedLocation: vm.filterState.location
                     )
                 }
             }
 
             FeedCollapsibleHeaderView(
-                selectedCategory: vm.selectedCategory,
+                filterState: vm.filterState,
                 availableCategories: vm.availableCategories,
+                availableSports: vm.availableSports,
+                availableLocations: vm.availableLocations,
                 collapseProgress: headerCollapseProgress,
+                onSelectCircle: vm.selectCircle(_:),
+                onSelectSport: vm.selectSport(_:),
+                onSelectLocation: vm.selectLocation(_:),
                 onSelectCategory: vm.selectCategory(_:)
             )
         }
@@ -80,15 +89,29 @@ struct FeedScreen: View {
     }
 
     private func feedContent(
+        returnSignals: [FeedReturnSignal],
         visiblePosts: [FeedPreviewPost],
-        selectedCategory: FeedPostCategory,
-        availableCategories: [FeedPostCategory],
-        onSelectCategory: @escaping (FeedPostCategory) -> Void
+        innerCircleProfiles: [FeedProfileSnippet],
+        innerCirclePosts: [FeedPreviewPost],
+        hasInnerCircleSection: Bool,
+        selectedSport: FeedSportFilter,
+        selectedLocation: FeedLocationFilter
     ) -> some View {
         ScrollView(showsIndicators: false) {
             LazyVStack(alignment: .leading, spacing: ScoutLayout.Spacing.lg) {
                 Color.clear
                     .frame(height: FeedHeaderMetrics.expandedHeight)
+
+                FeedReturnSection(signals: returnSignals)
+
+                if hasInnerCircleSection {
+                    FeedInnerCircleSection(
+                        profiles: innerCircleProfiles,
+                        posts: innerCirclePosts,
+                        selectedSport: selectedSport,
+                        selectedLocation: selectedLocation
+                    )
+                }
 
                 ForEach(visiblePosts) { post in
                     FeedPostCard(post: post)
@@ -114,66 +137,105 @@ struct FeedScreen: View {
 }
 
 private struct FeedCollapsibleHeaderView: View {
-    let selectedCategory: FeedPostCategory
+    @State private var isFilterMenuOpen = false
+
+    let filterState: FeedFilterState
     let availableCategories: [FeedPostCategory]
+    let availableSports: [FeedSportFilter]
+    let availableLocations: [FeedLocationFilter]
     let collapseProgress: CGFloat
+    let onSelectCircle: (FeedCircleFilter) -> Void
+    let onSelectSport: (FeedSportFilter) -> Void
+    let onSelectLocation: (FeedLocationFilter) -> Void
     let onSelectCategory: (FeedPostCategory) -> Void
 
     var body: some View {
         VStack {
-            VStack(alignment: .leading, spacing: 0) {
+            ZStack(alignment: .topTrailing) {
+                VStack(alignment: .leading, spacing: 0) {
                 HStack(alignment: .top) {
                     VStack(alignment: .leading, spacing: ScoutLayout.Spacing.xs) {
                         Text("SCOUT")
-                            .font(.system(size: 11, weight: .bold, design: .default))
-                            .tracking(3)
+                            .font(.scoutMicro)
+                            .tracking(ScoutLayout.Tracking.labelCaps)
                             .foregroundStyle(Color.scoutTextSecondary)
                         Text("Feed")
-                            .font(.system(size: titleSize, weight: .black, design: .rounded))
+                            .font(collapseProgress > 0.45 ? .scoutTitleCompact : .scoutHeroTitle)
                             .foregroundStyle(Color.scoutTextPrimary)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.88)
+
+                        Text(filterSummary)
+                            .font(.scoutCaption)
+                            .foregroundStyle(Color.scoutTextSecondary)
+                            .opacity(summaryOpacity)
                     }
 
                     Spacer()
 
-                    ZStack {
-                        RoundedRectangle(cornerRadius: ScoutLayout.Radius.lg, style: .continuous)
-                            .fill(
+                    Button {
+                        withAnimation(ScoutMotion.selection) {
+                            isFilterMenuOpen.toggle()
+                        }
+                    } label: {
+                        Image(systemName: isFilterMenuOpen ? "xmark" : "slider.horizontal.3")
+                            .font(.scoutCallout)
+                            .foregroundStyle(Color.scoutTextPrimary)
+                            .frame(width: 58, height: 58)
+                    }
+                    .buttonStyle(.plain)
+                    .background(
+                        Circle()
+                            .fill(Color.scoutGlassFill.opacity(0.95))
+                            .background(.ultraThinMaterial, in: Circle())
+                    )
+                    .overlay(
+                        Circle()
+                            .stroke(
                                 LinearGradient(
-                                    colors: [Color.scoutGradientViolet, Color.scoutGradientCyan],
+                                    colors: [
+                                        Color.scoutGlassHighlightStrong,
+                                        Color.scoutGlassStroke,
+                                        Color.scoutAccentStart.opacity(0.18)
+                                    ],
                                     startPoint: .topLeading,
                                     endPoint: .bottomTrailing
-                                )
+                                ),
+                                lineWidth: ScoutLayout.Stroke.hairline
                             )
-
-                        Text("S")
-                            .font(.system(size: 20, weight: .black, design: .rounded))
-                            .foregroundStyle(Color.scoutOnImageTextPrimary)
-                    }
-                    .frame(width: 44, height: 44)
+                    )
+                    .shadow(color: Color.scoutShadowStrong.opacity(0.72), radius: 16, y: 8)
                 }
                 .padding(.top, ScoutLayout.Spacing.lg)
-
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: ScoutLayout.Spacing.sm) {
-                        ForEach(availableCategories) { category in
-                            Button(category.title) {
-                                onSelectCategory(category)
-                            }
-                            .buttonStyle(FeedCategoryFilterButtonStyle(isSelected: selectedCategory == category))
-                        }
-                    }
                 }
-                .padding(.top, chipsTopPadding)
-                .opacity(chipsOpacity)
-                .offset(y: chipsVerticalOffset)
+                .padding(.horizontal, ScoutLayout.Spacing.lg)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(height: headerHeight, alignment: .top)
+                .background(glassPanel)
+                .overlay(glassStroke)
+                .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
+                .shadow(color: Color.scoutShadowStrong.opacity(0.88), radius: 24, y: 14)
+
+                if isFilterMenuOpen {
+                    FeedFilterMenu(
+                        filterState: filterState,
+                        availableCategories: availableCategories,
+                        availableSports: availableSports,
+                        availableLocations: availableLocations,
+                        onSelectCircle: onSelectCircle,
+                        onSelectSport: onSelectSport,
+                        onSelectLocation: onSelectLocation,
+                        onSelectCategory: onSelectCategory
+                    )
+                    .frame(width: 312)
+                    .padding(.top, 72)
+                    .padding(.trailing, ScoutLayout.Spacing.md)
+                    .transition(.asymmetric(
+                        insertion: .opacity.combined(with: .scale(scale: 0.94, anchor: .topTrailing)),
+                        removal: .opacity.combined(with: .scale(scale: 0.96, anchor: .topTrailing))
+                    ))
+                }
             }
-            .padding(.horizontal, ScoutLayout.Spacing.lg)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .frame(height: headerHeight, alignment: .top)
-            .background(glassPanel)
-            .overlay(glassStroke)
-            .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
-            .shadow(color: Color.scoutShadowStrong.opacity(0.88), radius: 24, y: 14)
         }
         .padding(.horizontal, ScoutLayout.Spacing.lg)
         .padding(.top, ScoutLayout.Spacing.sm)
@@ -183,20 +245,12 @@ private struct FeedCollapsibleHeaderView: View {
         FeedHeaderMetrics.expandedHeight - ((FeedHeaderMetrics.expandedHeight - FeedHeaderMetrics.collapsedHeight) * collapseProgress)
     }
 
-    private var titleSize: CGFloat {
-        34 - (12 * collapseProgress)
+    private var summaryOpacity: CGFloat {
+        1 - min(collapseProgress * 1.6, 0.92)
     }
 
-    private var chipsOpacity: CGFloat {
-        1 - min(collapseProgress * 1.45, 1)
-    }
-
-    private var chipsVerticalOffset: CGFloat {
-        -16 * collapseProgress
-    }
-
-    private var chipsTopPadding: CGFloat {
-        18 - (10 * collapseProgress)
+    private var filterSummary: String {
+        "\(filterState.circle.title) • \(filterState.sport.title) • \(filterState.location.title)"
     }
 
     private var glassPanel: some View {
@@ -250,6 +304,83 @@ private struct FeedCollapsibleHeaderView: View {
     }
 }
 
+private struct FeedFilterMenu: View {
+    let filterState: FeedFilterState
+    let availableCategories: [FeedPostCategory]
+    let availableSports: [FeedSportFilter]
+    let availableLocations: [FeedLocationFilter]
+    let onSelectCircle: (FeedCircleFilter) -> Void
+    let onSelectSport: (FeedSportFilter) -> Void
+    let onSelectLocation: (FeedLocationFilter) -> Void
+    let onSelectCategory: (FeedPostCategory) -> Void
+
+    var body: some View {
+        GlassCard(padding: ScoutLayout.Spacing.md) {
+            VStack(alignment: .leading, spacing: ScoutLayout.Spacing.md) {
+                audienceSegmentedControl
+
+                filterRow(title: "Sport") {
+                    ForEach(availableSports) { sport in
+                        Button(sport.title) {
+                            onSelectSport(sport)
+                        }
+                        .buttonStyle(FeedCategoryFilterButtonStyle(isSelected: filterState.sport == sport))
+                    }
+                }
+
+                filterRow(title: "Location") {
+                    ForEach(availableLocations) { location in
+                        Button(location.title) {
+                            onSelectLocation(location)
+                        }
+                        .buttonStyle(FeedCategoryFilterButtonStyle(isSelected: filterState.location == location))
+                    }
+                }
+
+                filterRow(title: "Post Type") {
+                    ForEach(availableCategories) { category in
+                        Button(category.title) {
+                            onSelectCategory(category)
+                        }
+                        .buttonStyle(FeedCategoryFilterButtonStyle(isSelected: filterState.category == category))
+                    }
+                }
+            }
+        }
+    }
+
+    private var audienceSegmentedControl: some View {
+        VStack(alignment: .leading, spacing: ScoutLayout.Spacing.sm) {
+            Text("AUDIENCE")
+                .font(.scoutLabelCaps)
+                .tracking(ScoutLayout.Tracking.micro)
+                .foregroundStyle(Color.scoutTextSecondary)
+
+            ScoutSegmentedToggle(
+                options: FeedCircleFilter.allCases,
+                selection: filterState.circle,
+                title: \.title,
+                onSelect: onSelectCircle
+            )
+        }
+    }
+
+    private func filterRow<Content: View>(title: String, @ViewBuilder content: () -> Content) -> some View {
+        VStack(alignment: .leading, spacing: ScoutLayout.Spacing.sm) {
+            Text(title.uppercased())
+                .font(.scoutLabelCaps)
+                .tracking(ScoutLayout.Tracking.micro)
+                .foregroundStyle(Color.scoutTextSecondary)
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: ScoutLayout.Spacing.sm) {
+                    content()
+                }
+            }
+        }
+    }
+}
+
 private struct FeedCategoryFilterButtonStyle: ButtonStyle {
     let isSelected: Bool
 
@@ -266,5 +397,5 @@ private struct FeedCategoryFilterButtonStyle: ButtonStyle {
 }
 
 #Preview {
-    FeedScreen(vm: FeedViewModel())
+    FeedScreen(vm: FeedViewModel(feedProvider: MockFeedProvider()))
 }

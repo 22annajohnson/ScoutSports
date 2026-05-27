@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import ScoutDesign
 
 struct PlayerSwipeScrollView: View {
     let model: CardViewModel

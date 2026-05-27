@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-struct GlassChip: View {
-    enum Style {
+public struct GlassChip: View {
+    public enum Style {
         case neutral
         case accent
         case selected
@@ -19,7 +19,19 @@ struct GlassChip: View {
     var style: Style = .neutral
     var isEmphasized: Bool = false
 
-    var body: some View {
+    public init(
+        title: String,
+        systemImage: String? = nil,
+        style: Style = .neutral,
+        isEmphasized: Bool = false
+    ) {
+        self.title = title
+        self.systemImage = systemImage
+        self.style = style
+        self.isEmphasized = isEmphasized
+    }
+
+    public var body: some View {
         HStack(spacing: ScoutLayout.Spacing.xs) {
             if let systemImage {
                 Image(systemName: systemImage)

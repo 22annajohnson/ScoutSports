@@ -7,14 +7,14 @@
 
 import SwiftUI
 
-enum ScoutTheme {
-    static let accentGradient = LinearGradient(
+public enum ScoutTheme {
+    public static let accentGradient = LinearGradient(
         colors: [.scoutAccentStart, .scoutAccentEnd],
         startPoint: .leading,
         endPoint: .trailing
     )
 
-    static let accentRadialGlow = RadialGradient(
+    public static let accentRadialGlow = RadialGradient(
         colors: [
             Color.scoutAccentEnd.opacity(0.45),
             Color.scoutAccentStart.opacity(0.18),
@@ -25,15 +25,15 @@ enum ScoutTheme {
         endRadius: 160
     )
 
-    static let screenBackground = LinearGradient(
+    public static let screenBackground = LinearGradient(
         colors: [.scoutBackground, .scoutSurface],
         startPoint: .top,
         endPoint: .bottom
     )
 }
 
-enum ScoutChrome {
-    static let bottomBarExpandedHeight: CGFloat = 74
-    static let bottomBarCondensedHeight: CGFloat = 56
-    static let bottomBarReservedHeight: CGFloat = 112
+public enum ScoutChrome {
+    public static let bottomBarExpandedHeight: CGFloat = 74
+    public static let bottomBarCondensedHeight: CGFloat = 56
+    public static let bottomBarReservedHeight: CGFloat = 112
 }
