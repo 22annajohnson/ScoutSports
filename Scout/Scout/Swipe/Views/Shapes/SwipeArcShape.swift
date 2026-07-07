@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import ScoutDesign
 
 struct SwipeArcShape: Shape {
     enum Side { case left, right }

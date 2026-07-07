@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		95141FFB2F4E45500046886B /* Auth in Frameworks */ = {isa = PBXBuildFile; productRef = 95141FFA2F4E45500046886B /* Auth */; };
 		95141FFD2F4E45500046886B /* Functions in Frameworks */ = {isa = PBXBuildFile; productRef = 95141FFC2F4E45500046886B /* Functions */; };
+		95C5A5A02F61000100C0D3A1 /* ScoutDesign in Frameworks */ = {isa = PBXBuildFile; productRef = 95C5A59F2F61000100C0D3A1 /* ScoutDesign */; };
 		9580C96C2F4E463B00093095 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 9580C96B2F4E463B00093095 /* Supabase */; };
 /* End PBXBuildFile section */
 
@@ -97,6 +98,7 @@
 			files = (
 				95141FFD2F4E45500046886B /* Functions in Frameworks */,
 				95141FFB2F4E45500046886B /* Auth in Frameworks */,
+				95C5A5A02F61000100C0D3A1 /* ScoutDesign in Frameworks */,
 				9580C96C2F4E463B00093095 /* Supabase in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -169,6 +171,7 @@
 			packageProductDependencies = (
 				95141FFA2F4E45500046886B /* Auth */,
 				95141FFC2F4E45500046886B /* Functions */,
+				95C5A59F2F61000100C0D3A1 /* ScoutDesign */,
 				9580C96B2F4E463B00093095 /* Supabase */,
 			);
 			productName = Scout;
@@ -252,6 +255,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				95141FF92F4E45500046886B /* XCRemoteSwiftPackageReference "supabase-swift" */,
+				95C5A59E2F61000100C0D3A1 /* XCLocalSwiftPackageReference "ScoutDesign" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 954A49142F47530800BFAC10 /* Products */;
@@ -666,6 +670,13 @@
 		};
 /* End XCRemoteSwiftPackageReference section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		95C5A59E2F61000100C0D3A1 /* XCLocalSwiftPackageReference "ScoutDesign" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ScoutDesign;
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
 		95141FFA2F4E45500046886B /* Auth */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -681,6 +692,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 95141FF92F4E45500046886B /* XCRemoteSwiftPackageReference "supabase-swift" */;
 			productName = Supabase;
+		};
+		95C5A59F2F61000100C0D3A1 /* ScoutDesign */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 95C5A59E2F61000100C0D3A1 /* XCLocalSwiftPackageReference "ScoutDesign" */;
+			productName = ScoutDesign;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

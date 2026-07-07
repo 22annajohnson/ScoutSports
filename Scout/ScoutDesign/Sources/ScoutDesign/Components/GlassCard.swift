@@ -7,12 +7,12 @@
 
 import SwiftUI
 
-struct GlassCard<Content: View>: View {
+public struct GlassCard<Content: View>: View {
     private let shape = RoundedRectangle(cornerRadius: ScoutLayout.Radius.lg, style: .continuous)
     private let padding: CGFloat
     private let content: Content
 
-    init(
+    public init(
         padding: CGFloat = ScoutLayout.Spacing.lg,
         @ViewBuilder content: () -> Content
     ) {
@@ -20,7 +20,7 @@ struct GlassCard<Content: View>: View {
         self.content = content()
     }
 
-    var body: some View {
+    public var body: some View {
         content
             .padding(padding)
             .background(cardBackground)

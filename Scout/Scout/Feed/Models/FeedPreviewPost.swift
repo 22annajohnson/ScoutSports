@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import ScoutDesign
 
 enum FeedPostCategory: String, CaseIterable, Identifiable {
     case all

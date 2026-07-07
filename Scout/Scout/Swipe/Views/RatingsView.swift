@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import ScoutDesign
 
 struct RatingsView: View {
     let stats: [StatsViewModel]

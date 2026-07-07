@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import ScoutDesign
 
 struct SwipeCardTagCluster: View {
     let tags: [SwipeCardTagItem]

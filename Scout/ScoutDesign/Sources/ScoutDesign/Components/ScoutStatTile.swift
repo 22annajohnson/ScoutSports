@@ -7,12 +7,18 @@
 
 import SwiftUI
 
-struct ScoutStatTile: View {
+public struct ScoutStatTile: View {
     let title: String
     let value: String
     var detail: String? = nil
 
-    var body: some View {
+    public init(title: String, value: String, detail: String? = nil) {
+        self.title = title
+        self.value = value
+        self.detail = detail
+    }
+
+    public var body: some View {
         GlassCard(padding: ScoutLayout.Spacing.md) {
             VStack(alignment: .leading, spacing: ScoutLayout.Spacing.xs) {
                 Text(title.uppercased())

@@ -7,12 +7,12 @@
 
 import SwiftUI
 
-struct ScoutFormPageShell<Header: View, Content: View, Footer: View>: View {
+public struct ScoutFormPageShell<Header: View, Content: View, Footer: View>: View {
     let header: Header
     let content: Content
     let footer: Footer
 
-    init(
+    public init(
         @ViewBuilder header: () -> Header,
         @ViewBuilder content: () -> Content,
         @ViewBuilder footer: () -> Footer
@@ -22,7 +22,7 @@ struct ScoutFormPageShell<Header: View, Content: View, Footer: View>: View {
         self.footer = footer()
     }
 
-    var body: some View {
+    public var body: some View {
         VStack(spacing: 0) {
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: ScoutLayout.Spacing.xl) {

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import ScoutDesign
 
 struct AvailabilityGridDemo: View {
     let accent: Color

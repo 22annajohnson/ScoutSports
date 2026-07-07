@@ -7,11 +7,16 @@
 
 import SwiftUI
 
-private struct ScoutGlassSelectableSurface: ViewModifier {
+public struct ScoutGlassSelectableSurface: ViewModifier {
     let isSelected: Bool
     let cornerRadius: CGFloat
 
-    func body(content: Content) -> some View {
+    public init(isSelected: Bool, cornerRadius: CGFloat = ScoutLayout.Radius.lg) {
+        self.isSelected = isSelected
+        self.cornerRadius = cornerRadius
+    }
+
+    public func body(content: Content) -> some View {
         let shape = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
 
         content
@@ -30,7 +35,7 @@ private struct ScoutGlassSelectableSurface: ViewModifier {
     }
 }
 
-extension View {
+public extension View {
     func scoutGlassSelectableSurface(
         isSelected: Bool,
         cornerRadius: CGFloat = ScoutLayout.Radius.lg

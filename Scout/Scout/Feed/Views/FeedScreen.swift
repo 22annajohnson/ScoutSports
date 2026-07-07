@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import ScoutDesign
 
 private enum FeedHeaderMetrics {
     static let expandedHeight: CGFloat = 196

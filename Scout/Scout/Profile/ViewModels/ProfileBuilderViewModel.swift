@@ -9,6 +9,7 @@ import Foundation
 import Observation
 import PhotosUI
 import SwiftUI
+import ScoutDesign
 
 #if canImport(UIKit)
 import UIKit

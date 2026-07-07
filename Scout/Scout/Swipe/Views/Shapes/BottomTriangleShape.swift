@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import ScoutDesign
 
 struct BottomTriangle: Shape {
     func path(in rect: CGRect) -> Path {
