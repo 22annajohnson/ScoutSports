@@ -31,6 +31,8 @@ Dashboard edits are allowed for:
 
 Dashboard edits are not allowed as durable schema changes unless converted into an approved migration.
 
+The live Supabase database is an execution target for approved changes, not the canonical source of schema truth.
+
 ## Repository Areas
 
 Expected future Supabase assets:
@@ -89,3 +91,13 @@ This document does not approve:
 - CI jobs.
 - Secrets changes.
 - Auth strategy changes.
+
+Before Scout creates the first migration or activates Supabase implementation directories, approval must be captured for:
+
+- The migration directory and naming convention.
+- Local validation and reset workflow.
+- RLS documentation and verification expectations.
+- Generated type ownership and check-in rules.
+- Environment variable and secret naming conventions.
+- The schema-specific implementation plan and Jira story that authorize the migration.
+- Any required ADRs for database architecture, auth strategy, backend ownership, shared packages, or CI strategy.
