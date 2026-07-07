@@ -9,6 +9,7 @@ Related documents:
 - `docs/database/DATABASE.md`: database planning overview and domain ownership.
 - `docs/database/MIGRATIONS.md`: proposed migration workflow.
 - `docs/database/RLS.md`: RLS planning expectations.
+- `docs/database/GENERATED_TYPES.md`: proposed generated type workflow.
 - `implementation/proposed/INFRA-001-database-foundation.md`: proposed Supabase foundation plan.
 - `implementation/proposed/PROFILE-002-v1-identity-field-set.md`: proposed v1 profile field set.
 - `implementation/proposed/PROFILE-003-profile-schema-and-rls.md`: future/proposed profile schema and RLS plan.
@@ -57,6 +58,8 @@ The local development workflow is not yet approved. Future plans should define:
 - Migration validation.
 - Generated type commands.
 - Required environment variables.
+
+See `docs/database/GENERATED_TYPES.md` for proposed generated type options, command shapes, and schema PR requirements.
 
 ## Environment and Secrets
 

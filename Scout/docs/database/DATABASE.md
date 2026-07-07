@@ -11,6 +11,7 @@ Related planning documents:
 - `docs/database/SUPABASE.md`: Supabase operating model.
 - `docs/database/MIGRATIONS.md`: proposed migration workflow.
 - `docs/database/RLS.md`: RLS planning expectations and table policy template.
+- `docs/database/GENERATED_TYPES.md`: proposed generated type workflow.
 - `implementation/proposed/INFRA-001-database-foundation.md`: proposed database foundation implementation plan.
 - `implementation/proposed/PROFILE-002-v1-identity-field-set.md`: proposed v1 Player Identity field set.
 - `implementation/proposed/PROFILE-003-profile-schema-and-rls.md`: future/proposed profile schema and RLS implementation plan.
@@ -149,6 +150,8 @@ Future schema plans should define how Supabase types are generated and consumed 
 - Future backend or Edge Function code.
 
 Generated files should not be hand-edited. Schema-changing PRs should state whether generated types changed or why not.
+
+See `docs/database/GENERATED_TYPES.md` for proposed generated type options, command shapes, PR notes, and approval boundaries.
 
 ## Edge Functions
 
