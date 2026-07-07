@@ -15,18 +15,21 @@ This repository is the future Scout monorepo. AI agents should optimize for main
 
 Use the Scout software factory pipeline:
 
-1. Product Vision
-2. Technical Plan
-3. Approval
-4. Jira Tickets
-5. Implementation
-6. CI
-7. Review
-8. Merge
+1. Idea
+2. Roadmap
+3. Implementation Tech Plan
+4. Approval
+5. Jira Epic
+6. Jira Stories
+7. Implementation
+8. Review + CI
+9. Complete
 
 ## Planning Rules
 
-- Create or update a technical plan before major feature implementation.
+- Use `roadmap/` for lightweight long-term domain backlog items.
+- Promote imminent work into `implementation/proposed/` before detailed engineering design begins.
+- Create or update an implementation tech plan before major feature implementation.
 - Mark architecture, database, API, design system, project organization, and long-term direction changes as proposals requiring approval.
 - Stop before generating implementation tickets that depend on unapproved proposals.
 - Break approved plans into small, sequential Jira tickets.

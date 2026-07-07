@@ -18,24 +18,28 @@ The web application currently lives in a separate repository and will be migrate
 
 Scout development should follow this pipeline:
 
-1. Product Vision
-2. Technical Plan
-3. Approval
-4. Jira Tickets
-5. Implementation
-6. CI
-7. Review
-8. Merge
+1. Idea
+2. Roadmap
+3. Implementation Tech Plan
+4. Approval
+5. Jira Epic
+6. Jira Stories
+7. Implementation
+8. Review + CI
+9. Complete
 
-Major feature work should not begin until an approved technical plan exists and has been broken into small, reviewable implementation tickets.
+Major feature work should not begin until a roadmap item has been promoted into an approved implementation tech plan and broken into small, reviewable Jira stories.
 
 ## Top-Level Structure
 
 - `Scout/`, `ScoutTests/`, `ScoutUITests/`, `Scout.xcodeproj`, and `fastlane/` contain the current iOS app and supporting project files.
+- `ROADMAP.md` is the executive planning dashboard.
 - `apps/` contains placeholders for future application locations.
 - `backend/` contains backend documentation, Supabase planning, and future backend assets.
 - `docs/` contains durable product, architecture, design, database, agent, and contribution documentation.
+- `roadmap/` contains lightweight living domain roadmaps.
 - `tech-plans/` contains proposed, approved, archived, and template technical plans.
+- `implementation/` contains detailed implementation tech plans as they move from proposed to complete.
 - `jira/` documents Jira project organization, conventions, and workflow.
 - `.github/` contains GitHub workflows, templates, and repository automation.
 - `AGENTS.md` contains repository-wide instructions for AI agents.

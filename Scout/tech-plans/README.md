@@ -4,6 +4,15 @@ This directory contains Scout technical plans.
 
 Every major feature should begin with a technical plan before implementation begins. A plan should define the product problem, user experience, technical design, risks, testing strategy, rollout approach, and Definition of Done.
 
+Long-term backlog planning should live in `../roadmap/`. Do not create placeholder implementation plans until work is imminent.
+
+Implementation-specific plans should live in `../implementation/` and move through:
+
+- `proposed/`
+- `approved/`
+- `in-progress/`
+- `complete/`
+
 Scout planning follows a three-tier architecture:
 
 - Level 1: Foundations define platform rules, such as Architecture, Design System, Player Identity, Database, and Security.

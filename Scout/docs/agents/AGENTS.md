@@ -53,16 +53,19 @@ Owns release readiness:
 
 ## Default Workflow
 
-1. Product Vision
-2. Technical Plan
-3. Approval
-4. Jira Tickets
-5. Implementation
-6. CI
-7. Review
-8. Merge
+1. Idea
+2. Roadmap
+3. Implementation Tech Plan
+4. Approval
+5. Jira Epic
+6. Jira Stories
+7. Implementation
+8. Review + CI
+9. Complete
 
-Major feature implementation should not begin without an approved technical plan.
+Major feature implementation should not begin without an approved implementation tech plan.
+
+Roadmaps in `roadmap/` are lightweight long-term backlogs. They should not contain detailed engineering design. When work is imminent, promote a roadmap item into `implementation/proposed/`.
 
 ## Domain-Level Plan Standard
 
@@ -110,6 +113,7 @@ Planning may explore these areas, but implementation tickets depending on them s
 
 Planning agents should inspect:
 
+- Relevant domain roadmap in `roadmap/`.
 - Relevant product docs in `docs/product/`.
 - Relevant architecture docs in `docs/architecture/`.
 - Relevant design docs in `docs/design/`.
@@ -122,7 +126,8 @@ Planning agents should inspect:
 
 Implementation agents should inspect:
 
-- The approved tech plan.
+- The approved implementation tech plan.
+- The relevant roadmap item.
 - The Jira ticket.
 - `AGENTS.md`.
 - Relevant docs.
