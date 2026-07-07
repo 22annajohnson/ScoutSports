@@ -11,6 +11,7 @@ Related planning documents:
 - `docs/database/SUPABASE.md`: Supabase operating model.
 - `docs/database/MIGRATIONS.md`: proposed migration workflow.
 - `docs/database/RLS.md`: RLS planning expectations and table policy template.
+- `docs/database/EDGE_FUNCTIONS.md`: proposed Edge Function planning template.
 - `docs/database/STORAGE.md`: proposed storage bucket planning template.
 - `docs/database/GENERATED_TYPES.md`: proposed generated type workflow.
 - `implementation/proposed/INFRA-001-database-foundation.md`: proposed database foundation implementation plan.
@@ -159,6 +160,8 @@ See `docs/database/GENERATED_TYPES.md` for proposed generated type options, comm
 ## Edge Functions
 
 Edge Functions are not approved yet. Future plans should define ownership, auth, secrets, inputs/outputs, idempotency, observability, and deployment expectations before creating functions.
+
+See `docs/database/EDGE_FUNCTIONS.md` for the proposed Edge Function planning template.
 
 ## Open Database Questions
 

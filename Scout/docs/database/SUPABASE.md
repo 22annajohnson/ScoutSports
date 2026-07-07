@@ -9,6 +9,7 @@ Related documents:
 - `docs/database/DATABASE.md`: database planning overview and domain ownership.
 - `docs/database/MIGRATIONS.md`: proposed migration workflow.
 - `docs/database/RLS.md`: RLS planning expectations.
+- `docs/database/EDGE_FUNCTIONS.md`: proposed Edge Function planning template.
 - `docs/database/STORAGE.md`: proposed storage bucket planning template.
 - `docs/database/GENERATED_TYPES.md`: proposed generated type workflow.
 - `implementation/proposed/INFRA-001-database-foundation.md`: proposed Supabase foundation plan.
