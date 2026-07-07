@@ -62,6 +62,40 @@ The repository currently contains the iOS app at the root and is being prepared 
 - The existing `ios-tests.yml` workflow must be renamed, refined, or split carefully during implementation. Do not add duplicate macOS build/test workflows that run the same expensive iOS work twice on every pull request.
 - There is not yet a documented CI status policy, branch protection policy, PR template, CODEOWNERS, Dependabot configuration, or separate documentation validation workflow.
 
+## INFRA-11 Approval Review
+
+Jira story: `INFRA-11` (`CI: Approve CI/CD foundation plan`).
+
+This review captures the implementation-readiness decisions needed before CI foundation implementation stories begin.
+
+### Approved for Implementation Planning
+
+- `develop` is the active integration branch for initial CI work.
+- Initial required checks are `Swift Build`, `Swift Tests`, `Docs Validation`, and `GitHub Actions Validation`.
+- Swift Build and Swift Tests should coordinate with the existing `.github/workflows/ios-tests.yml` workflow to avoid duplicate expensive macOS runs.
+- PR requirements should include Jira ticket, approved tech plan, affected repo area, summary, scope, validation, and risk/rollback notes.
+- Scout story point scale and owner/action labels in this plan are the planning reference for CI/CD foundation stories.
+
+### Deferred
+
+- Supabase migration validation waits for approved migration workflow, directories, and commands.
+- Web validation waits for approved web migration or web implementation planning.
+- Release/TestFlight/App Store automation waits for a separate approved release plan.
+- SwiftLint is not required unless existing adoption is confirmed or a separate approval story approves it.
+- Production branch strategy and stricter `main` protection wait until production release planning.
+
+### Owner Actions
+
+- Configure branch protection and required checks in GitHub settings.
+- Configure review requirements, merge settings, branch cleanup, Actions permissions, and secrets.
+- Confirm whether `develop` or `main` is the first protected branch.
+
+### Implementation Boundaries
+
+- Do not move iOS files or change repository structure as part of this plan.
+- Do not create duplicate macOS workflows that run the same build/test work twice per PR.
+- Do not introduce Supabase migrations, tables, buckets, Edge Functions, generated types, web validation, or release automation from this plan.
+
 ## Desired CI Architecture
 
 CI should start as a small set of GitHub Actions workflows with clear ownership and required checks.
