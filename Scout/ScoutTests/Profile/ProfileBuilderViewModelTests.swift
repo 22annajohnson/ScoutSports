@@ -62,7 +62,7 @@ final class ProfileBuilderViewModelTests: XCTestCase {
         XCTAssertEqual(profileRepository.replaceClubMembershipCalls.first, ["Club A", "Club B"])
     }
 
-    func test_saveProfile_whenOnlyOneMatchSignalEdited_onlyPatchesThatSignal() async {
+    func test_saveProfile_whenOnlyOneMatchSignalEdited_onlyPatchesThatSignal() async throws {
         let profileRepository = MockProfileRepository()
         let imageUploadService = MockImageUploadService()
         let userID = UUID()
@@ -87,7 +87,7 @@ final class ProfileBuilderViewModelTests: XCTestCase {
         XCTAssertNil(input.preferredMatchIntensity)
     }
 
-    func test_saveProfile_whenHomeCourtNameIsCleared_requestsNullHomeCourtWrites() async {
+    func test_saveProfile_whenHomeCourtNameIsCleared_requestsNullHomeCourtWrites() async throws {
         let profileRepository = MockProfileRepository()
         let imageUploadService = MockImageUploadService()
         let userID = UUID()
