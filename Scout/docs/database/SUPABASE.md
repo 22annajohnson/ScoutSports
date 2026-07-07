@@ -9,6 +9,7 @@ Related documents:
 - `docs/database/DATABASE.md`: database planning overview and domain ownership.
 - `docs/database/MIGRATIONS.md`: proposed migration workflow.
 - `docs/database/RLS.md`: RLS planning expectations.
+- `docs/database/GENERATED_TYPES.md`: proposed generated type workflow.
 - `implementation/proposed/INFRA-001-database-foundation.md`: proposed Supabase foundation plan.
 - `implementation/proposed/PROFILE-002-v1-identity-field-set.md`: proposed v1 profile field set.
 - `implementation/proposed/PROFILE-003-profile-schema-and-rls.md`: future/proposed profile schema and RLS plan.
@@ -63,6 +64,8 @@ Expected local workflow coverage:
 - Validation notes in the PR description.
 
 This document does not approve installing Supabase CLI in CI, linking a remote project, creating migrations, creating seed data, or committing generated types.
+
+See `docs/database/GENERATED_TYPES.md` for proposed generated type options, command shapes, and schema PR requirements.
 
 ## Environment and Secrets
 

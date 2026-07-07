@@ -19,6 +19,7 @@ INFRA
 - `docs/database/SUPABASE.md`
 - `docs/database/MIGRATIONS.md`
 - `docs/database/RLS.md`
+- `docs/database/GENERATED_TYPES.md`
 - `implementation/proposed/PROFILE-002-v1-identity-field-set.md`
 - `implementation/proposed/PROFILE-003-profile-schema-and-rls.md`
 
@@ -250,14 +251,36 @@ Generated types should help iOS, future web, and AI agents avoid schema drift.
 Proposed principles:
 
 - Generate types after migrations are applied to the expected target.
-- Check generated types into the repo only after the owning platform strategy is approved.
+- Do not generate or commit type files until the owning platform strategy is approved.
+- Check generated types into the repo only after the owning platform output path and review pattern are approved.
 - Avoid hand-editing generated files.
 - Type generation commands should be documented before first use.
-- PRs that change schema should state whether generated types changed or why not.
+- Schema-changing PRs must state whether generated types were updated, not changed, or deferred.
+- Local generation may be used for validation when approved, even if generated files are not committed.
+
+Proposed command shape:
+
+```text
+supabase gen types typescript --local > <approved-web-type-path>
+supabase gen types swift --local > <approved-ios-type-path>
+supabase gen types typescript --project-id <project-ref> > <approved-web-type-path>
+```
+
+Schema-changing PRs should include:
+
+- Target platform: iOS, web, Edge Functions, or not applicable.
+- Generation target: local database, `scout-dev`, or another approved project.
+- Command used, if generation ran.
+- Output path, if files were committed.
+- Reason for deferral, if files were not committed.
 
 Open decision:
 
 - Whether v1 commits generated types for iOS only, web only, both, or neither until monorepo migration is complete.
+- Which generated type commands and output paths Scout standardizes.
+- Whether CI validates generated type freshness after the first schema migration.
+
+See `docs/database/GENERATED_TYPES.md` for proposed generated type options, tradeoffs, PR notes, and approval boundaries.
 
 ## Storage Bucket Planning
 
