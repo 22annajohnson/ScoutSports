@@ -124,18 +124,45 @@ Proposed workflow:
 
 1. Pull latest `develop`.
 2. Review the approved implementation tech plan and Jira ticket.
-3. Start local Supabase when local workflow is available.
-4. Create a migration from the approved Jira ticket.
-5. Apply migration locally.
-6. Regenerate types if required.
-7. Run local validation and tests.
-8. Open PR with migration, docs, generated type updates, and validation notes.
+3. Confirm Supabase CLI is installed and the local environment is configured.
+4. Start local Supabase with the approved project configuration.
+5. Create a migration from the approved Jira ticket.
+6. Apply migrations to the local database.
+7. Load seed data if the schema plan requires it.
+8. Regenerate types if required.
+9. Run local validation, RLS checks, and affected app tests.
+10. Reset the local database and reapply migrations when the change depends on ordering or seed behavior.
+11. Open PR with migration, docs, generated type updates, and validation notes.
+
+Proposed command shape:
+
+```text
+supabase start
+supabase migration new <jira-key>_<short_description>
+supabase db reset
+supabase gen types <target> > <approved-generated-type-path>
+supabase stop
+```
+
+These commands are planning guidance only. Exact flags, project linking, generated type targets, and output paths must be approved before the first migration.
+
+Future database PRs should include validation notes for:
+
+- Local Supabase start/reset status.
+- Migration apply/reset result.
+- Seed data loaded or intentionally skipped.
+- Generated types updated or intentionally unchanged.
+- RLS positive and negative checks performed.
+- App or repository tests run.
+- Any manual dashboard inspection performed.
 
 Open questions:
 
 - Whether Scout will require Supabase CLI local stack for every database PR.
 - Whether local seed data should be required for all schema changes.
 - Whether generated types should be checked in for iOS, web, or both.
+- Whether `supabase db reset` is required for every database PR or only schema/seed ordering changes.
+- Which local RLS checks become required before CI coverage exists.
 
 ## Migration Naming Conventions
 
