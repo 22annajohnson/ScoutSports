@@ -103,14 +103,16 @@ Avoid tickets that combine unrelated UI, backend, data model, and CI changes unl
 Scout work should follow this pipeline:
 
 1. Idea
-2. Tech Plan
-3. Approval
-4. Jira
-5. Implementation
-6. Pull Request
-7. CI
-8. Review
-9. Merge
+2. Roadmap
+3. Implementation Tech Plan
+4. Approval
+5. Jira Epic
+6. Jira Stories
+7. Implementation
+8. Review + CI
+9. Complete
+
+Roadmap items should stay lightweight until work is imminent. Once a roadmap item is ready to begin, create a detailed implementation tech plan in `implementation/proposed/`. After approval, move it to `implementation/approved/`, create the Jira epic and stories, then move it through `implementation/in-progress/` and `implementation/complete/` as work progresses.
 
 ## Status Guidance
 
