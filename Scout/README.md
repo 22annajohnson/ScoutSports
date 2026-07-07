@@ -33,6 +33,7 @@ Major feature work should not begin until a roadmap item has been promoted into 
 ## Top-Level Structure
 
 - `Scout/`, `ScoutTests/`, `ScoutUITests/`, `Scout.xcodeproj`, and `fastlane/` contain the current iOS app and supporting project files.
+- `ROADMAP.md` is the executive planning dashboard.
 - `apps/` contains placeholders for future application locations.
 - `backend/` contains backend documentation, Supabase planning, and future backend assets.
 - `docs/` contains durable product, architecture, design, database, agent, and contribution documentation.
