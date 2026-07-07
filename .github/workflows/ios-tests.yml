@@ -8,6 +8,7 @@ on:
 
 jobs:
   test:
+    name: Swift Tests
     runs-on: macos-15
     defaults:
       run:
@@ -29,4 +30,8 @@ jobs:
         run: bundle install
 
       - name: Run tests
+        env:
+          SUPABASE_SCHEME: https
+          SUPABASE_HOST: example.supabase.co
+          SUPABASE_ANON_KEY: test-anon-key
         run: bundle exec fastlane ios tests
