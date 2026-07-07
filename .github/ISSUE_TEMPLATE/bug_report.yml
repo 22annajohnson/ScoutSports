@@ -1,0 +1,66 @@
+name: Bug report
+description: Report a reproducible Scout app, CI, docs, or infrastructure problem.
+title: "Bug: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form for initial bug intake. Jira remains Scout's authoritative execution tracker, so accepted work should be linked to or copied into a Jira ticket before implementation starts.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What went wrong?
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Repository area
+      options:
+        - iOS
+        - web
+        - Supabase
+        - docs
+        - CI/CD
+        - Not sure
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Include exact steps, commands, inputs, or screen path where possible.
+      placeholder: |
+        1. ...
+        2. ...
+        3. ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What should have happened?
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Logs, screenshots, or recordings
+      description: Add relevant logs, screenshots, recordings, crash text, or GitHub Actions links.
+  - type: input
+    id: jira
+    attributes:
+      label: Jira ticket
+      description: Link the Jira issue if one already exists.
+      placeholder: INFRA-123 or https://thescoutapp.atlassian.net/browse/...

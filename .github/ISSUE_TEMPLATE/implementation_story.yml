@@ -1,0 +1,71 @@
+name: Implementation story
+description: Capture proposed implementation work before or alongside Jira planning.
+title: "Implementation: "
+labels:
+  - implementation
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Jira is Scout's authoritative execution tracker. Do not start implementation from this GitHub issue alone; link the approved Jira story and tech plan before coding.
+  - type: input
+    id: jira
+    attributes:
+      label: Jira ticket
+      description: Required before implementation starts.
+      placeholder: INFRA-123
+    validations:
+      required: true
+  - type: input
+    id: tech-plan
+    attributes:
+      label: Approved tech plan
+      description: Link or path to the approved implementation/foundation plan.
+      placeholder: Scout/implementation/approved/PLAN-001-example.md
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Repository area
+      options:
+        - iOS
+        - web
+        - Supabase
+        - docs
+        - CI/CD
+    validations:
+      required: true
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What needs to be implemented?
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: What is included?
+    validations:
+      required: true
+  - type: textarea
+    id: out-of-scope
+    attributes:
+      label: Out of scope
+      description: What should not be changed in this work?
+    validations:
+      required: true
+  - type: textarea
+    id: validation
+    attributes:
+      label: Validation
+      description: What commands, checks, or review steps should prove the work?
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies or blockers
+      description: Link required tickets, PRs, approvals, or owner actions.

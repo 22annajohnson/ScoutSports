@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Scout Jira
+    url: https://thescoutapp.atlassian.net
+    about: Use Jira as the authoritative execution tracker for approved Scout work.
