@@ -366,11 +366,15 @@ Required documentation before implementation:
 - Required Supabase project refs.
 - Public anon key usage.
 - Service role key handling.
+- Database URL or connection string handling, if required.
+- Supabase access token handling, if required for CI.
 - CI secret names.
 - Rotation expectations.
 - Which apps consume each value.
 
 Any change to auth strategy, secret ownership, or CI secret propagation requires approval and may require an ADR.
+
+See `docs/database/SECRETS_AND_GITHUB.md` for proposed secret categories, GitHub integration expectations, and ADR triggers.
 
 ## GitHub and Supabase Integration Expectations
 

@@ -11,6 +11,7 @@ Related planning documents:
 - `docs/database/SUPABASE.md`: Supabase operating model.
 - `docs/database/MIGRATIONS.md`: proposed migration workflow.
 - `docs/database/RLS.md`: RLS planning expectations and table policy template.
+- `docs/database/SECRETS_AND_GITHUB.md`: proposed secrets and GitHub integration guidance.
 - `docs/database/EDGE_FUNCTIONS.md`: proposed Edge Function planning template.
 - `docs/database/STORAGE.md`: proposed storage bucket planning template.
 - `docs/database/GENERATED_TYPES.md`: proposed generated type workflow.
