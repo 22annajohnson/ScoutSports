@@ -11,6 +11,7 @@ Related planning documents:
 - `docs/database/SUPABASE.md`: Supabase operating model.
 - `docs/database/MIGRATIONS.md`: proposed migration workflow.
 - `docs/database/RLS.md`: RLS planning expectations and table policy template.
+- `docs/database/EDGE_FUNCTIONS.md`: proposed Edge Function planning template.
 - `implementation/proposed/INFRA-001-database-foundation.md`: proposed database foundation implementation plan.
 - `implementation/proposed/PROFILE-002-v1-identity-field-set.md`: proposed v1 Player Identity field set.
 - `implementation/proposed/PROFILE-003-profile-schema-and-rls.md`: future/proposed profile schema and RLS implementation plan.
@@ -153,6 +154,8 @@ Generated files should not be hand-edited. Schema-changing PRs should state whet
 ## Edge Functions
 
 Edge Functions are not approved yet. Future plans should define ownership, auth, secrets, inputs/outputs, idempotency, observability, and deployment expectations before creating functions.
+
+See `docs/database/EDGE_FUNCTIONS.md` for the proposed Edge Function planning template.
 
 ## Open Database Questions
 

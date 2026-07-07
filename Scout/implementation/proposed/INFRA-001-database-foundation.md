@@ -253,6 +253,8 @@ Potential future uses:
 Each Edge Function plan must define:
 
 - Owning domain.
+- Product use case and reason a function is required.
+- Trigger.
 - Inputs and outputs.
 - Auth requirements.
 - Secrets used.
@@ -262,6 +264,8 @@ Each Edge Function plan must define:
 - Deployment path.
 
 No Edge Function is approved by this plan.
+
+See `docs/database/EDGE_FUNCTIONS.md` for the proposed Edge Function planning template.
 
 ## Seed Data Strategy
 
