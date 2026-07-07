@@ -1,0 +1,29 @@
+name: GitHub Actions Validation
+
+on:
+  pull_request:
+    branches: [ develop ]
+    paths:
+      - "**/*.yml"
+      - "**/*.yaml"
+      - ".github/scripts/validate-yaml.rb"
+      - ".github/workflows/github-actions-validation.yml"
+  push:
+    branches: [ develop ]
+    paths:
+      - "**/*.yml"
+      - "**/*.yaml"
+      - ".github/scripts/validate-yaml.rb"
+      - ".github/workflows/github-actions-validation.yml"
+
+jobs:
+  github-actions-validation:
+    name: GitHub Actions Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate YAML
+        run: ruby .github/scripts/validate-yaml.rb .github/yaml-validation.yml
