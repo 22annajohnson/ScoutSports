@@ -10,8 +10,7 @@
 #     https://docs.fastlane.tools/plugins/available-plugins
 #
 
-# Uncomment the line if you want fastlane to automatically update itself
-update_fastlane
+# Keep fastlane pinned through Gemfile.lock so CI runs are reproducible.
 
 default_platform(:ios)
 
