@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import ScoutDesign
 
 struct FeedProfileChip: View {
     let profile: FeedProfileSnippet
