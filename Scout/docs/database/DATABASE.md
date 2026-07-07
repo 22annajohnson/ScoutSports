@@ -12,6 +12,7 @@ Related planning documents:
 - `docs/database/MIGRATIONS.md`: proposed migration workflow.
 - `docs/database/RLS.md`: RLS planning expectations and table policy template.
 - `docs/database/EDGE_FUNCTIONS.md`: proposed Edge Function planning template.
+- `docs/database/STORAGE.md`: proposed storage bucket planning template.
 - `docs/database/GENERATED_TYPES.md`: proposed generated type workflow.
 - `implementation/proposed/INFRA-001-database-foundation.md`: proposed database foundation implementation plan.
 - `implementation/proposed/PROFILE-002-v1-identity-field-set.md`: proposed v1 Player Identity field set.
@@ -122,6 +123,8 @@ Storage documentation should define:
 Profile media is the first expected storage domain requiring detailed documentation.
 
 Storage bucket creation requires an approved implementation plan. Expected future buckets include profile photos, action photos, event media, and chat attachments.
+
+See `docs/database/STORAGE.md` for the proposed storage bucket planning template.
 
 ## Migrations
 
