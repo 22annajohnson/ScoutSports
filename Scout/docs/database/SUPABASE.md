@@ -9,6 +9,7 @@ Related documents:
 - `docs/database/DATABASE.md`: database planning overview and domain ownership.
 - `docs/database/MIGRATIONS.md`: proposed migration workflow.
 - `docs/database/RLS.md`: RLS planning expectations.
+- `docs/database/STORAGE.md`: proposed storage bucket planning template.
 - `implementation/proposed/INFRA-001-database-foundation.md`: proposed Supabase foundation plan.
 - `implementation/proposed/PROFILE-002-v1-identity-field-set.md`: proposed v1 profile field set.
 - `implementation/proposed/PROFILE-003-profile-schema-and-rls.md`: future/proposed profile schema and RLS plan.

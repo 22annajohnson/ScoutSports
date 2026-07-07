@@ -228,6 +228,7 @@ Expected future buckets:
 Each bucket plan must define:
 
 - Bucket name.
+- Product use case and owning domain.
 - Public/private access.
 - Path convention.
 - Owner and access rules.
@@ -237,6 +238,8 @@ Each bucket plan must define:
 - Abuse/moderation considerations.
 
 No storage bucket is approved by this plan.
+
+See `docs/database/STORAGE.md` for the proposed storage bucket planning template.
 
 ## Edge Function Planning
 
