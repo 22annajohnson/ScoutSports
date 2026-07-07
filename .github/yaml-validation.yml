@@ -1,0 +1,12 @@
+include:
+  - .github/**/*.yml
+  - .github/**/*.yaml
+  - Scout/.github/**/*.yml
+  - Scout/.github/**/*.yaml
+exclude:
+  - "**/.build/**"
+  - "**/DerivedData/**"
+  - "**/node_modules/**"
+rules:
+  require_valid_yaml: true
+  validate_github_workflow_shape: true

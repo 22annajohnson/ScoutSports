@@ -7,8 +7,37 @@ on:
     branches: [ develop ]
 
 jobs:
+  ios-change-detection:
+    name: iOS Change Detection
+    runs-on: ubuntu-latest
+    outputs:
+      should-run-ios: ${{ steps.changed-files.outputs.should-run-ios }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect iOS-relevant changes
+        id: changed-files
+        env:
+          BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+        run: |
+          git diff --name-only "$BASE_SHA" "$HEAD_SHA" > changed-files.txt
+          cat changed-files.txt
+
+          if grep -E '^Scout/(Gemfile|Gemfile\.lock|Makefile|Scout/|Scout\.xcodeproj/|ScoutDesign/|ScoutTests/|ScoutUITests/|fastlane/)' changed-files.txt; then
+            echo "should-run-ios=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "should-run-ios=false" >> "$GITHUB_OUTPUT"
+          fi
+
   test:
     name: Swift Tests
+    needs: ios-change-detection
+    if: needs.ios-change-detection.outputs.should-run-ios == 'true'
     runs-on: macos-15
     defaults:
       run:

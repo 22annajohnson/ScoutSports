@@ -4,6 +4,8 @@ This directory contains GitHub workflows, templates, and repository automation f
 
 Existing iOS CI lives under `workflows/`. Future monorepo changes should update GitHub automation through approved technical plans when build, test, packaging, or deployment behavior changes.
 
+The `iOS Tests` workflow uses a lightweight change-detection job so expensive macOS test runs start only for app-relevant changes: the iOS app, Xcode project, tests, design package, Fastlane, Bundler files, or Makefile. Documentation-only changes, planning files, PR/issue templates, CODEOWNERS, Dependabot config, and GitHub workflow/config changes should rely on the docs and YAML validation workflows instead of launching iOS tests.
+
 ## Local iOS CI Validation
 
 Run the Swift tests check with safe placeholder Supabase configuration from the repository root:
