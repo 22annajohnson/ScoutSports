@@ -19,3 +19,5 @@ make test
 The placeholder Supabase values are allowed only for build/test workflows that need the app to initialize without contacting a real backend. Unit and UI test launch should not require real Supabase calls, and real Supabase secrets must not be exposed to ordinary pull request workflows.
 
 Do not weaken `SupabaseConfig` production validation. Outside controlled test and CI contexts, Scout should still fail loudly when required Supabase configuration is missing.
+
+Fastlane should run from the repository-pinned bundle during CI. Do not enable `update_fastlane` in the Fastfile for pull request checks, because self-updating can replace the locked Fastlane gem during a run and break Bundler before tests execute.
