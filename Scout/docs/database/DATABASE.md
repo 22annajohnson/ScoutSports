@@ -103,7 +103,7 @@ RLS policies must be documented before implementation. Each table should define:
 - Whether admin or service role access is required.
 - How blocked, deleted, private, or hidden users affect access.
 
-See `docs/database/RLS.md` for the proposed RLS planning checklist.
+Future schema plans must copy the table policy template in `docs/database/RLS.md` or provide equivalent coverage before migration work begins.
 
 ## Storage
 
