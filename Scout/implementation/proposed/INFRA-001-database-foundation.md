@@ -55,6 +55,35 @@ Before Scout creates its first repo-owned migration, the team needs a database f
 - No repository-owned migration workflow is approved until this plan is approved.
 - Dashboard edits may be used only for inspection/debugging unless a future approved emergency process says otherwise.
 
+## INFRA-2 Operating Model Review
+
+Jira story: `INFRA-2` (`Infra: Approve Supabase operating model`).
+
+This review captures the operating model decisions needed before any database implementation begins. The plan remains `Proposed` until the product owner explicitly approves moving it forward.
+
+### Approved for Planning
+
+- `scout-dev` is the current Supabase project for development planning, inspection, and future approved development migrations.
+- Staging and production Supabase projects are deferred until a later approved plan defines environment ownership, auth/deployment expectations, promotion flow, and any required ADRs.
+- Repository migrations are the future source of truth once the first migration workflow is approved.
+- Supabase dashboard edits are limited to inspection, debugging, and temporary exploration. They are not durable schema changes unless converted into an approved repository migration.
+- No Supabase folders, migrations, generated types, storage buckets, Edge Functions, CI jobs, schema changes, RLS policies, or production code are authorized by this plan while it remains proposed.
+
+### Revised or Clarified
+
+- `backend/supabase/` remains a reserved documentation and planning area until an approved implementation ticket activates specific subdirectories.
+- The live Supabase database is an execution target for approved changes, not the canonical source of schema truth.
+- Generated type strategy, local Supabase workflow, seed data, and CI validation remain planning topics until their follow-up INFRA stories are approved.
+
+### Deferred Decisions
+
+- Exact staging and production project creation timing.
+- Whether Supabase branching is used.
+- Whether every database PR must use the Supabase CLI local stack.
+- Which generated types are checked in for iOS, future web, or both.
+- Which CI jobs validate migrations, generated types, seed data, and RLS checks.
+- Any emergency process for manual dashboard changes.
+
 ## Supabase Project Strategy
 
 ### v1 Project
@@ -296,6 +325,8 @@ Before the first migration is created, Scout must approve:
 - Environment variable and secret naming convention.
 - Initial implementation tech plan for the specific schema change.
 - Any required ADRs for database architecture, auth strategy, backend ownership, shared packages, or CI strategy.
+
+Approval must be visible in the relevant Jira story and implementation plan before a PR creates the first migration or activates Supabase implementation directories.
 
 ## Risks
 
