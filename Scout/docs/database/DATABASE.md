@@ -6,6 +6,15 @@ This document defines the planning foundation for Scout's Supabase-backed data m
 
 Schema, Row Level Security, storage, auth, and migration changes require explicit approval through a technical plan.
 
+Related planning documents:
+
+- `docs/database/SUPABASE.md`: Supabase operating model.
+- `docs/database/MIGRATIONS.md`: proposed migration workflow.
+- `docs/database/RLS.md`: RLS planning expectations and table policy template.
+- `implementation/proposed/INFRA-001-database-foundation.md`: proposed database foundation implementation plan.
+- `implementation/proposed/PROFILE-002-v1-identity-field-set.md`: proposed v1 Player Identity field set.
+- `implementation/proposed/PROFILE-003-profile-schema-and-rls.md`: future/proposed profile schema and RLS implementation plan.
+
 ## Current State
 
 Scout uses Supabase for authentication, data, and storage. The iOS app currently contains Supabase-facing code under:
@@ -16,6 +25,29 @@ Scout uses Supabase for authentication, data, and storage. The iOS app currently
 - `Scout/Data/Supabase`
 
 The canonical database schema should be documented here or in `backend/supabase/` as it becomes available.
+
+Current planning assumptions:
+
+- `scout-dev` is the active Supabase development project.
+- Staging and production projects will be introduced later through approved planning.
+- Migrations in the repository should become the authoritative schema history after approval.
+- Supabase dashboard edits are for inspection/debugging only, not durable schema changes.
+- No schema, migration, RLS, storage, or Edge Function change is approved by this document alone.
+
+## Domain Ownership
+
+Scout's data model should follow domain ownership boundaries. Domains own their own state and expose approved contracts to other domains.
+
+Expected future ownership:
+
+- Profile owns player identity, profile fields, profile readiness, profile privacy, and profile media metadata.
+- Discovery owns swipe decisions, recommendation decisions, exclusions, and matches.
+- Events owns events, organizer state, event participants, event lifecycle, and participation state.
+- Chat owns conversations, conversation membership, and messages.
+- Notifications owns notification records, delivery state, and notification preferences after approval.
+- Infrastructure owns migration workflow, RLS standards, generated type workflow, environment strategy, and shared Supabase operating conventions.
+
+Domains should not directly mutate another domain's data. Cross-domain features should consume approved contracts such as Profile Summary, Candidate Card, Event Card, Chat Summary, or Notification Summary. If a feature needs data that an existing contract does not provide, it should propose a contract change through an approved implementation tech plan rather than reaching into another domain's underlying tables.
 
 ## Core Entity Candidates
 
@@ -71,6 +103,8 @@ RLS policies must be documented before implementation. Each table should define:
 - Whether admin or service role access is required.
 - How blocked, deleted, private, or hidden users affect access.
 
+See `docs/database/RLS.md` for the proposed RLS planning checklist.
+
 ## Storage
 
 Storage documentation should define:
@@ -85,6 +119,8 @@ Storage documentation should define:
 
 Profile media is the first expected storage domain requiring detailed documentation.
 
+Storage bucket creation requires an approved implementation plan. Expected future buckets include profile photos, action photos, event media, and chat attachments.
+
 ## Migrations
 
 Future migration workflow should define:
@@ -97,6 +133,26 @@ Future migration workflow should define:
 - How seed data is handled.
 
 No migration workflow is approved by this document alone.
+
+See `docs/database/MIGRATIONS.md` for the proposed migration workflow.
+
+## Supabase Operating Model
+
+See `docs/database/SUPABASE.md` for the proposed Supabase project, source-of-truth, local development, secrets, and GitHub integration model.
+
+## Generated Types
+
+Future schema plans should define how Supabase types are generated and consumed by:
+
+- Current iOS code.
+- Future web code.
+- Future backend or Edge Function code.
+
+Generated files should not be hand-edited. Schema-changing PRs should state whether generated types changed or why not.
+
+## Edge Functions
+
+Edge Functions are not approved yet. Future plans should define ownership, auth, secrets, inputs/outputs, idempotency, observability, and deployment expectations before creating functions.
 
 ## Open Database Questions
 
