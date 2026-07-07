@@ -9,6 +9,7 @@ Related documents:
 - `docs/database/DATABASE.md`: database planning overview and domain ownership.
 - `docs/database/MIGRATIONS.md`: proposed migration workflow.
 - `docs/database/RLS.md`: RLS planning expectations.
+- `docs/database/SECRETS_AND_GITHUB.md`: proposed secrets and GitHub integration guidance.
 - `implementation/proposed/INFRA-001-database-foundation.md`: proposed Supabase foundation plan.
 - `implementation/proposed/PROFILE-002-v1-identity-field-set.md`: proposed v1 profile field set.
 - `implementation/proposed/PROFILE-003-profile-schema-and-rls.md`: future/proposed profile schema and RLS plan.
@@ -70,6 +71,8 @@ Future plans should document:
 - Local `.env` expectations.
 - CI secret names.
 - Rotation and revocation expectations.
+
+See `docs/database/SECRETS_AND_GITHUB.md` for proposed local environment categories, CI secret categories, GitHub integration expectations, and ADR triggers.
 
 ## GitHub Integration
 

@@ -11,6 +11,7 @@ Related planning documents:
 - `docs/database/SUPABASE.md`: Supabase operating model.
 - `docs/database/MIGRATIONS.md`: proposed migration workflow.
 - `docs/database/RLS.md`: RLS planning expectations and table policy template.
+- `docs/database/SECRETS_AND_GITHUB.md`: proposed secrets and GitHub integration guidance.
 - `implementation/proposed/INFRA-001-database-foundation.md`: proposed database foundation implementation plan.
 - `implementation/proposed/PROFILE-002-v1-identity-field-set.md`: proposed v1 Player Identity field set.
 - `implementation/proposed/PROFILE-003-profile-schema-and-rls.md`: future/proposed profile schema and RLS implementation plan.
