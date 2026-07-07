@@ -1,0 +1,24 @@
+include:
+  - AGENTS.md
+  - README.md
+  - pull_request_template.md
+  - Scout/AGENTS.md
+  - Scout/README.md
+  - Scout/ROADMAP.md
+  - Scout/DesignTasks.md
+  - Scout/SwipeCardTasks.md
+  - Scout/apps/**/*.md
+  - Scout/backend/**/*.md
+  - Scout/docs/**/*.md
+  - Scout/implementation/**/*.md
+  - Scout/jira/**/*.md
+  - Scout/roadmap/**/*.md
+  - Scout/tech-plans/**/*.md
+exclude:
+  - "**/.build/**"
+  - "**/DerivedData/**"
+  - "**/node_modules/**"
+rules:
+  require_utf8: true
+  reject_conflict_markers: true
+  require_balanced_fences: true
