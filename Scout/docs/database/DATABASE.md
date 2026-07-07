@@ -12,6 +12,8 @@ Related planning documents:
 - `docs/database/MIGRATIONS.md`: proposed migration workflow.
 - `docs/database/RLS.md`: RLS planning expectations and table policy template.
 - `docs/database/SECRETS_AND_GITHUB.md`: proposed secrets and GitHub integration guidance.
+- `docs/database/STORAGE.md`: proposed storage bucket planning template.
+- `docs/database/GENERATED_TYPES.md`: proposed generated type workflow.
 - `implementation/proposed/INFRA-001-database-foundation.md`: proposed database foundation implementation plan.
 - `implementation/proposed/PROFILE-002-v1-identity-field-set.md`: proposed v1 Player Identity field set.
 - `implementation/proposed/PROFILE-003-profile-schema-and-rls.md`: future/proposed profile schema and RLS implementation plan.
@@ -104,7 +106,7 @@ RLS policies must be documented before implementation. Each table should define:
 - Whether admin or service role access is required.
 - How blocked, deleted, private, or hidden users affect access.
 
-See `docs/database/RLS.md` for the proposed RLS planning checklist.
+Future schema plans must copy the table policy template in `docs/database/RLS.md` or provide equivalent coverage before migration work begins.
 
 ## Storage
 
@@ -121,6 +123,8 @@ Storage documentation should define:
 Profile media is the first expected storage domain requiring detailed documentation.
 
 Storage bucket creation requires an approved implementation plan. Expected future buckets include profile photos, action photos, event media, and chat attachments.
+
+See `docs/database/STORAGE.md` for the proposed storage bucket planning template.
 
 ## Migrations
 
@@ -150,6 +154,8 @@ Future schema plans should define how Supabase types are generated and consumed 
 - Future backend or Edge Function code.
 
 Generated files should not be hand-edited. Schema-changing PRs should state whether generated types changed or why not.
+
+See `docs/database/GENERATED_TYPES.md` for proposed generated type options, command shapes, PR notes, and approval boundaries.
 
 ## Edge Functions
 

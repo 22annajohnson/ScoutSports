@@ -10,6 +10,8 @@ Related documents:
 - `docs/database/MIGRATIONS.md`: proposed migration workflow.
 - `docs/database/RLS.md`: RLS planning expectations.
 - `docs/database/SECRETS_AND_GITHUB.md`: proposed secrets and GitHub integration guidance.
+- `docs/database/STORAGE.md`: proposed storage bucket planning template.
+- `docs/database/GENERATED_TYPES.md`: proposed generated type workflow.
 - `implementation/proposed/INFRA-001-database-foundation.md`: proposed Supabase foundation plan.
 - `implementation/proposed/PROFILE-002-v1-identity-field-set.md`: proposed v1 profile field set.
 - `implementation/proposed/PROFILE-003-profile-schema-and-rls.md`: future/proposed profile schema and RLS plan.
@@ -50,14 +52,22 @@ Do not create Supabase folders, migrations, generated types, storage buckets, or
 
 ## Local Development
 
-The local development workflow is not yet approved. Future plans should define:
+The local development workflow is not yet active. Future database implementation stories should use the proposed workflow in `docs/database/MIGRATIONS.md` unless the approved story intentionally revises it.
 
-- Supabase CLI usage.
-- Local project start/reset commands.
-- Seed data loading.
-- Migration validation.
-- Generated type commands.
+Expected local workflow coverage:
+
+- Supabase CLI start/stop usage.
+- Local database reset behavior.
+- Migration apply validation.
+- Seed data loading when required by the schema plan.
+- Generated type commands after schema changes.
+- RLS positive and negative checks.
 - Required environment variables.
+- Validation notes in the PR description.
+
+This document does not approve installing Supabase CLI in CI, linking a remote project, creating migrations, creating seed data, or committing generated types.
+
+See `docs/database/GENERATED_TYPES.md` for proposed generated type options, command shapes, and schema PR requirements.
 
 ## Environment and Secrets
 
