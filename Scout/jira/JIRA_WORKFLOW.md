@@ -71,6 +71,23 @@ Ticket descriptions should include:
 
 Prefer tickets that can be completed in a few hours.
 
+Story points estimate developer-day effort for an AI-assisted workflow, including both agent implementation time and human review time.
+
+Use fractional story points:
+
+- `0.25`: Agent can complete the work and a human can review it in about 2 total hours.
+- `0.5`: Agent implementation takes about 2 hours and human review takes about 2 hours.
+- `1`: Roughly one developer day of combined implementation, validation, review, and revision effort.
+- `2+`: Larger than one developer day and should usually be split unless there is a clear reason not to.
+
+When estimating, include:
+
+- Agent implementation time.
+- Human review time.
+- Expected revision time.
+- Validation time.
+- Documentation or ticket handoff time.
+
 Tickets should be:
 
 - Independently reviewable
