@@ -70,13 +70,49 @@ Each migration PR should document:
 
 ## Local Validation
 
-Future workflow should define:
+Future workflow should validate database changes against a local Supabase stack before PR review when the approved story requires a migration, seed change, generated type update, or RLS change.
 
-- How to apply migrations locally.
-- How to reset local state.
-- How to run RLS checks.
-- How to regenerate types.
-- How to validate seed data.
+Proposed local workflow:
+
+1. Pull latest `develop`.
+2. Review the approved implementation plan and Jira story.
+3. Confirm the Supabase CLI is available.
+4. Start the local Supabase stack.
+5. Create or apply the approved migration.
+6. Reset the local database when validating migration ordering, seed data, or RLS behavior.
+7. Load seed data if the approved schema plan requires it.
+8. Regenerate generated types if the approved type strategy requires it.
+9. Run required RLS checks and affected app or repository tests.
+10. Stop the local Supabase stack when validation is complete.
+
+Proposed command shape:
+
+```text
+supabase start
+supabase migration new <jira-key>_<short_description>
+supabase db reset
+supabase gen types <target> > <approved-generated-type-path>
+supabase stop
+```
+
+These commands are examples until Scout approves exact CLI usage, project linking, generated type targets, and output paths.
+
+Future database PRs should document:
+
+- Whether local Supabase started successfully.
+- Which migrations were applied or reset.
+- Whether seed data was loaded or intentionally skipped.
+- Whether generated types were updated or intentionally unchanged.
+- Which RLS positive and negative checks were performed.
+- Which app or repository tests were run.
+- Any manual dashboard inspection performed.
+
+Open questions:
+
+- Whether every database PR requires `supabase db reset`.
+- Whether local seed data is required for all schema changes or only selected domains.
+- Which generated type targets are required for iOS and future web.
+- Which RLS checks are required before automated database tests exist.
 
 ## Rollback Philosophy
 

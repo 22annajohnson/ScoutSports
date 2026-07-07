@@ -47,14 +47,20 @@ Do not create Supabase folders, migrations, generated types, storage buckets, or
 
 ## Local Development
 
-The local development workflow is not yet approved. Future plans should define:
+The local development workflow is not yet active. Future database implementation stories should use the proposed workflow in `docs/database/MIGRATIONS.md` unless the approved story intentionally revises it.
 
-- Supabase CLI usage.
-- Local project start/reset commands.
-- Seed data loading.
-- Migration validation.
-- Generated type commands.
+Expected local workflow coverage:
+
+- Supabase CLI start/stop usage.
+- Local database reset behavior.
+- Migration apply validation.
+- Seed data loading when required by the schema plan.
+- Generated type commands after schema changes.
+- RLS positive and negative checks.
 - Required environment variables.
+- Validation notes in the PR description.
+
+This document does not approve installing Supabase CLI in CI, linking a remote project, creating migrations, creating seed data, or committing generated types.
 
 ## Environment and Secrets
 
