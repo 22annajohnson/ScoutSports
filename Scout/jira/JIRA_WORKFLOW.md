@@ -114,6 +114,20 @@ Scout work should follow this pipeline:
 
 Roadmap items should stay lightweight until work is imminent. Once a roadmap item is ready to begin, create a detailed implementation tech plan in `implementation/proposed/`. After approval, move it to `implementation/approved/`, create the Jira epic and stories, then move it through `implementation/in-progress/` and `implementation/complete/` as work progresses.
 
+## Planning Authority
+
+Jira controls execution, not upstream product or architecture decisions. Tickets must fit inside this authority chain:
+
+1. Product docs control product direction.
+2. Architecture docs and ADRs control system structure and durable technical direction.
+3. Approved tech plans control implementation approach.
+4. Jira epics group approved work.
+5. Jira stories control executable scope.
+
+If a Jira issue conflicts with product docs, architecture docs, an ADR, or an approved tech plan, the issue is not ready for implementation. Agents should stop, document the conflict, and wait for the owning planning artifact or ticket to be updated.
+
+Jira stories may narrow the scope of an approved plan, but they must not expand product behavior, architecture, repository organization, database ownership, auth strategy, shared contracts, CI behavior, or long-term technical direction without the required approval.
+
 ## Status Guidance
 
 Suggested Jira statuses:
