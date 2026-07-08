@@ -466,6 +466,46 @@ Organizer responsibilities may include:
 
 Organizer tools should be powerful enough to keep games viable but constrained enough to protect participants from unfair or opaque behavior.
 
+### SOCIAL-13 Organizer Responsibility Review
+
+Jira story: `SOCIAL-13` (`Events: Document organizer responsibilities and trust rules`).
+
+This review clarifies organizer responsibilities for future planning. It does not implement organizer dashboards, verification, reputation, moderation, messaging, participant states, or permissions.
+
+Authoritative V1 organizer responsibilities:
+
+| Responsibility | V1 Guidance | Future Hooks |
+| --- | --- | --- |
+| Event accuracy | Organizer is responsible for accurate sport, time, capacity, skill expectations, venue/location language, and description. | Repeated inaccurate events may inform future trust or moderation review. |
+| Communication | Organizer should communicate material changes and cancellations clearly through approved update, notification, or chat surfaces. | Automated reminders, announcement tools, and event chat require later plans. |
+| Participant fit | Organizer may approve, decline, remove, or waitlist participants only when the approved participation model allows it. | Approval history and fairness review may inform future moderation. |
+| Capacity management | Organizer should keep capacity and participation state aligned with actual event viability. | Waitlist automation and capacity optimization are future work. |
+| Cancellation | Organizer should cancel when the event is no longer viable and provide a reason or recovery path where supported. | Cancellation patterns may inform future reliability signals. |
+| Safety escalation | Organizer may report abuse or unsafe behavior through approved safety channels. | Moderation workflow, evidence handling, and enforcement are future Trust & Safety work. |
+| Trust maintenance | Organizer reliability is a product signal, but not a punitive v1 mechanic by itself. | Verification, reputation, badges, no-show handling, and organizer scoring require explicit approval. |
+
+V1 permission boundaries:
+
+- Organizer permissions are scoped to the event they organize.
+- Organizer actions must be valid for the current event lifecycle state.
+- Organizer permissions do not allow bypassing visibility, location precision, blocked-user, restricted-account, or participant privacy rules.
+- Organizer decisions that affect participant access should be understandable and reviewable in future implementation plans.
+- Organizer tools must not expose full Player Identity data; they consume approved profile contracts.
+- Organizer actions that affect notifications, chat, maps, recommendations, or feed visibility require approved downstream contracts.
+
+Deferred trust and reputation hooks:
+
+- Organizer verification.
+- Organizer reliability score.
+- Participant reputation or attendance score.
+- No-show penalties.
+- Late-cancellation penalties.
+- Automated moderation or enforcement.
+- Public organizer badges.
+- Organizer dashboard analytics.
+
+These hooks should remain conceptual until approved Trust & Safety, reputation, analytics, and Events implementation plans define data ownership, fairness rules, appeal/recovery behavior, and privacy boundaries.
+
 ## Safety & Trust Principles
 
 Safety and trust are first-class event concerns.
