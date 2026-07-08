@@ -561,6 +561,54 @@ Future versions may add:
 
 Advanced features should not expand v1 scope unless explicitly approved. They should be introduced through new versioned plans that preserve existing lifecycle, ownership, visibility, and contract assumptions.
 
+### SOCIAL-10 V1 Community Game Scope
+
+Jira story: `SOCIAL-10` (`Events: Define V1 community game scope and success metrics`).
+
+This review narrows the approved EVENT-001 direction into the V1 implementation-planning baseline. It does not authorize UI, schema, service, notification, chat, map, payment, reservation, league, or tournament implementation.
+
+V1 should support lightweight community games where one organizer helps compatible players coordinate real-world play.
+
+In V1 scope:
+
+- Single-session community games or open-play style meetups.
+- One organizer responsible for event accuracy, updates, cancellation, and participant coordination.
+- One sport per event.
+- Clear time, approximate location, skill expectation, capacity, and participation status.
+- Join or request-to-join flow, depending on the future participant-permission plan.
+- Basic participant list or participant summary, subject to approved Event and Player Identity contracts.
+- Basic organizer updates and cancellation messaging, subject to future notification/chat plans.
+- Location visibility that starts coarse and reveals more detail only through approved visibility rules.
+
+Out of V1 scope unless a later approved plan explicitly expands it:
+
+- Tournaments.
+- Leagues.
+- Payments.
+- Court or venue reservations.
+- Recurring-event automation.
+- Advanced organizer dashboard workflows.
+- Automated waitlist optimization.
+- Attendance verification or check-in.
+- No-show scoring or reputation penalties.
+- Public web event pages.
+- Weather automation.
+- Club or team management.
+
+V1 success metrics should prioritize completed, positive play outcomes:
+
+| Metric | Why It Matters | Planning Notes |
+| --- | --- | --- |
+| Completed games | Measures whether Scout turns interest into actual play. | Primary health signal; should outweigh raw event creation count. |
+| Join conversion | Shows whether event detail and expectations are clear enough to commit. | Interpret with capacity and visibility context. |
+| Attendance rate | Measures reliability after commitment. | Requires careful future attendance semantics before punitive use. |
+| Cancellation rate | Surfaces organizer reliability and event quality issues. | Track organizer-initiated and participant-initiated cancellations separately in future plans. |
+| Organizer reliability | Indicates whether organizers keep event details accurate and communicate changes. | Reputation or trust use remains future work. |
+| Participant satisfaction | Captures whether the game was worthwhile after completion. | Collection method is future analytics/product work. |
+| Repeat participation | Shows whether Events creates durable real-world value. | Should be interpreted alongside safety and inclusion signals. |
+
+Event creation volume is a diagnostic signal only. It should not be treated as a V1 success metric unless paired with completion, attendance, cancellation, and satisfaction outcomes.
+
 ## Goals / Non-goals
 
 ### Goals
