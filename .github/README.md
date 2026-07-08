@@ -8,6 +8,8 @@ The `iOS Tests` workflow uses a lightweight change-detection job so expensive ma
 
 Required validation workflows should not use top-level `paths` filters. GitHub leaves required checks pending when a workflow is skipped before it creates a check run, so `Docs Validation` and `GitHub Actions Validation` always start on pull requests and pushes to `develop`. Each job performs its own changed-file detection and exits successfully without running the validator when no relevant files changed.
 
+Dependabot version updates are configured in `dependabot.yml` for the package surfaces currently present in the repository: GitHub Actions at the repository root, Bundler under `Scout/`, and the Swift package under `Scout/ScoutDesign/`. Each ecosystem checks weekly on Monday morning, targets `develop`, and limits version-update pull requests to two open PRs per ecosystem so dependency work stays reviewable. No private registries or secrets are configured. Dependabot applies its standard dependency labels unless repository owners customize labels in GitHub.
+
 ## Local iOS CI Validation
 
 Run the Swift tests check with safe placeholder Supabase configuration from the repository root:
