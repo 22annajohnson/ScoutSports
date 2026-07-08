@@ -89,6 +89,18 @@ Conceptual data types are not SQL decisions.
 
 ## Minimum Profile Requirements
 
+Readiness states are planning contracts for downstream consumers. They do not define database schema, generated types, onboarding enforcement, or implementation logic.
+
+| Readiness State | Required Fields | Recommended Fields | Downstream Consumers | Dependencies and Notes |
+| --- | --- | --- | --- | --- |
+| Account Created | `account_status`, `created_at`, `profile_completion_state` | None | Onboarding, AuthGate, Trust & Safety, Analytics | Created after authentication. Does not make a user discoverable or eligible for social surfaces. |
+| Basic Identity | Account Created fields, `display_name` | `profile_photo` | Onboarding, Profile editing, Chat fallback summaries, Notifications | Supports human recognition before sports readiness. `profile_photo` remains optional per SOCIAL-24. |
+| Discovery Ready | Basic Identity fields, `sports`, `primary_sport`, `skill_level_by_sport` for primary sport, `profile_visibility`, `discoverable = true`, `account_status = active`, plus `home_area` and `location_precision` when location-based Discovery is active | `profile_photo`, `play_intent`, `travel_radius` | Discovery, Recommendations, Search, Feed, Public Profile summaries | `discoverable` must remain consent- and readiness-dependent. Location must be coarse until schema/privacy planning defines precision. |
+| Event Creator Ready | Discovery Ready fields, event-relevant sport/skill context, `account_status = active` | `profile_photo`, `play_intent`, availability fields, future verification/reputation signals | Events, Feed, Notifications, Chat, Trust & Safety | Photo, verification, reputation, and completed availability are deferred trust gates, not v1 readiness blockers unless a later Events/Trust plan changes them. |
+| Event Join Ready | `display_name`, `sports`, event-relevant sport/skill when event rules require it, `profile_visibility`, `account_status = active` | `profile_photo`, `home_area` or event-area compatibility, `play_intent` | Events, Chat, Notifications, Organizer participant summaries | Event-specific eligibility may add sport/skill constraints, but profile readiness should not expose private fields outside approved event contracts. |
+| Chat Ready | `display_name`, `profile_visibility`, `account_status = active` | `profile_photo`, sports context when tied to a match or event | Chat, Notifications, Match summaries, Event participant summaries | Chat must use the approved Chat Summary contract and avoid exposing private profile fields. |
+| Fully Complete | Discovery Ready and Event Ready fields, `bio`, `action_photo`, `preferred_days`, `preferred_times`, `travel_radius`, `preferred_play_style` | `username`, richer media, future trust/reputation signals | Discovery, Events, Feed, Recommendations, Public Profile, Search | Enrichment state only. It should improve quality and trust without becoming a hidden v1 gate. |
+
 ### Discovery
 
 Minimum proposed Discovery Ready profile:
@@ -114,11 +126,20 @@ Strongly recommended but not required:
 Minimum proposed Event Creator Ready profile:
 
 - Discovery Ready requirements.
-- `profile_photo` recommended.
-- `play_intent` recommended.
 - No restricted account status.
 
-Open decision: whether organizers must have profile photo, verified email/phone, or minimum reputation before creating events.
+Recommended but not required for v1 readiness:
+
+- `profile_photo`
+- `play_intent`
+- Availability fields.
+
+Deferred trust gates:
+
+- Required photo.
+- Verified email or phone.
+- Minimum reputation.
+- Completed availability.
 
 ### Joining an Event
 
@@ -153,56 +174,125 @@ Chat should use the approved Chat Summary contract and avoid exposing private pr
 
 ## Profile Completion Levels
 
+Completion levels are lifecycle labels derived from the readiness rules above. They should degrade gracefully when optional fields are missing.
+
 ### Account Created
 
 User has authenticated and system fields exist.
 
-Expected fields:
+Required fields:
 
 - `account_status`
 - `created_at`
 - `profile_completion_state`
 
+Downstream consumers:
+
+- Onboarding
+- AuthGate
+- Trust & Safety
+- Analytics
+
 ### Basic Identity
 
 User can recognize and edit their identity.
 
-Expected fields:
+Required fields:
 
 - `display_name`
-- Optional `profile_photo`
+
+Recommended fields:
+
+- `profile_photo`
+
+Downstream consumers:
+
+- Onboarding
+- Profile editing
+- Chat fallback summaries
+- Notifications
 
 ### Discovery Ready
 
 User can appear in discovery and recommendations.
 
-Expected fields:
+Required fields:
 
 - Basic Identity.
 - `sports`
 - `primary_sport`
 - `skill_level_by_sport` for primary sport.
-- `home_area` if location-based discovery is active.
 - `profile_visibility`
-- `discoverable`
-- `location_precision`
+- `discoverable = true`
+- `account_status = active`
+- `home_area` if location-based discovery is active.
+- `location_precision` if location-based discovery is active.
+
+Recommended fields:
+
+- `profile_photo`
+- `play_intent`
+- `travel_radius`
+
+Downstream consumers:
+
+- Discovery
+- Recommendations
+- Search
+- Feed
+- Public Profile summaries
 
 ### Event Ready
 
 User can create or join lightweight community games, subject to organizer/event rules.
 
-Expected fields:
+Required fields:
 
 - Discovery Ready.
 - Event-relevant sport/skill context.
-- Recommended `profile_photo`.
-- Recommended `play_intent`.
+
+Recommended fields:
+
+- `profile_photo`
+- `play_intent`
+- `preferred_days`
+- `preferred_times`
+
+Downstream consumers:
+
+- Events
+- Feed
+- Notifications
+- Chat
+- Trust & Safety
+
+### Chat Ready
+
+User can participate in chat contexts without exposing private profile data.
+
+Required fields:
+
+- `display_name`
+- `profile_visibility`
+- `account_status = active`
+
+Recommended fields:
+
+- `profile_photo`
+- Sports context when chat is tied to a match or event.
+
+Downstream consumers:
+
+- Chat
+- Notifications
+- Match summaries
+- Event participant summaries
 
 ### Fully Complete
 
 User has enriched profile data that improves compatibility and trust.
 
-Expected fields:
+Required fields:
 
 - Discovery Ready/Event Ready fields.
 - `bio`
@@ -211,7 +301,19 @@ Expected fields:
 - `preferred_times`
 - `travel_radius`
 - `preferred_play_style`
-- Optional `username`
+
+Recommended fields:
+
+- `username`
+
+Downstream consumers:
+
+- Discovery
+- Events
+- Feed
+- Recommendations
+- Public Profile
+- Search
 
 ## Visibility Guidance
 
