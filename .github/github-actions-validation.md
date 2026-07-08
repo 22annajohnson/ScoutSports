@@ -2,6 +2,8 @@
 
 The `GitHub Actions Validation` workflow performs lightweight YAML validation for Scout GitHub Actions and related YAML config. It uses a repository-local Ruby script so the first CI foundation does not introduce an additional package manager or secrets-based workflow tests.
 
+The workflow intentionally runs on every pull request and push to `develop` so branch protection always receives a `GitHub Actions Validation` status. The job detects changed files internally and skips the YAML validator when no YAML validation inputs changed.
+
 Run the check locally from the repository root:
 
 ```sh
