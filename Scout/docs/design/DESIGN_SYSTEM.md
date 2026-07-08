@@ -92,6 +92,39 @@ Initial component families to document and standardize:
 
 New components should be added only when existing components cannot be extended cleanly.
 
+## Component Hierarchy
+
+Scout's design system hierarchy follows `DESIGN-001` and should be used as the reference point for UI planning and implementation tickets:
+
+| Level | Area | Role |
+| --- | --- | --- |
+| 1 | Foundations | Color, typography, spacing, icons, elevation, shape, layout rhythm, and motion timing. |
+| 2 | Navigation | Root structure, tab or section navigation, stack navigation, modal and sheet behavior, dismissal, and future routes. |
+| 3 | Inputs | Text entry, pickers, segmented controls, toggles, sliders, sport and skill selectors, date/time inputs, location inputs, and media inputs. |
+| 4 | Feedback | Loading, empty, error, success, inline validation, recovery, match feedback, and save confirmation states. |
+| 5 | Cards | Swipe cards, profile summary cards, feed cards, event cards, match cards, and invitation cards. |
+| 6 | Lists | Feed lists, profile detail lists, participant lists, search results, settings lists, and notification lists. |
+| 7 | Domain components | Profile, Swipe, Feed, Event, Chat, Map, Team, Search, and Notification components owned by their product domains. |
+| 8 | Animations | Screen transitions, swipe decisions, match confirmation, loading transitions, save feedback, error recovery, and empty-state reveals. |
+| 9 | Accessibility | Dynamic Type, VoiceOver, contrast, touch targets, reduced motion, non-color state indication, and future web focus behavior. |
+
+Foundation changes are design system direction changes. Do not change or add color scales, typography scales, spacing systems, icon strategy, elevation, shape, layout rhythm, motion timing, design tokens, or cross-platform design tooling without an approved design proposal.
+
+## Reuse Rules
+
+Before creating or changing UI, agents should:
+
+- Inspect the current iOS design areas listed above and the relevant feature area.
+- Identify the design system level and product domain owner for the UI being changed.
+- Reuse existing foundations, components, modifiers, and interaction patterns where they fit the use case.
+- Extend an existing component with a clear variant, state, or configuration when the behavior belongs to the same component family.
+- Keep feature-specific components inside the owning feature unless repeated use proves they should graduate into shared design system documentation.
+- Document loading, empty, error, accessibility, and motion impact for UI implementation tickets.
+
+Create a new component only when existing components cannot be extended cleanly. The ticket or PR should explain what was inspected, what is being reused, why extension is insufficient, and whether the new component is feature-specific or a candidate for shared reuse.
+
+New shared components, new foundation patterns, cross-feature component ownership changes, and any divergence from native iOS platform behavior require design review or an approved proposal before implementation.
+
 ## Interaction Patterns
 
 ### Onboarding
