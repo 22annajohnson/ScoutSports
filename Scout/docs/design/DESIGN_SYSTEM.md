@@ -92,6 +92,30 @@ Initial component families to document and standardize:
 
 New components should be added only when existing components cannot be extended cleanly.
 
+## Feature Ownership Matrix
+
+This matrix follows `DESIGN-001` and identifies which product area owns each design surface before future agents add or change UI.
+
+| Design Area | Owner | Consumers | Reuse Guidance |
+| --- | --- | --- | --- |
+| Foundations | Design | All features | Color, typography, spacing, icons, elevation, shape, layout rhythm, and motion timing are shared foundations. Changes require design approval. |
+| Navigation | App / Design | Profile, Swipe, Feed, Events, Chat, Maps | Preserve platform expectations and a clear sense of place. |
+| Inputs | Design | Profile, Events, Chat, Maps, Settings | Reuse form, picker, selector, media, validation, and recovery patterns before creating feature-specific inputs. |
+| Feedback | Design | All features | Loading, empty, error, success, validation, save, and recovery states should use shared patterns. |
+| Cards | Design | Swipe, Feed, Events, Profile, Chat | Card variants should extend shared card behavior rather than duplicate layout, spacing, or state treatment. |
+| Lists | Design | Feed, Events, Chat, Profile, Maps, Notifications | Lists should remain dense, grouped, scannable, and predictable. |
+| Profile components | Profile | Swipe, Events, Chat, Feed, Teams, Search | Profile summaries, identity cues, sport badges, skill indicators, media, and availability previews should stay consistent across consumers. |
+| Swipe components | Swipe | Feed, Profile, Recommendations | Swipe UI should emphasize sports compatibility and play intent, not dating-app cues. |
+| Feed components | Feed | Profile, Swipe, Events, Notifications | Feed surfaces should guide useful action without becoming a generic social network. |
+| Event components | Events | Feed, Profile, Chat, Maps, Notifications | Event UI should make time, place, capacity, organizer context, and participation state clear. |
+| Chat components | Chat | Profile, Events, Teams, Notifications | Chat UI should support coordination toward real play, including match or event context. |
+| Map components | Maps | Events, Profile, Feed | Map UI should communicate location with appropriate privacy and precision. |
+| Notification components | Notifications | Feed, Events, Chat, Profile | Notification UI should reuse feedback and list patterns, and route users to the relevant domain context. |
+| Animations | Design | All features | Motion should communicate state, reinforce intent, and remain consistent for similar changes. |
+| Accessibility | Design | All features | Accessibility behavior is shared across design and feature owners. |
+
+When ownership overlaps, agents should identify the primary user intent and the domain that owns the underlying product concept. Shared design areas should be extended before a domain creates a parallel pattern. If two domains need the same component behavior, document the overlap and route the change through design review before making it shared.
+
 ## Interaction Patterns
 
 ### Onboarding
