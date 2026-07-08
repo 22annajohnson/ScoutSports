@@ -377,7 +377,8 @@ The following decisions remain intentionally deferred and must be resolved in th
 - `docs/architecture/API_BOUNDARIES.md`
 - `tech-plans/approved/PROFILE-001-player-profile-system.md`, only for clarifying references if needed
 - Future `implementation/proposed/PROFILE-003-profile-schema-and-rls.md`
-- Future `implementation/proposed/PROFILE-004-profile-ui-and-editing.md`
+- Future `implementation/proposed/PROFILE-004-profile-contracts.md`
+- Future profile UI and editing implementation plan
 - Future Discovery, Event, Chat, Search, and Notification implementation plans
 
 ## Suggested Jira Epics and Stories
