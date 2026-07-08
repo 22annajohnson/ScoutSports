@@ -162,6 +162,8 @@ Agent handoffs should include:
 
 For documentation-only changes, say that no build was run unless project configuration changed.
 
+For UI changes, include state coverage in the handoff: loading, empty, error, success, recovery, accessibility, screenshots or recordings, and any motion or Reduced Motion impact.
+
 ## Current Repository Guardrails
 
 - Do not move the iOS project into `apps/ios/` yet.
