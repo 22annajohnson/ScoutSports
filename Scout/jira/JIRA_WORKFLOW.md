@@ -123,9 +123,28 @@ Suggested Jira statuses:
 - `Ready for Approval`: Plan or ticket is waiting for owner review.
 - `Ready for Dev`: Ticket is approved and unblocked.
 - `In Progress`: Implementation is active.
-- `In Review`: Pull request is open.
+- `Awaiting CI`: Pull request is open and CI is running.
+- `Ready for Review`: CI has passed and the pull request is ready for human review.
 - `Blocked`: Work cannot continue without a decision or dependency.
 - `Done`: Work is merged and accepted.
+
+## Ticket Status Automation
+
+Agents are responsible for starting work and monitoring their own PRs:
+
+- When an agent starts a ticket, it must move the Jira ticket to `In Progress`.
+- Pull requests must follow the repository's GitHub PR template. Required template sections should be completed, or marked as not applicable with a short explanation.
+
+Scout Jira automation handles PR, CI, review, and merge transitions:
+
+- When a pull request is opened, automation may move the ticket to `Awaiting CI`.
+- If CI checks fail, automation may move the ticket from `Awaiting CI` back to `In Progress`.
+- If CI checks pass, automation may move the ticket to `Ready for Review`.
+- If the pull request is merged, automation may move the ticket to `Done`.
+
+After opening a pull request, an agent should monitor its ticket. When an agent notices that one of its tickets has moved back to `In Progress`, it should treat that as a signal to inspect the pull request, review failed checks, update the code or documentation as needed, and push a follow-up commit. Agents should not ignore tickets that automation returns to `In Progress`.
+
+Agents should not manually mark their own implementation tickets `Awaiting CI`, `Ready for Review`, or `Done` when Jira automation is configured to do so. If automation does not run, the agent should mention the status gap in its handoff rather than guessing.
 
 ## Approval Rules
 
