@@ -1,0 +1,31 @@
+# Scout repository ownership
+#
+# Keep owners valid GitHub users or teams. Branch protection and required
+# review enforcement remain repository-owner settings outside this file.
+
+# Default owner for the current repository.
+* @22annajohnson
+
+# GitHub automation and repository governance.
+.github/ @22annajohnson
+
+# Current iOS app, tests, design package, Fastlane, and Xcode project.
+Scout/Scout/ @22annajohnson
+Scout/Scout.xcodeproj/ @22annajohnson
+Scout/ScoutDesign/ @22annajohnson
+Scout/ScoutTests/ @22annajohnson
+Scout/ScoutUITests/ @22annajohnson
+Scout/fastlane/ @22annajohnson
+Scout/Makefile @22annajohnson
+
+# Planning, documentation, and implementation plans.
+Scout/.agents/ @22annajohnson
+Scout/docs/ @22annajohnson
+Scout/implementation/ @22annajohnson
+Scout/jira/ @22annajohnson
+Scout/roadmap/ @22annajohnson
+Scout/tech-plans/ @22annajohnson
+
+# Future monorepo and backend placeholders.
+Scout/apps/ @22annajohnson
+Scout/backend/ @22annajohnson
