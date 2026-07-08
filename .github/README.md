@@ -4,6 +4,8 @@ This directory contains GitHub workflows, templates, and repository automation f
 
 Existing iOS CI lives under `workflows/`. Future monorepo changes should update GitHub automation through approved technical plans when build, test, packaging, or deployment behavior changes.
 
+Future Supabase and web validation checks are documented as placeholders in `future-validation-placeholders.md`. They are not active workflows or required status checks until approved follow-up plans define the repository structure, commands, and any required secrets.
+
 The `iOS Tests` workflow uses a lightweight change-detection job so expensive macOS test runs start only for app-relevant changes: the iOS app, Xcode project, tests, design package, Fastlane, Bundler files, or Makefile. Documentation-only changes, planning files, PR/issue templates, CODEOWNERS, Dependabot config, and GitHub workflow/config changes should rely on the docs and YAML validation workflows instead of launching iOS tests.
 
 Required validation workflows should not use top-level `paths` filters. GitHub leaves required checks pending when a workflow is skipped before it creates a check run, so `Docs Validation` and `GitHub Actions Validation` always start on pull requests and pushes to `develop`. Each job performs its own changed-file detection and exits successfully without running the validator when no relevant files changed.
