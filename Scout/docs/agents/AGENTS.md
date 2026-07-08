@@ -148,6 +148,8 @@ Tickets generated for implementation should include:
 - Validation steps.
 - Handoff expectations.
 
+UI implementation tickets must also follow the checklist in `jira/JIRA_WORKFLOW.md`, including `DESIGN-001`, existing component reuse, new component justification, accessibility, loading, empty, error, screenshot, animation, and Apple HIG divergence expectations.
+
 Tickets should be small enough to complete in a few hours when possible.
 
 ## Handoff Format
