@@ -36,6 +36,8 @@ Scout uses this software factory lifecycle:
 
 Work should not skip lifecycle stages. Small documentation or implementation tasks may have lightweight plans, but meaningful product, architecture, database, API, design system, repository-organization, auth, or CI changes must be traceable through this lifecycle before implementation starts.
 
+Use `docs/architecture/ARCHITECTURE_CHANGE_CHECKLIST.md` before creating tickets or implementation changes that may affect architecture.
+
 ## Current State
 
 Scout is currently an iOS-focused repository with a Swift/SwiftUI application at the repository root.
