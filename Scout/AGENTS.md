@@ -45,12 +45,12 @@ Use the Scout software factory pipeline:
 ## Jira Status Rules
 
 - When starting work on a Jira ticket, move the ticket to `In Progress`.
-- When opening a pull request for that ticket, move the ticket to `Awaiting CI`.
 - Pull requests must follow the repository's GitHub PR template. Do not omit required template sections unless they are clearly not applicable and are marked as such.
-- Jira automation may move the ticket back to `In Progress` if CI checks fail. If this happens on one of your tickets, inspect the PR/check failures again, make the needed fix, and push an update.
+- Jira automation moves tickets to `Awaiting CI` when a pull request is opened.
+- After opening a pull request, monitor your ticket. Jira automation may move it back to `In Progress` if CI checks fail. If this happens, inspect the PR/check failures again, make the needed fix, and push an update.
 - Jira automation may move the ticket to `Ready for Review` when CI passes and to `Done` when the PR is merged.
 - Do not merge your own PRs unless explicitly instructed.
-- Do not manually mark implementation tickets `Ready for Review` or `Done` when automation is expected to handle those transitions.
+- Do not manually mark implementation tickets `Awaiting CI`, `Ready for Review`, or `Done` when automation is expected to handle those transitions.
 
 ## Handoff Expectations
 
