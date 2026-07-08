@@ -3,6 +3,7 @@
 ## Active Domain Health
 
 - 🟢 Foundation: Player Discovery & Recommendation System is defined.
+- 🟢 Metrics: Discovery should optimize for meaningful real-world connections, not swipe volume.
 - 🟡 In Progress: None.
 - 🔵 Ready Next: Define v1 recommendation inputs and candidate card contract.
 - ⚪ Planned: Decision semantics, exclusion rules, match authority.

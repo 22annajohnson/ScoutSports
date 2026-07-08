@@ -86,18 +86,37 @@ Discovery success should be measured by real-world outcomes, not swipe volume.
 
 Conceptual success metrics:
 
-- Recommendation acceptance rate.
-- Match rate.
-- Successful games created.
-- Recommendation diversity.
-- Repeat-player satisfaction.
-- Empty deck rate.
-- Time to first meaningful connection.
-- Match-to-conversation or coordination rate.
-- Match-to-play conversion rate.
-- Negative feedback or block rate after recommendation.
+- Recommendation acceptance rate: the share of surfaced candidates that receive a positive discovery action.
+- Match rate: the share of positive decisions that become mutual matches through the authoritative match path.
+- Successful games created: the number of matches or recommendations that lead toward real-world play, aligned with EVENT-001 completion and attendance outcomes.
+- Recommendation diversity: whether users see a healthy mix of compatible players, skill levels, play styles, locations, and future contexts instead of a narrow repetitive set.
+- Repeat-player satisfaction: whether users continue to value recommendations after initial matching, including future feedback and repeat play signals.
+- Empty deck rate: how often eligible users have no candidates available, separated from intentional exclusion or privacy outcomes.
+- Time to first meaningful connection: how quickly a user reaches a useful match, conversation, or play coordination path after entering Discovery.
+- Match-to-conversation or coordination rate: whether matches move into practical coordination instead of remaining unused.
+- Match-to-play conversion rate: whether discovery-originated matches contribute to completed games or committed play when Events integration exists.
+- Negative feedback or block rate after recommendation: whether recommendations create safety, quality, or trust issues after presentation.
 
 Swipe count alone is not a success metric. A smaller number of high-quality recommendations is healthier than a large number of low-quality interactions.
+
+Quality signals should support those metrics without becoming analytics implementation requirements.
+
+| Quality Signal | What It Indicates | Example Inputs |
+| --- | --- | --- |
+| Compatibility | Candidate and viewer are likely to enjoy playing together. | Sport overlap, skill fit, play style, intent, preferred formats. |
+| Diversity | Discovery avoids repeatedly showing the same type of candidate when other compatible options exist. | Candidate mix, geography spread, skill variety, play-style variety. |
+| Freshness | Recommendations include relevant new or recently available candidates without ignoring strong existing matches. | Recent profile activity, new availability, new event context, unseen candidates. |
+| Reliability | Recommendations favor people likely to follow through on real-world play. | Future attendance, cancellation, response, or reputation signals after approval. |
+| Location | Candidates are practically reachable for the viewer's preferred play radius. | Home area, court/event proximity, travel radius, privacy-safe location buckets. |
+| Availability | Recommended candidates have plausible overlapping play windows. | Availability summaries, event attendance windows, preferred days or times. |
+| Player experience | Discovery feels useful, respectful, and safe for both viewer and candidate. | Negative feedback, blocks, reports, hides, empty deck recovery, repeat satisfaction. |
+
+Metric and signal boundaries:
+
+- These are domain-level review criteria, not analytics event names.
+- Analytics instrumentation, pipelines, dashboards, and data retention require a future approved implementation plan.
+- Ranking changes should show how they improve real-world connection quality, not only engagement volume.
+- EVENT-001 outcomes such as completed games, attendance, cancellation, and participant satisfaction may inform future learning only after privacy and contract approval.
 
 ## Conceptual Model
 
