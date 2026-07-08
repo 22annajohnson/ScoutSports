@@ -2,6 +2,8 @@
 
 The `Docs Validation` workflow performs lightweight Markdown checks for Scout planning and documentation files. It intentionally avoids broad editorial style rules and external link validation so early CI catches low-level breakage without creating noisy documentation churn.
 
+The workflow intentionally runs on every pull request and push to `develop` so branch protection always receives a `Docs Validation` status. The job detects changed files internally and skips the Markdown validator when no Markdown validation inputs changed.
+
 Run the check locally from the repository root:
 
 ```sh
