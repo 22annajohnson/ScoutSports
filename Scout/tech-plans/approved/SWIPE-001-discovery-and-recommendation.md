@@ -154,6 +154,65 @@ flowchart TB
     Location --> Engine
 ```
 
+## V1 Recommendation Inputs and Eligibility
+
+V1 recommendation planning should start with deterministic, explainable inputs. These inputs define candidate eligibility and ranking context; they do not approve a ranking algorithm, database schema, service implementation, or UI change.
+
+### Approved V1 Input Categories
+
+| Input Category | Source Authority | V1 Use | Boundary |
+| --- | --- | --- | --- |
+| Player identity summary | `PROFILE-001` profile contracts | Candidate recognition, trust context, profile completeness, and presentation eligibility. | Discovery consumes profile contracts and must not redefine identity fields. |
+| Sports compatibility | Player Identity / Sports | Match players by shared sport, primary sport, and approved sport-specific context. | Sport modeling remains profile-owned unless a later plan changes it. |
+| Skill compatibility | Player Identity / Sports | Prefer candidates within an approved skill compatibility range. | Exact scoring/range logic requires a future implementation plan. |
+| Availability | Player Identity / Availability | Prefer candidates with overlapping preferred days, times, or play intent when available. | Missing availability should degrade gracefully rather than automatically exclude unless approved. |
+| Location and travel radius | Player Identity / Privacy / Location | Filter or rank by approved approximate play area, distance, or travel constraints. | Precise location must not be exposed through recommendation contracts unless explicitly approved. |
+| Preferences | Player Identity / Preferences | Respect approved discovery preferences such as play format or match intent. | Preferences may personalize ranking without becoming broadly visible profile data. |
+| Event context | `EVENT-001` contracts | Future relevance for event participants, organizers, or nearby play opportunities. | Event state remains Events-owned; Discovery consumes event contracts. |
+| Reputation and reliability | Reputation / Profile | Future trust, attendance, completion, or safety cues when approved. | Reputation signals require careful product and safety approval before ranking impact. |
+| Account and lifecycle status | Auth / Profile / Trust and Safety | Exclude inactive, suspended, unsafe, or non-discoverable accounts. | System fields are not consumer-facing by default. |
+| Prior decisions | Discovery | Avoid repeated candidates after pass, interest, hide, block, report, or other approved decisions. | Decisions must be idempotent and centrally interpreted. |
+
+### Eligibility Rules
+
+A candidate is eligible for V1 recommendation only after the following gates are evaluated:
+
+1. The viewer and candidate are active, authorized users.
+2. The candidate is discoverable in the current context.
+3. Profile visibility allows this viewer to receive the relevant recommendation contract.
+4. Blocking, reporting, hidden-user, trust, and safety exclusions do not apply.
+5. The candidate has the minimum profile and sport data required by the consuming surface.
+6. The candidate satisfies approved sport, location, and availability constraints for the current recommendation context.
+7. The candidate has not already been decided, exhausted, or excluded under current lifecycle rules.
+
+Exclusions override ranking. A highly compatible candidate must still be withheld when privacy, blocking, safety, visibility, or lifecycle rules exclude them.
+
+### V1 Deterministic Inputs Versus Future Learning
+
+V1 deterministic inputs:
+
+- Shared sport.
+- Skill compatibility.
+- Profile completeness required for the surface.
+- Discoverability and visibility.
+- Approximate location or play area when approved.
+- Availability overlap when present.
+- Approved preferences.
+- Prior decisions and exclusions.
+- Account lifecycle and safety status.
+
+Future learning or ML inputs:
+
+- Collaborative filtering.
+- Predicted match acceptance.
+- Repeat-player satisfaction.
+- Completed-game outcomes.
+- Reliability models.
+- Diversity and freshness tuning beyond simple deterministic rules.
+- Event, venue, or organizer recommendation models.
+
+Future learning inputs require approved implementation planning before use. They must remain explainable enough for debugging, trust, privacy, safety, and user support.
+
 ## Domain Invariants
 
 The following rules must always remain true:
