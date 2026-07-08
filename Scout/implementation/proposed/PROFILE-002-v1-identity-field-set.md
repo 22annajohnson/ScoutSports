@@ -16,6 +16,8 @@ PROFILE
 
 This plan narrows `tech-plans/approved/PROFILE-001-player-profile-system.md` into a proposed minimum viable v1 identity model. It does not redefine Player Identity.
 
+This document remains `Proposed` until the product owner explicitly approves it. The SOCIAL-22/SOCIAL-24 decision review below captures implementation-readiness recommendations for review; approval happens through the normal Jira and PR review flow.
+
 PROFILE-001 remains the canonical domain authority for:
 
 - Player Identity philosophy.
@@ -44,7 +46,7 @@ Scout needs a small, practical v1 profile field set that can unlock Discovery, E
 - Identify readiness requirements for Discovery, Events, and Chat.
 - Define conceptual field metadata without choosing SQL schema.
 - Preserve PROFILE-001 domain boundaries and profile contracts.
-- Identify product decisions requiring approval before schema or UI implementation.
+- Identify product decisions requiring approval, revision, or deferral before schema or UI implementation.
 - Suggest Jira work without creating tickets yet.
 
 ## Non-goals
@@ -224,20 +226,46 @@ Proposed visibility classes:
 
 Privacy rules from PROFILE-001 remain authoritative and should override every consumer.
 
-## Open Product Decisions Requiring Approval
+## SOCIAL-24 Decision Review
 
-- Is `username` required in v1 or deferred?
-- Is `profile_photo` required for Discovery Ready, Event creation, or only recommended?
-- Can different sports have different skill levels in v1?
-- Should availability be sport-specific in v1?
-- How coarse should `home_area` be?
-- What is the default `travel_radius`?
-- Does `discoverable` default to false until the user explicitly opts in?
-- What exact profile visibility options are approved?
-- Is Event creation gated by photo, verification, reputation, or completed availability?
-- What skill-level labels are product-approved for pickleball v1?
-- Are `preferred_days` and `preferred_times` needed before Events v1?
-- Is `last_active_at` allowed to influence recommendations before being user-visible?
+SOCIAL-24 reviews the open PROFILE-002 product decisions so downstream planning can proceed without changing production code, database schema, Supabase storage, migrations, generated types, or iOS files.
+
+| Decision | Outcome | Downstream Impact |
+| --- | --- | --- |
+| Is `username` required in v1 or deferred? | Deferred. Keep `username` optional in v1 planning. | Does not block profile schema or readiness planning. Blocks any v1 feature that requires durable public handles, profile URLs, or username search. |
+| Is `profile_photo` required for Discovery Ready, Event creation, or only recommended? | Revised. Keep `profile_photo` optional but strongly recommended for Discovery, Event, and Chat readiness. Do not make it a hard v1 gate unless a later product decision changes trust requirements. | Allows onboarding/readiness planning to proceed without media upload as a blocker. Media storage planning can still support profile photos as an important enrichment path. |
+| Can different sports have different skill levels in v1? | Approved for planning. Model skill as sport-specific conceptually, with primary sport skill required for readiness. | PROFILE-003 should preserve per-sport extensibility. Exact SQL shape and constraints remain schema-plan decisions. |
+| Should availability be sport-specific in v1? | Deferred. Keep `preferred_days` and `preferred_times` profile-level and optional for v1. | Events and recommendations can reference availability as enrichment only. Sport-specific scheduling should wait for later Events/Recommendations planning. |
+| How coarse should `home_area` be? | Revised. Require coarse location only when location-based Discovery or Events are active. Exact precision model is deferred. | PROFILE-003 and RLS planning must avoid exact home address storage/exposure and define privacy-safe precision before migration. |
+| What is the default `travel_radius`? | Deferred. Keep `travel_radius` optional with a product default still TBD. | Does not block core readiness. Blocks final recommendation defaults and any UI copy that displays radius assumptions. |
+| Does `discoverable` default to false until the user explicitly opts in? | Approved for planning. Default `discoverable` to false until the user is Discovery Ready and product onboarding explicitly enables or confirms discoverability. | Prevents accidental exposure. PROFILE-003 and UI plans should treat discoverability as both readiness- and consent-dependent. |
+| What exact profile visibility options are approved? | Revised. Use the visibility classes in this plan for implementation planning, but defer final user-facing option labels and settings. | Consumer contracts and RLS planning can proceed using owner-only, system-only, discovery-visible, event-visible, chat-visible, and public-profile-visible classes. Final settings UI remains blocked. |
+| Is Event creation gated by photo, verification, reputation, or completed availability? | Deferred. For v1 planning, Event creation requires active account status and Event Ready profile fields; photo, verification, reputation, and availability remain recommended or future trust gates. | Events planning may proceed with profile-readiness gates, but final organizer trust rules need a later Events/Trust decision before implementation. |
+| What skill-level labels are product-approved for pickleball v1? | Deferred. Keep skill labels as approved-option placeholders until product labels are selected. | Blocks final enum/check constraint, seed data, and UI labels. Does not block documenting field ownership or readiness dependency. |
+| Are `preferred_days` and `preferred_times` needed before Events v1? | Deferred. Treat both fields as optional enrichment before Events v1. | Events v1 should not depend on completed availability unless a later Events plan explicitly adds that gate. |
+| Is `last_active_at` allowed to influence recommendations before being user-visible? | Deferred. Keep `last_active_at` system-managed and non-user-visible in v1 planning. | Recommendation ranking that uses activity recency requires a later privacy/product decision. Basic profile readiness is not blocked. |
+
+### Approved Planning Baseline
+
+The v1 planning baseline after SOCIAL-24 is:
+
+- `display_name`, `sports`, `primary_sport`, primary sport skill, privacy/readiness fields, and active account status are the core readiness inputs.
+- `home_area` and `location_precision` are required only when location-based Discovery or Events are active, and must remain coarse until a schema/privacy plan defines precision.
+- `profile_photo`, `play_intent`, `travel_radius`, `preferred_days`, `preferred_times`, `preferred_play_style`, `bio`, `action_photo`, and `username` are enrichment fields unless a later approved plan makes them required.
+- Profile visibility planning may use conceptual visibility classes, but final user-facing settings remain deferred.
+- No schema, migration, storage, generated type, or iOS implementation work should start from this decision review alone.
+
+### Deferred Decisions Blocking Later Work
+
+The following decisions remain intentionally deferred and must be resolved in the relevant downstream plan before implementation:
+
+- Pickleball v1 skill labels and whether they become enums, lookup rows, or validation constants.
+- Exact `home_area` representation, allowed precision levels, and RLS exposure rules.
+- Default `travel_radius` and recommendation behavior when radius is missing.
+- Final profile visibility settings and user-facing copy.
+- Event organizer trust gates beyond active account and Event Ready profile state.
+- Whether availability becomes sport-specific after v1.
+- Whether `last_active_at` can affect recommendations before users can inspect or control that signal.
 
 ## Downstream Docs and Plans to Update After Approval
 
