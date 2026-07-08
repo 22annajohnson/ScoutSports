@@ -12,6 +12,8 @@ Dependabot version updates are configured in `dependabot.yml` for the package su
 
 ## Local iOS CI Validation
 
+For the complete local pre-PR checklist, see `local-ci-validation.md`.
+
 Run the Swift tests check with safe placeholder Supabase configuration from the repository root:
 
 ```sh
