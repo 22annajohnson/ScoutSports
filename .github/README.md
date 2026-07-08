@@ -6,6 +6,8 @@ Existing iOS CI lives under `workflows/`. Future monorepo changes should update 
 
 The `iOS Tests` workflow uses a lightweight change-detection job so expensive macOS test runs start only for app-relevant changes: the iOS app, Xcode project, tests, design package, Fastlane, Bundler files, or Makefile. Documentation-only changes, planning files, PR/issue templates, CODEOWNERS, Dependabot config, and GitHub workflow/config changes should rely on the docs and YAML validation workflows instead of launching iOS tests.
 
+Required validation workflows should not use top-level `paths` filters. GitHub leaves required checks pending when a workflow is skipped before it creates a check run, so `Docs Validation` and `GitHub Actions Validation` always start on pull requests and pushes to `develop`. Each job performs its own changed-file detection and exits successfully without running the validator when no relevant files changed.
+
 ## Local iOS CI Validation
 
 Run the Swift tests check with safe placeholder Supabase configuration from the repository root:
