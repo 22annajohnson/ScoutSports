@@ -74,6 +74,21 @@ Shared contracts may include:
 
 Shared contracts should be versioned or documented before they are consumed by both iOS and web.
 
+## Discovery Boundaries
+
+Discovery and recommendation behavior should be exposed through documented contracts, not through duplicated ranking logic in consuming features.
+
+Discovery owns:
+
+- Candidate eligibility.
+- Recommendation scoring and ordering.
+- Swipe decision semantics.
+- Match creation rules.
+- Exclusions and privacy-sensitive filtering.
+- Approved recommendation learning signals.
+
+Consumers such as Swipe Deck, Feed, Notifications, Events, Chat, Profiles, Recommendations, and future Teams may own their presentation surfaces. They may not recreate ranking, bypass exclusions, infer eligibility independently, or create matches outside the authoritative Discovery or Match contract.
+
 ## API Change Requirements
 
 Technical plans that change API or service boundaries should include:
