@@ -621,6 +621,17 @@ Discovery owns recommendation logic and discovery state. Other systems consume r
 
 If a consuming feature needs recommendation data outside its approved contract, it must propose a contract change through an approved tech plan.
 
+Ownership constraints:
+
+- Swipe Deck owns card rendering, local gestures, empty states, and immediate interaction feedback. It must consume queue, card, decision, match, and exclusion contracts instead of recalculating ranking.
+- Feed may surface recommended players, events, or future groups, but it must consume recommendation summaries or future feed recommendation contracts. Feed must not maintain a separate ranking model.
+- Notifications may consume match notification and recommendation summary contracts for delivery timing and copy. Notifications must not infer match creation or eligibility independently.
+- Events may provide context used by Discovery and may consume recommendation summaries for organizer or player suggestions. Events owns event state, attendance, and coordination rules.
+- Chat may open from authoritative matches. Chat must not create matches, bypass exclusions, or infer that a conversation is allowed without the match contract.
+- Profiles may display candidate/player information from Player Identity contracts. Profiles must not become the source of discovery eligibility, ranking, or exclusion decisions.
+- Recommendations owns reusable recommendation summaries and future learning signals. Presentation features consume these contracts and send approved feedback only.
+- Future Teams may consume team or group recommendation contracts after approval. Team matching must not duplicate player discovery ranking or exclusion logic.
+
 ## Relationship Contracts
 
 Discovery consumes Player Identity contracts for candidate display and eligibility. It does not own player profile data.
@@ -643,6 +654,10 @@ Other domains consume Discovery contracts rather than direct recommendation engi
 - Notifications consume `Match Notification`.
 - Events may consume recommendation summaries for organizer or player suggestions.
 - Search may consume recommendation summaries when ranking search results.
+- Chat consumes authoritative match state before enabling discovery-originated conversations.
+- Profiles consume candidate card and player identity display contracts.
+- Recommendations consumes approved feedback and learning contracts.
+- Future Teams consume only future team-specific recommendation contracts after approval.
 
 This keeps ownership clear: Discovery owns recommendation logic; Profile owns player identity; Events owns real-world coordination; consumers receive contracts.
 
@@ -652,17 +667,17 @@ Discovery data is consumed across Scout. Any discovery change must consider down
 
 Known and future consumers:
 
-- Swipe deck.
-- Feed recommendations.
-- Match modal.
-- Notifications.
-- Chat entry points.
-- Events and organizer suggestions.
-- Search.
-- Player Profiles.
-- Recommendations service.
-- Future Teams.
-- Future web discovery surfaces.
+| Consumer | Allowed Discovery Contracts | Presentation Ownership | Must Not Own |
+| --- | --- | --- | --- |
+| Swipe Deck | `Discovery Queue`, `Candidate Card`, decision result, match result, exclusion reason | Card layout, gesture feedback, queue empty states | Ranking, eligibility, match creation, exclusions |
+| Feed | `Future Feed Recommendations`, `Recommendation Summary` | Feed placement, feed copy, dismiss UI | Parallel ranking, candidate eligibility, exclusion overrides |
+| Notifications | `Match Notification`, `Recommendation Summary` | Notification copy, delivery surface, deep link | Match creation, eligibility inference, ranking |
+| Events | `Recommendation Summary`, event-context recommendation contracts | Organizer/player suggestion UI | Event-independent ranking, profile ownership |
+| Chat | Authoritative match state and match notification context | Chat entry points and conversation UI | Match creation, exclusion bypass |
+| Profiles | `Candidate Card`, Player Identity display contracts | Profile screen rendering and profile actions | Discovery ranking, candidate queue state, eligibility |
+| Recommendations | Recommendation summaries, approved feedback and learning contracts | Shared recommendation presentation patterns | Undocumented learning signals or duplicate scoring |
+| Future Teams | Future team recommendation contracts | Team discovery UI after approval | Reusing player ranking as team ranking without approval |
+| Future web discovery surfaces | Documented discovery contracts | Web presentation and platform-specific navigation | Divergent cross-client ranking or exclusion behavior |
 
 Discovery changes should document:
 
