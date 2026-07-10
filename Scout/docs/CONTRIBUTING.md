@@ -56,7 +56,7 @@ Implementation PR workflow:
 5. Once addressed, reapply `needs-ai-review`.
 6. When complete, replace `needs-ai-review` with `ai-reviewed` and `needs-human-review`.
 
-Agents must never approve PRs, merge PRs, or review their own PRs. Every review must leave a written GitHub comment.
+Agents must never approve PRs, merge PRs, or review their own PRs. Every review must leave a written GitHub comment using the template in `docs/agents/AGENTS.md`.
 
 Agents should include their Scout identity in PR descriptions and handoffs. Current identities are Stephan, Tom, and Jerry. Tom and Jerry are general workers unless a task prompt assigns a temporary specialty.
 

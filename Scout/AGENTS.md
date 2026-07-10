@@ -112,7 +112,7 @@ PR review rules:
 - Agents must never approve PRs.
 - Agents must never merge PRs.
 - Agents must never review their own PRs.
-- Every review must leave a written GitHub comment.
+- Every review must leave a written GitHub comment using the review comment template in `docs/agents/AGENTS.md`.
 - Every implementation PR should eventually have `ai-reviewed` and `needs-human-review`.
 - Every documentation PR should eventually have `needs-human-review`.
 

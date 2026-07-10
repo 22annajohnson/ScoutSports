@@ -15,3 +15,4 @@ In short:
 - Use `architecture-risk`, `scope-risk`, and `follow-up-ticket` to make review concerns visible.
 - Agents do not approve, merge, or review their own PRs.
 - Agents should identify themselves as Stephan, Tom, or Jerry in PR descriptions and handoffs.
+- Review comments should use the template in `docs/agents/AGENTS.md`.

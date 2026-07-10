@@ -249,6 +249,94 @@ Use `needs-human-qa` for significant UI changes, animations, camera, push notifi
 - Every implementation PR should eventually have `ai-reviewed` and `needs-human-review`.
 - Every documentation PR should eventually have `needs-human-review`.
 
+### GitHub Review Comment Template
+
+Use this template for top-level GitHub PR review comments. Keep it concise and remove sections that do not apply.
+
+Start with one state emoji:
+
+- `🟢 Review passed`: No blocking issues found. Do not approve; update labels according to the workflow.
+- `🟡 Changes requested`: Specific changes are required before the PR should advance.
+- `🔴 Blocked`: The PR cannot be reviewed safely because required context, CI, plan approval, or dependencies are missing.
+
+Template:
+
+```md
+🟢 Review passed
+
+Summary:
+- <One or two sentences describing what was reviewed and why it is acceptable.>
+
+Checks:
+- Scope: <Matches Jira / minor concern / exceeds Jira.>
+- Architecture: <Aligned / concern noted.>
+- Tests/validation: <Appropriate / missing / not applicable.>
+- Maintainability: <Acceptable / concern noted.>
+
+Risk labels:
+- architecture-risk: <yes/no, reason if yes>
+- scope-risk: <yes/no, reason if yes>
+- needs-human-qa: <yes/no, reason if yes>
+- follow-up-ticket: <yes/no, reason if yes>
+
+Suggestions:
+- <Optional non-blocking suggestion or follow-up.>
+
+Label next step:
+- <For implementation: replace needs-ai-review with ai-reviewed and needs-human-review.>
+- <For documentation: replace needs-stephan-review with needs-human-review.>
+```
+
+```md
+🟡 Changes requested
+
+Summary:
+- <One or two sentences describing the blocking concern.>
+
+Required changes:
+- <Specific change required before review can pass.>
+
+Checks:
+- Scope: <Matches Jira / exceeds Jira.>
+- Architecture: <Aligned / architecture-risk because...>
+- Tests/validation: <Appropriate / missing because...>
+- Maintainability: <Acceptable / concern because...>
+
+Risk labels:
+- architecture-risk: <yes/no, reason if yes>
+- scope-risk: <yes/no, reason if yes>
+- needs-human-qa: <yes/no, reason if yes>
+- follow-up-ticket: <yes/no, reason if yes>
+
+Suggestions:
+- <Optional implementation suggestion.>
+
+Label next step:
+- Remove <needs-ai-review or needs-stephan-review>.
+- Add needs-changes.
+```
+
+```md
+🔴 Blocked
+
+Summary:
+- <Why this PR cannot be reviewed safely yet.>
+
+Blocked by:
+- <Missing approved plan / missing Jira ticket / failing or unavailable CI / dependency PR / unclear ownership.>
+
+Needed before review resumes:
+- <Specific unblock step.>
+
+Risk labels:
+- architecture-risk: <yes/no, reason if yes>
+- scope-risk: <yes/no, reason if yes>
+- follow-up-ticket: <yes/no, reason if yes>
+
+Label next step:
+- Keep or add needs-changes, or document the blocking label/status used for this PR.
+```
+
 ## Current Repository Guardrails
 
 - Do not move the iOS project into `apps/ios/` yet.
