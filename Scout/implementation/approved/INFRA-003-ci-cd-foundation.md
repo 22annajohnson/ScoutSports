@@ -16,7 +16,7 @@ INFRA
 
 - `tech-plans/approved/ARCH-001-app-architecture.md`
 - `jira/JIRA_WORKFLOW.md`
-- `.github/README.md`
+- `.github/README_github.md`
 - `Makefile`
 - `implementation/proposed/INFRA-001-database-foundation.md`
 

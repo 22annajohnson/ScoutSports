@@ -12,7 +12,7 @@
 
 | Proposed Tech Plan ID | Status | Title | Description | Why Now? | Dependencies | Priority | Complexity |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| SWIPE-002 | 🟦 Not Started | V1 Recommendation Inputs | Define the initial compatibility inputs for candidate eligibility and ranking, such as sport, skill, availability, location, privacy, and exclusions. | This unlocks the first useful discovery experience and gives Feed, Events, and future Recommendations a shared eligibility foundation. | SWIPE-001, PROFILE-001 | High | M |
+| SWIPE-002 | 🟦 Not Started | V1 Recommendation Inputs | Define the initial compatibility inputs for candidate eligibility and ranking, such as sport, skill, availability, location, privacy, and exclusions. | This unlocks the first useful discovery experience and gives Feed, Events, and future Recommendations a shared eligibility foundation. | SWIPE-001, PROFILE-001, PROFILE-002 | High | M |
 | SWIPE-003 | 🟦 Not Started | Candidate Card Contract | Define the Candidate Card contract consumed by the swipe deck and future discovery surfaces. | Candidate cards need a stable contract before UI, privacy filtering, and profile summary work can proceed safely. | SWIPE-001, PROFILE-002, DESIGN-001 | High | M |
 
 ## ⚪ Soon
