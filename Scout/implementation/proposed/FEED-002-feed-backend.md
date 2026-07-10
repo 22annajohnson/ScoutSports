@@ -111,8 +111,8 @@ Initial backend may be repository-composed from existing Supabase reads/contract
 
 | Order | Jira | Story | Type | Points | Dependencies |
 | --- | --- | --- | --- | --- | --- |
-| 1 | `SOCIAL-110` | Feed: Define FeedItem contracts and source types | 🤖 AI Implementation | 0.75 | FEED-002 |
-| 2 | `SOCIAL-111` | Feed: Add FeedRepository protocol and mock repository | 🤖 AI Implementation | 0.75 | `SOCIAL-110` |
-| 3 | `SOCIAL-112` | Feed: Implement Event Profile and Discovery source adapters | 🤖 AI Implementation | 1.5 | `SOCIAL-110`, `SOCIAL-111`, source-domain contracts |
-| 4 | `SOCIAL-113` | Feed: Replace mock feed in Feed ViewModel | 🤖 AI Implementation | 1.5 | `SOCIAL-112` |
+| 1 | `SOCIAL-110` | Feed: Define FeedItem contracts and source types | 🤖 AI Implementation | 1 | FEED-002 |
+| 2 | `SOCIAL-111` | Feed: Add FeedRepository protocol and mock repository | 🤖 AI Implementation | 1 | `SOCIAL-110` |
+| 3 | `SOCIAL-112` | Feed: Implement Event Profile and Discovery source adapters | 🤖 AI Implementation | 2 | `SOCIAL-110`, `SOCIAL-111`, source-domain contracts |
+| 4 | `SOCIAL-113` | Feed: Replace mock feed in Feed ViewModel | 🤖 AI Implementation | 2 | `SOCIAL-112` |
 | 5 | `SOCIAL-114` | Feed: Add pagination refresh and state regression tests | 🤖 AI Implementation | 1 | `SOCIAL-113` |
