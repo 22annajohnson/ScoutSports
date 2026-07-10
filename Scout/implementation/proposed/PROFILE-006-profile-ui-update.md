@@ -53,19 +53,17 @@ Scout needs a reviewed iOS plan before changing onboarding, profile editing, or 
 
 Future implementation tickets should inspect these areas before editing:
 
-- `Scout/AuthGate/Views/Onboarding/OnboardingView.swift`
-- `Scout/AuthGate/ViewModels/OnboardingViewModel.swift`
-- `Scout/Profile/Views/ProfileBuilderView.swift`
-- `Scout/Profile/ViewModels/ProfileBuilderViewModel.swift`
-- `Scout/Data/Profiles/ProfileRepository.swift`
-- `Scout/Data/Profiles/ProfileDTO.swift`
-- `Scout/Data/Profiles/ProfileProviding.swift`
-- `Scout/Domain/Profile.swift`
-- `Scout/Swipe/Views/SwipeCardIdentitySection.swift`
-- `Scout/Swipe/Views/SwipeDeckScreen.swift`
-- `Scout/Design/Components`
-- `Scout/Design/Theme`
-- `Scout/Design/Typography`
+- `Scout/Scout/AuthGate/Views/Onboarding/OnboardingView.swift`
+- `Scout/Scout/AuthGate/ViewModels/OnboardingViewModel.swift`
+- `Scout/Scout/Profile/Views/ProfileBuilderView.swift`
+- `Scout/Scout/Profile/ViewModels/ProfileBuilderViewModel.swift`
+- `Scout/Scout/Data/Profiles/ProfileRepository.swift`
+- `Scout/Scout/Data/Profiles/ProfileDTO.swift`
+- `Scout/Scout/Data/Profiles/ProfileProviding.swift`
+- `Scout/Scout/Domain/Profile.swift`
+- `Scout/Scout/Swipe/Views/SwipeCardIdentitySection.swift`
+- `Scout/Scout/Swipe/Views/SwipeDeckScreen.swift`
+- `Scout/ScoutDesign/Sources/ScoutDesign`
 
 This plan does not authorize moving files or changing app architecture.
 
@@ -76,7 +74,7 @@ DESIGN-001 is the UI authority for this plan.
 Future UI tickets must:
 
 - Reuse existing ScoutDesign components when they fit.
-- Inspect `Scout/Design/` before adding UI primitives.
+- Inspect `Scout/ScoutDesign/Sources/ScoutDesign` before adding UI primitives.
 - Avoid new typography, spacing, color, radius, shadow, or motion scales without approved design work.
 - Preserve native iOS navigation, gestures, controls, accessibility behavior, and interaction expectations.
 - Document loading, empty, error, and accessibility states.
