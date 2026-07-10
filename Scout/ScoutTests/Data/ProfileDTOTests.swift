@@ -260,6 +260,98 @@ final class ProfileDTOTests: XCTestCase {
         XCTAssertTrue(values.6)
     }
 
+    func test_ownerEditableProfile_keepsSystemOwnedFieldsReadOnlyOnProfileState() {
+        let createdAt = Date(timeIntervalSince1970: 100)
+        let lastActiveAt = Date(timeIntervalSince1970: 200)
+
+        let profile = OwnerEditableProfile(
+            id: "owner-1",
+            displayName: "Anna",
+            username: "anna_pb",
+            profilePhotoPath: nil,
+            actionPhotoPath: nil,
+            bio: "Weekend games",
+            sports: ["pickleball"],
+            primarySport: "pickleball",
+            skillLevelBySport: ["pickleball": 3],
+            preferredDays: [.saturday],
+            preferredTimeWindows: [.morning],
+            playIntent: .flexible,
+            homeArea: "Raleigh",
+            travelRadiusMiles: 10,
+            preferredPlayStyle: .doubles,
+            profileVisibility: .publicProfile,
+            isDiscoverable: true,
+            locationPrecision: .coarse,
+            completionState: .discoveryReady,
+            accountStatus: .active,
+            createdAt: createdAt,
+            lastActiveAt: lastActiveAt
+        )
+
+        XCTAssertEqual(profile.completionState, .discoveryReady)
+        XCTAssertEqual(profile.accountStatus, .active)
+        XCTAssertEqual(profile.createdAt, createdAt)
+        XCTAssertEqual(profile.lastActiveAt, lastActiveAt)
+    }
+
+    func test_profileIdentityUpdateCommand_validatesDisplayNameAndUsernameOnly() {
+        let invalid = ProfileIdentityUpdateCommand(
+            displayName: " A ",
+            username: "Bad Handle",
+            bio: "Short bio"
+        )
+
+        XCTAssertEqual(invalid.validationErrors(), [.displayNameLength, .usernameFormat])
+
+        let valid = ProfileIdentityUpdateCommand(
+            displayName: "Anna",
+            username: "anna_pb",
+            bio: nil
+        )
+
+        XCTAssertEqual(valid.validationErrors(), [])
+    }
+
+    func test_profileSportsUpdateCommand_validatesPrimarySportSelectionAndSkill() {
+        let missingSelection = ProfileSportsUpdateCommand(
+            sports: ["tennis"],
+            primarySport: "pickleball",
+            skillLevelBySport: ["pickleball": 3]
+        )
+
+        XCTAssertEqual(missingSelection.validationErrors(), [.primarySportNotSelected])
+
+        let missingSkill = ProfileSportsUpdateCommand(
+            sports: ["pickleball"],
+            primarySport: "pickleball",
+            skillLevelBySport: [:]
+        )
+
+        XCTAssertEqual(missingSkill.validationErrors(), [.primarySportSkillMissing])
+
+        let valid = ProfileSportsUpdateCommand(
+            sports: ["pickleball"],
+            primarySport: "pickleball",
+            skillLevelBySport: ["pickleball": 3]
+        )
+
+        XCTAssertEqual(valid.validationErrors(), [])
+    }
+
+    func test_profileAvailabilityUpdateCommand_rejectsNegativeTravelRadius() {
+        let invalid = ProfileAvailabilityUpdateCommand(
+            preferredDays: [.monday, .wednesday],
+            preferredTimeWindows: [.evening],
+            playIntent: .casual,
+            homeArea: "Durham",
+            travelRadiusMiles: -1,
+            preferredPlayStyle: .open
+        )
+
+        XCTAssertEqual(invalid.validationErrors(), [.negativeTravelRadius])
+    }
+
     func test_mockProfileRepository_tracks_newBoundaryCalls() async throws {
         let repository = await MainActor.run { MockProfileRepository() }
         let reviewedUserID = UUID()
