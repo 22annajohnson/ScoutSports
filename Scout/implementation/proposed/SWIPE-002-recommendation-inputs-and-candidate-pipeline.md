@@ -29,7 +29,7 @@ Authoritative inputs:
 - `tech-plans/approved/SWIPE-001-discovery-and-recommendation.md`
 - `tech-plans/approved/PROFILE-001-player-profile-system.md`
 - `implementation/proposed/PROFILE-002-v1-identity-field-set.md`
-- `implementation/proposed/PROFILE-004-profile-repository-and-data-flow.md`
+- `implementation/approved/PROFILE-004-profile-repository-and-data-flow.md`
 - `tech-plans/approved/EVENT-001-games-and-events.md`
 - `tech-plans/approved/DESIGN-001-design-system.md`
 - `docs/architecture/API_BOUNDARIES.md`
