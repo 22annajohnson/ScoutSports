@@ -13,6 +13,7 @@ In short:
 - Implementation PRs start with `needs-ai-review`, then move to `ai-reviewed` and `needs-human-review` after the opposite worker agent reviews.
 - Add `needs-human-qa` when manual testing is appropriate.
 - Use `architecture-risk`, `scope-risk`, and `follow-up-ticket` to make review concerns visible.
+- Use `author-stephan`, `author-tom`, or `author-jerry` to show who authored the PR.
 - Agents do not approve, merge, or review their own PRs.
 - Agents should identify themselves as Stephan, Tom, or Jerry in PR descriptions and handoffs.
 - Review comments should use the template in `docs/agents/AGENTS.md`.

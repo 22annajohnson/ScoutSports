@@ -37,6 +37,12 @@ Use these general labels:
 - `documentation`: Documentation, tech plans, architecture docs, or planning artifacts.
 - `ruby`: CI, GitHub Actions, Fastlane, Ruby scripts, Markdown validation, or repository automation.
 
+Use the author label that matches the PR author's Scout identity:
+
+- `author-stephan`: PR was authored by Stephan.
+- `author-tom`: PR was authored by Tom.
+- `author-jerry`: PR was authored by Jerry.
+
 Documentation PR workflow:
 
 1. Open the PR with `documentation` and `needs-stephan-review`.

@@ -195,6 +195,14 @@ Scout uses GitHub labels as the canonical review handoff between agents, Stephan
 - `documentation`: PR primarily changes documentation, tech plans, architecture docs, or planning artifacts.
 - `ruby`: PR primarily changes CI, GitHub Actions, Fastlane, Ruby scripts, Markdown validation, or repository automation.
 
+Author identity labels:
+
+- `author-stephan`: PR was authored by Stephan.
+- `author-tom`: PR was authored by Tom.
+- `author-jerry`: PR was authored by Jerry.
+
+Agents should apply the author label that matches their Scout identity when opening a PR. These labels make review routing visible without replacing the PR description or handoff identity.
+
 ### Documentation PRs
 
 Documentation PRs include docs, architecture docs, tech plans, roadmap updates, Jira documentation, and other planning artifacts.
