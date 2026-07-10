@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposed
+Approved
 
 ## Owner
 
@@ -18,11 +18,11 @@ SOCIAL
 
 ## Work Type
 
-Implementation-readiness plan. This document authorizes Jira planning only while status is `Proposed`.
+Approved implementation plan. This document authorizes the Profile repository and data-flow implementation work described in the Jira backlog below.
 
 ## Source of Truth
 
-This plan builds on the approved Player Identity domain and the proposed v1 field/schema plans. It does not redefine Player Identity, profile fields, schema, RLS, storage, or UI requirements.
+This plan builds on the approved Player Identity domain and the v1 field/schema planning documents. It does not redefine Player Identity, profile fields, schema, RLS, storage, or UI requirements.
 
 Authoritative inputs:
 
@@ -35,7 +35,7 @@ Authoritative inputs:
 - `docs/database/RLS.md`
 - `AGENTS.md`
 
-This plan must not be implemented until `PROFILE-002`, `PROFILE-003`, `INFRA-001`, and this plan are approved.
+Implementation may begin for stories whose listed dependencies are satisfied. iOS-only repository boundary work may proceed under this approved plan once `PROFILE-002` is approved. Stories that require generated types, concrete Supabase reads/writes, schema assumptions, or RLS behavior remain blocked until the relevant `PROFILE-003` and `INFRA-001` approvals are in place.
 
 ## Problem Statement
 
@@ -395,11 +395,11 @@ V1 implementation should avoid duplicating business validation in unrelated feat
 
 ## Rollout Strategy
 
-1. Approve `PROFILE-002`, `PROFILE-003`, `INFRA-001`, and this plan.
+1. Confirm `PROFILE-002` approval before implementing domain/update command models.
 2. Implement domain/update command models without Supabase dependency.
 3. Add repository protocol and mock repository.
-4. Add mapping layer and mapping tests.
-5. Implement concrete Supabase repository behind the protocol.
+4. Add mapping layer and mapping tests after `PROFILE-003` schema/RLS boundaries are approved.
+5. Implement concrete Supabase repository behind the protocol after schema/RLS and database foundation dependencies are approved.
 6. Wire repository into the app environment.
 7. Update Profile ViewModels one surface at a time.
 8. Add contract reads only after contract-specific plans are approved.
@@ -426,7 +426,7 @@ Create one Epic:
 
 | Order | Story | Work Type | Points | Dependencies | Repository Area |
 | --- | --- | --- | ---: | --- | --- |
-| 1 | Define Profile domain models and update commands | 🤖 AI Implementation | 0.75 | PROFILE-002 approval | iOS |
+| 1 | Define Profile domain models and update commands | 🤖 AI Implementation | 0.75 | PROFILE-002 approval, PROFILE-004 approval | iOS |
 | 2 | Add ProfileRepository protocol and mock repository | 🤖 AI Implementation | 0.75 | Story 1 | iOS |
 | 3 | Add profile mapping layer and mapper tests | 🤖 AI Implementation | 1 | Story 1, PROFILE-003 approval | iOS, Supabase |
 | 4 | Implement concrete Supabase ProfileRepository | 🤖 AI Implementation | 1.5 | Stories 2-3, approved schema/RLS | iOS, Supabase |
@@ -435,7 +435,7 @@ Create one Epic:
 | 7 | Add repository error/loading state validation | 🤖 AI Implementation | 0.75 | Stories 2-6 | iOS |
 | 8 | Review repository boundary and future package ownership | 🤝 Shared | 0.5 | Stories 1-7 | Docs, iOS |
 
-Do not create implementation work from these stories until this plan is approved.
+Implementation agents should follow the dependency column for each story. This approval does not approve schema, RLS, migration, storage, generated type, or Supabase dashboard changes.
 
 ## Testing Strategy
 
