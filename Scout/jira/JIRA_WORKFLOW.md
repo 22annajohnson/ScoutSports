@@ -134,6 +134,7 @@ Agents are responsible for starting work and monitoring their own PRs:
 
 - When an agent starts a ticket, it must move the Jira ticket to `In Progress`.
 - Pull requests must follow the repository's GitHub PR template. Required template sections should be completed, or marked as not applicable with a short explanation.
+- Pull requests must follow the canonical GitHub label review workflow in `AGENTS.md` and `docs/agents/AGENTS.md`.
 
 Scout Jira automation handles PR, CI, review, and merge transitions:
 
@@ -145,6 +146,39 @@ Scout Jira automation handles PR, CI, review, and merge transitions:
 After opening a pull request, an agent should monitor its ticket. When an agent notices that one of its tickets has moved back to `In Progress`, it should treat that as a signal to inspect the pull request, review failed checks, update the code or documentation as needed, and push a follow-up commit. Agents should not ignore tickets that automation returns to `In Progress`.
 
 Agents should not manually mark their own implementation tickets `Awaiting CI`, `Ready for Review`, or `Done` when Jira automation is configured to do so. If automation does not run, the agent should mention the status gap in its handoff rather than guessing.
+
+## Pull Request Label Workflow
+
+Jira status and GitHub labels answer different questions. Jira tracks ticket execution state, while GitHub labels track PR review ownership and risk.
+
+General PR labels:
+
+- `documentation`: Documentation, tech plans, architecture docs, or planning artifacts.
+- `ruby`: CI, GitHub Actions, Fastlane, Ruby scripts, Markdown validation, or repository automation.
+
+Documentation PRs:
+
+- Start with `documentation` and `needs-stephan-review`.
+- Stephan reviews for architecture consistency, planning quality, roadmap alignment, implementation readiness, and documentation quality.
+- Stephan leaves a written GitHub comment and does not approve.
+- If changes are required, use `needs-changes`.
+- When Stephan review is complete, replace `needs-stephan-review` with `needs-human-review`.
+
+Implementation PRs:
+
+- Start with `needs-ai-review`.
+- The opposite implementation agent reviews, leaves a written GitHub review comment, and does not approve.
+- If changes are required, use `needs-changes`.
+- When AI review is complete, replace `needs-ai-review` with `ai-reviewed` and `needs-human-review`.
+
+Manual QA and risk labels:
+
+- Use `needs-human-qa` for significant UI changes, animations, camera, push notifications, gesture-heavy interactions, accessibility concerns, or anything difficult to validate in CI.
+- Use `architecture-risk` for architecture violations, technical debt, bypassed repository boundaries, or questionable abstractions.
+- Use `scope-risk` for PRs that exceed Jira scope, include feature creep, or bundle unrelated changes.
+- Use `follow-up-ticket` when deferred work or cleanup should be tracked separately.
+
+Agents must never approve PRs, merge PRs, or review their own PRs.
 
 ## Approval Rules
 

@@ -36,6 +36,7 @@ Owns risk-focused review:
 - Checks correctness, regressions, missing tests, and mismatch with the approved plan.
 - Prioritizes actionable findings.
 - Avoids broad stylistic rewrites unless they affect maintainability or correctness.
+- Leaves a written GitHub review comment and does not approve or merge.
 
 ### Documentation Agent
 
@@ -162,16 +163,71 @@ Agent handoffs should include:
 
 For documentation-only changes, say that no build was run unless project configuration changed.
 
+## Pull Request Review Workflow
+
+Scout uses GitHub labels as the canonical review handoff between agents, Stephan, and human reviewers.
+
+### General PR Labels
+
+- `documentation`: PR primarily changes documentation, tech plans, architecture docs, or planning artifacts.
+- `ruby`: PR primarily changes CI, GitHub Actions, Fastlane, Ruby scripts, Markdown validation, or repository automation.
+
+### Documentation PRs
+
+Documentation PRs include docs, architecture docs, tech plans, roadmap updates, Jira documentation, and other planning artifacts.
+
+Workflow:
+
+1. Agent opens the PR.
+2. Agent applies `documentation` and `needs-stephan-review`.
+3. Stephan reviews for architecture consistency, planning quality, roadmap alignment, implementation readiness, and documentation quality.
+4. Stephan leaves a written GitHub comment and does not approve.
+5. If changes are required, remove `needs-stephan-review` and add `needs-changes`.
+6. Once the author addresses feedback, remove `needs-changes` and re-add `needs-stephan-review`.
+7. Repeat until acceptable.
+8. When complete, remove `needs-stephan-review` and add `needs-human-review`.
+
+### Implementation PRs
+
+Implementation PRs include iOS, Supabase, backend, CI, automation, or production behavior changes.
+
+Workflow:
+
+1. Agent opens the PR.
+2. Agent applies `needs-ai-review`.
+3. The opposite implementation agent reviews. For example, Jerry reviews Tom's backend work and Tom reviews Jerry's frontend work.
+4. The reviewer verifies scope matches Jira, scope matches the approved tech plan, architecture is consistent, no obvious bugs are present, maintainability is acceptable, and tests are appropriate for the change.
+5. The reviewer leaves a written GitHub review comment and does not approve.
+6. If changes are required, remove `needs-ai-review` and add `needs-changes`.
+7. The author addresses feedback.
+8. Reapply `needs-ai-review`.
+9. Repeat until review passes.
+10. When complete, remove `needs-ai-review`, add `ai-reviewed`, and add `needs-human-review`.
+
+### Human QA
+
+If either reviewer believes manual testing is appropriate, add `needs-human-qa`.
+
+Use `needs-human-qa` for significant UI changes, animations, camera, push notifications, gesture-heavy interactions, accessibility concerns, or anything difficult to validate in CI.
+
+### Optional Risk And Follow-Up Labels
+
+- `architecture-risk`: Use when a PR violates approved architecture, introduces technical debt, bypasses repository boundaries, or uses a questionable abstraction.
+- `scope-risk`: Use when PR scope exceeds Jira, includes feature creep, or bundles unrelated changes.
+- `follow-up-ticket`: Use when an improvement, intentionally deferred work, or future cleanup should be tracked after the PR.
+
+### Review Rules
+
+- Agents must never approve PRs.
+- Agents must never merge PRs.
+- Agents must never review their own PRs.
+- Every review must leave a written GitHub comment.
+- Every implementation PR should eventually have `ai-reviewed` and `needs-human-review`.
+- Every documentation PR should eventually have `needs-human-review`.
+
 ## Current Repository Guardrails
 
 - Do not move the iOS project into `apps/ios/` yet.
 - Do not move the web app into `apps/web/` yet.
 - Do not alter Xcode references, package paths, schemes, CI, or build settings without an approved plan.
 - Do not implement product features during planning-only tasks.
-
-## Open Agent Workflow Questions
-
-- What exact Jira fields should be required for AI-generated tickets?
-- What review checklist should be mandatory before merge?
-- Should plans include implementation prompts for agents?
-- How should agent handoffs be stored or linked from Jira?

@@ -52,6 +52,49 @@ Use the Scout software factory pipeline:
 - Do not merge your own PRs unless explicitly instructed.
 - Do not manually mark implementation tickets `Awaiting CI`, `Ready for Review`, or `Done` when automation is expected to handle those transitions.
 
+## Pull Request Label Workflow
+
+Agents must use GitHub labels to make review state visible.
+
+General labels:
+
+- `documentation`: PR primarily changes documentation, tech plans, architecture docs, or planning artifacts.
+- `ruby`: PR primarily changes CI, GitHub Actions, Fastlane, Ruby scripts, Markdown validation, or repository automation.
+
+Documentation PRs:
+
+- When opening a documentation PR, apply `documentation` and `needs-stephan-review`.
+- Stephan reviews for architecture consistency, planning quality, roadmap alignment, implementation readiness, and documentation quality.
+- Stephan leaves a written GitHub comment but does not approve.
+- If changes are required, remove `needs-stephan-review` and add `needs-changes`.
+- After the author addresses feedback, remove `needs-changes` and re-add `needs-stephan-review`.
+- When Stephan review is complete, remove `needs-stephan-review` and add `needs-human-review`.
+
+Implementation PRs:
+
+- When opening an implementation PR, apply `needs-ai-review`.
+- The opposite implementation agent reviews the PR, leaves a written GitHub review comment, and does not approve.
+- The reviewer checks Jira scope, approved tech plan alignment, architecture consistency, obvious bugs, maintainability, and test appropriateness.
+- If changes are required, remove `needs-ai-review` and add `needs-changes`.
+- After the author addresses feedback, remove `needs-changes` and re-add `needs-ai-review`.
+- When AI review is complete, remove `needs-ai-review`, add `ai-reviewed`, and add `needs-human-review`.
+
+Human QA and risk labels:
+
+- Add `needs-human-qa` when manual testing is appropriate, including significant UI changes, animations, camera, push notifications, gesture-heavy interactions, accessibility concerns, or anything difficult to validate in CI.
+- Add `architecture-risk` when a PR violates approved architecture, introduces technical debt, bypasses repository boundaries, or uses a questionable abstraction.
+- Add `scope-risk` when PR scope exceeds Jira, includes feature creep, or bundles unrelated changes.
+- Add `follow-up-ticket` when an improvement, cleanup, or deferred work should be tracked after the PR.
+
+PR review rules:
+
+- Agents must never approve PRs.
+- Agents must never merge PRs.
+- Agents must never review their own PRs.
+- Every review must leave a written GitHub comment.
+- Every implementation PR should eventually have `ai-reviewed` and `needs-human-review`.
+- Every documentation PR should eventually have `needs-human-review`.
+
 ## Handoff Expectations
 
 Every handoff should explain:
