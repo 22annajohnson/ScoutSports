@@ -431,10 +431,12 @@ Notifications should avoid leaking sensitive event or location details outside t
 
 Events does not own player identity. Events consumes Player Identity contracts for organizers and participants.
 
+For v1 planning, Events should reference `implementation/proposed/PROFILE-002-v1-identity-field-set.md` for Event Ready, Event Creator Ready, and Event Join Ready assumptions. Events must not redefine display identity, sport/skill requirements, profile photo requirements, visibility, discoverability, account status, or location precision.
+
 Examples:
 
-- Organizer display should use an approved Player Identity contract.
-- Participant rows should use an approved Player Identity contract.
+- Organizer display should use the Event Summary profile contract.
+- Participant rows should use the Event Summary profile contract.
 - Reputation or trust cues should use approved Player Identity or Reputation contracts when available.
 - Events must not duplicate player profile fields to solve display needs.
 
@@ -721,6 +723,7 @@ Future AI agents must:
 - Respect domain invariants.
 - Preserve ownership boundaries from the ownership matrix.
 - Use Player Identity contracts for organizer and participant display instead of duplicating profile data.
+- Use `PROFILE-002` v1 identity readiness assumptions before adding event-specific gates.
 - Require approved contract changes when a consumer needs event data outside its current contract.
 - Document affected downstream consumers for every event change.
 - Document location precision and visibility implications for every event change.
@@ -730,6 +733,7 @@ Future AI agents must:
 ## Dependencies
 
 - Player Identity contracts for organizer and participant display.
+- `PROFILE-002` Event Ready, Event Creator Ready, and Event Join Ready assumptions.
 - Design system for event cards, forms, feedback, and safety states.
 - Database and RLS decisions.
 - Location precision and privacy decisions.
