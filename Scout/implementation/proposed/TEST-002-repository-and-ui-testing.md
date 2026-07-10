@@ -142,9 +142,9 @@ Initial coverage targets:
 
 | Order | Jira | Story | Type | Points | Dependencies |
 | --- | --- | --- | --- | --- | --- |
-| 1 | `INFRA-48` | Testing: Add repository fixtures and mock conventions | 🤖 AI Implementation | 0.75 | TEST-002 |
-| 2 | `INFRA-49` | Testing: Add onboarding and profile ViewModel coverage | 🤖 AI Implementation | 1.5 | `INFRA-48`, PROFILE-005 |
-| 3 | `INFRA-50` | Testing: Add swipe and feed repository state coverage | 🤖 AI Implementation | 1.5 | `INFRA-48`, SWIPE-004, FEED-002 |
+| 1 | `INFRA-48` | Testing: Add repository fixtures and mock conventions | 🤖 AI Implementation | 1 | TEST-002 |
+| 2 | `INFRA-49` | Testing: Add onboarding and profile ViewModel coverage | 🤖 AI Implementation | 2 | `INFRA-48`, PROFILE-005 |
+| 3 | `INFRA-50` | Testing: Add swipe and feed repository state coverage | 🤖 AI Implementation | 2 | `INFRA-48`, SWIPE-004, FEED-002 |
 | 4 | `INFRA-51` | Testing: Add navigation smoke tests for core app flows | 🤖 AI Implementation | 1 | `INFRA-48`, current navigation architecture |
 | 5 | `INFRA-52` | Testing: Add selective snapshot and screenshot strategy | 🤖 AI Implementation | 1 | `INFRA-48`, DESIGN-002/DESIGN-004 |
 | 6 | `INFRA-53` | Testing: Document local test commands and CI compatibility | 🤖 AI Implementation | 0.5 | INFRA-003, TEST-002 |
