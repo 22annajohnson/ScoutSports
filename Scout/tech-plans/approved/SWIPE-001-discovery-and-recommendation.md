@@ -402,9 +402,11 @@ If a consuming feature needs recommendation data outside its approved contract, 
 
 Discovery consumes Player Identity contracts for candidate display and eligibility. It does not own player profile data.
 
+For v1 planning, Discovery should reference `implementation/proposed/PROFILE-002-v1-identity-field-set.md` for Discovery Ready inputs and approved/deferred profile assumptions. Discovery must not redefine required identity fields, profile media requirements, discoverability defaults, location precision, or profile visibility rules.
+
 Discovery may consume:
 
-- Player Identity summaries.
+- Swipe Summary or Search Summary profile contracts.
 - Availability and preference contracts.
 - Privacy and visibility rules.
 - Event contracts for play context.
@@ -557,6 +559,7 @@ Expected conceptual pattern:
 - View models manage presentation state, gestures, loading, empty, error, and match feedback.
 - Recommendation services own candidate fetching, eligibility, ranking, exclusions, decisions, and match creation when implementation is approved.
 - Player Identity supplies approved profile contracts.
+- `PROFILE-002` supplies v1 Discovery Ready assumptions: display name, selected sports, primary sport, primary sport skill, privacy/readiness fields, active account status, and coarse location only when location-based Discovery is active.
 - Events supplies approved coordination contracts when recommendations use event context.
 - Match creation behavior is documented before implementation.
 
@@ -639,6 +642,7 @@ Future AI agents must:
 ## Dependencies
 
 - Player Identity contracts for candidate display and eligibility.
+- `PROFILE-002` v1 identity field set and Discovery Ready rules.
 - Event contracts for coordination outcomes and future event recommendations.
 - Design system card and feedback patterns.
 - Database decisions for decisions, exclusions, and matches.

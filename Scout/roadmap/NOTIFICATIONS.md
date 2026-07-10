@@ -19,8 +19,8 @@
 
 | Proposed Tech Plan ID | Status | Title | Description | Dependencies | Priority | Complexity |
 | --- | --- | --- | --- | --- | --- | --- |
-| NOTIFICATIONS-003 | 🟦 Not Started | Match Notification Scope | Define notification behavior for matches, next actions, and post-match coordination. | NOTIFICATIONS-001, SWIPE-001, CHAT-002 | Medium | M |
-| NOTIFICATIONS-004 | 🟦 Not Started | Chat Notification Scope | Define message notification behavior, privacy boundaries, preview text, and mute rules. | NOTIFICATIONS-001, CHAT-001 | Medium | L |
+| NOTIFICATIONS-003 | 🟦 Not Started | Match Notification Scope | Define notification behavior for matches, next actions, and post-match coordination. | NOTIFICATIONS-001, SWIPE-001, CHAT-002, PROFILE-002 | Medium | M |
+| NOTIFICATIONS-004 | 🟦 Not Started | Chat Notification Scope | Define message notification behavior, privacy boundaries, preview text, and mute rules. | NOTIFICATIONS-001, CHAT-001, PROFILE-002 | Medium | L |
 
 ## ⚪ Later
 
