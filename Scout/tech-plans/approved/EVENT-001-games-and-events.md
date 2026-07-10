@@ -584,6 +584,53 @@ Conceptual principles:
 
 These are conceptual principles only. They do not approve implementation details.
 
+### SOCIAL-14 Safety Visibility and Location Review
+
+This review defines conceptual safety and location guidance for Events V1. It does not approve location precision logic, reporting flows, moderation policy, RLS, storage policy, or implementation-specific enforcement.
+
+Visibility rules must override convenience. Event consumers should receive only the information needed for their current relationship to the event, and exact location details must not be exposed simply because they make discovery, notifications, maps, or feed cards easier to build.
+
+Conceptual visibility rules:
+
+| Viewer or state | Appropriate V1 visibility | Safety boundary |
+| --- | --- | --- |
+| Discovery viewer | Sport, time window, approximate location, capacity status, skill expectations, organizer summary, and safe primary action. | Do not reveal exact address, court details, access notes, full participant list, or private participant profile details. |
+| Pre-join detail viewer | Event description, schedule, approximate venue area, participation requirements, organizer summary, and safe trust cues. | Exact location and private participant context remain gated by participation, lifecycle, and safety rules. |
+| Pending participant | Request status, organizer response path, and any detail needed to understand whether the request is still viable. | Pending state alone should not guarantee exact location reveal. |
+| Approved or joined participant | Coordination detail appropriate to the event lifecycle, including exact location only when approved by the final implementation plan. | Location reveal timing must be explicit and testable before implementation. |
+| Organizer | Full owned-event management context, participant requests, lifecycle controls, and safety controls approved for V1. | Organizer tools must remain bounded by participant privacy and abuse-prevention rules. |
+| Cancelled or archived event viewer | Safe event status, relevant recovery path, and historical context where approved. | Cancelled or archived events should not remain active discovery surfaces or leak stale coordination details. |
+
+Location precision rules:
+
+- Approximate location may mean city, neighborhood, venue area, park area, or another coarse location label approved by the implementation plan.
+- Exact location may include street address, named court, reservation details, entry notes, parking notes, or any instruction that materially helps someone find the participants.
+- Exact location reveal must be gated by event visibility, participation state, lifecycle state, organizer intent, and safety review.
+- Notifications, feed previews, maps, and shared links must use the same location precision contract as the in-app event consumer they represent.
+- Profile privacy contracts from `PROFILE-001` apply to event participants and organizers; Events must consume context-appropriate profile summaries rather than full Player Identity records.
+
+Safety topics requiring future approval before implementation:
+
+- Abuse reporting, escalation, and moderation handoff.
+- Blocked-user discovery, joining, and co-participation behavior.
+- Organizer verification and organizer trust signals.
+- Participant list visibility by lifecycle state and viewer relationship.
+- Exact location reveal timing and revocation behavior.
+- No-show, late-cancellation, and reliability consequences.
+- Safety-oriented notification copy and redaction rules.
+- RLS, service-layer enforcement, and audit requirements.
+
+Open questions requiring approval before implementation:
+
+- Which concrete visibility states are required for Events V1?
+- At what lifecycle and participation state can exact location be revealed?
+- Can pending participants see participant previews, organizer contact paths, or venue names?
+- How should blocked users affect discovery, event detail access, joining, and organizer management?
+- What is the minimum abuse reporting surface required for V1 launch?
+- Which organizer verification signals, if any, are required before public event discovery?
+- Who can see the participant list, and how much profile context can each viewer see?
+- How should cancelled events handle recovery paths without leaking stale location details?
+
 ## Downstream Consumers
 
 Event data is consumed across Scout. Any event change must consider downstream consumers.
