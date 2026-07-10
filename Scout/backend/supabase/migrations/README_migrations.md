@@ -19,3 +19,5 @@ Use the root Makefile target when an approved schema story authorizes a new migr
 ```text
 make supabase-migration-new SUPABASE_MIGRATION_NAME=<jira-key>_<short_description>
 ```
+
+From the repository root, equivalent direct Supabase CLI commands should use `--workdir backend`.
