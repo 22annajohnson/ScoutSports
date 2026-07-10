@@ -1,5 +1,7 @@
 # Jira Backlog
 
+> Historical draft: this backlog was generated before current Jira epics/stories and the approved-plan-first workflow were established. Treat it as review context only, not as a source of truth for creating implementation tickets.
+
 This directory contains Jira-ready backlog drafts generated from approved Scout technical plans and roadmap items.
 
 These files are not a substitute for Jira. They exist so the backlog can be reviewed, refined, and bulk-created once Jira access is available.
