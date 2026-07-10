@@ -135,8 +135,11 @@ Soft preference inputs may be passed through as metadata only.
 ## Jira Breakdown
 
 - Epic: `SOCIAL-97` - SWIPE-004: Discovery Candidate Queue
-- `SOCIAL-98` - Discovery Queue: Define request response contracts
-- `SOCIAL-99` - Discovery Queue: Implement Supabase candidate data source
-- `SOCIAL-100` - Discovery Queue: Apply filters exclusions and duplicate prevention
-- `SOCIAL-101` - Discovery Queue: Replace mock candidates in Swipe ViewModel
-- `SOCIAL-102` - Discovery Queue: Add queue regression tests
+
+| Order | Jira | Story | Type | Points | Dependencies |
+| --- | --- | --- | --- | --- | --- |
+| 1 | `SOCIAL-98` | Discovery Queue: Define request response contracts | 🤖 AI Implementation | 1 | SWIPE-004 |
+| 2 | `SOCIAL-99` | Discovery Queue: Implement Supabase candidate data source | 🤖 AI Implementation | 2 | `SOCIAL-98`, DB-001, PROFILE-004 |
+| 3 | `SOCIAL-100` | Discovery Queue: Apply filters exclusions and duplicate prevention | 🤖 AI Implementation | 2 | `SOCIAL-98`, `SOCIAL-99`, SWIPE-002 |
+| 4 | `SOCIAL-101` | Discovery Queue: Replace mock candidates in Swipe ViewModel | 🤖 AI Implementation | 2 | `SOCIAL-99`, `SOCIAL-100` |
+| 5 | `SOCIAL-102` | Discovery Queue: Add queue regression tests | 🤖 AI Implementation | 1 | `SOCIAL-100`, `SOCIAL-101` |
