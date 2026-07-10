@@ -31,6 +31,7 @@ final class MockProfileRepository: ProfileProviding, PlayerMatchSignalsProviding
 
     /// If set, `fetchMyProfile()` will return this profile.
     var fetchMyProfileResult: Profile = Profile(id: "test-user", displayName: "Test")
+    var fetchMyProfileState: RepositoryFixtureState<Profile>?
 
     /// If set, `updateDisplayName(_:)` will throw.
     var updateDisplayNameError: Error?
@@ -42,6 +43,7 @@ final class MockProfileRepository: ProfileProviding, PlayerMatchSignalsProviding
     var submitMatchFeedbackError: Error?
     var markProfileCompletedError: Error?
     var feedbackReceivedResult: [MatchPlayerFeedback] = []
+    var feedbackReceivedState: RepositoryFixtureState<[MatchPlayerFeedback]>?
     var derivedMetricsResult = PlayerDerivedMetrics(
         id: "test-user",
         friendlinessScore: nil,
@@ -68,11 +70,44 @@ final class MockProfileRepository: ProfileProviding, PlayerMatchSignalsProviding
     var onSubmitMatchFeedback: ((MatchPlayerFeedbackInput) -> Void)?
     var onMarkProfileCompleted: (() -> Void)?
 
+    // MARK: - Fixture conventions
+
+    static func success(profile: Profile = ProfileFixtures.make()) -> MockProfileRepository {
+        let repository = MockProfileRepository()
+        repository.configureFetchMyProfile(.success(profile))
+        return repository
+    }
+
+    static func empty() -> MockProfileRepository {
+        let repository = MockProfileRepository()
+        repository.configureFetchMyProfile(.empty)
+        repository.configureFeedbackReceived(.empty)
+        return repository
+    }
+
+    static func failure(_ error: Error) -> MockProfileRepository {
+        let repository = MockProfileRepository()
+        repository.configureFetchMyProfile(.failure(error))
+        repository.configureFeedbackReceived(.failure(error))
+        return repository
+    }
+
+    func configureFetchMyProfile(_ state: RepositoryFixtureState<Profile>) {
+        fetchMyProfileState = state
+    }
+
+    func configureFeedbackReceived(_ state: RepositoryFixtureState<[MatchPlayerFeedback]>) {
+        feedbackReceivedState = state
+    }
+
     // MARK: - ProfileProviding
 
     func fetchMyProfile() async throws -> Profile {
         fetchMyProfileCallCount += 1
         onFetchMyProfile?()
+        if let fetchMyProfileState {
+            return try fetchMyProfileState.value(emptyValue: ProfileFixtures.empty)
+        }
         if let fetchMyProfileError { throw fetchMyProfileError }
         return fetchMyProfileResult
     }
@@ -137,7 +172,8 @@ final class MockProfileRepository: ProfileProviding, PlayerMatchSignalsProviding
     }
 
     func fetchPrivateFeedbackReceived(for reviewedUserID: UUID) async throws -> [MatchPlayerFeedback] {
-        feedbackReceivedResult.filter { $0.reviewedUserID == reviewedUserID }
+        let feedback = try feedbackReceivedState?.value(emptyValue: []) ?? feedbackReceivedResult
+        return feedback.filter { $0.reviewedUserID == reviewedUserID }
     }
 
     func fetchDerivedMetrics(for userID: UUID) async throws -> PlayerDerivedMetrics {
