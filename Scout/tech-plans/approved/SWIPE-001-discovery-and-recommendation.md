@@ -279,11 +279,43 @@ Candidate actions may include:
 
 Decisions must be idempotent and should not create duplicate state.
 
+Decision lifecycle:
+
+1. Candidate is presented through an approved recommendation contract.
+2. User submits one approved decision action for the candidate in that context.
+3. The authoritative decision owner validates current eligibility and lifecycle state.
+4. The decision is recorded once.
+5. The candidate is excluded from repeat presentation unless an approved rule allows re-entry.
+6. Any match check or feedback update happens through centralized Discovery/Match rules.
+
+Decision invariants:
+
+- The same user/candidate/context decision must be safe to retry.
+- Duplicate taps, network retries, or replayed requests must not create duplicate decision state.
+- A later decision cannot silently contradict an earlier decision unless a future undo or override rule is approved.
+- Client UI state is not the source of truth for whether a decision exists.
+- Decisions must be evaluated before a candidate re-enters a queue.
+
 ### Match
 
 Match represents mutual interest or another approved compatibility event.
 
 Match creation should have one authoritative source. Match behavior should support coordination toward real play.
+
+Match creation ownership:
+
+- Match creation belongs to an authoritative Discovery/Match service or repository boundary defined by a future implementation plan.
+- Presentation surfaces may request or display match outcomes, but they must not independently decide that a durable match exists.
+- Chat, Events, Feed, Notifications, and Profile may consume match contracts after creation.
+- Match creation must respect privacy, blocking, reporting, account status, and candidate eligibility at creation time.
+
+Match invariants:
+
+- Mutual interest or another approved compatibility event can create at most one active match for the same participants and context unless a future plan defines repeat-match semantics.
+- Match creation must be transactional or otherwise protected against duplicate creation.
+- A match cannot bypass exclusions or safety rules.
+- Match confirmation UI must be derived from authoritative match state.
+- Match state should support coordination toward real-world play rather than ending at swipe feedback.
 
 ### Feedback
 
@@ -317,6 +349,27 @@ Exclusions may include:
 - Safety restrictions.
 
 Exclusions override ranking.
+
+Exclusion categories:
+
+| Category | Meaning | Boundary |
+| --- | --- | --- |
+| Blocked | Viewer or candidate has blocked the other user. | Must always exclude before presentation. |
+| Reported or safety-restricted | Trust and safety state prevents recommendation. | Must override ranking and UI convenience. |
+| Hidden | User has hidden, muted, dismissed, or otherwise suppressed the candidate or related context. | Future semantics must define duration and scope. |
+| Already decided | Candidate has an existing pass, interest, or other terminal decision for this context. | Must be checked before queue presentation. |
+| Already matched | Candidate is already connected through an active match where repeat recommendation is not approved. | Match state must be authoritative. |
+| Ineligible | Candidate fails required sport, visibility, account status, privacy, or minimum profile gates. | Eligibility is evaluated before ranking. |
+| Exhausted | Candidate was previously shown enough times under approved presentation rules. | Re-entry requires explicit freshness or retry rules. |
+| Unavailable | Candidate is temporarily unavailable for the current context, such as schedule or location constraints. | Missing data should not equal unavailable unless approved. |
+
+Exclusion invariants:
+
+- Exclusions must be centralized and applied before presentation.
+- Ranking must never reintroduce excluded candidates.
+- Clients may render empty/recovery states, but they must not create feature-local exclusion systems.
+- Exclusion reasons exposed to users must be privacy-safe and should not reveal blocks, reports, safety state, or private preferences.
+- Future learning can consume exclusion outcomes only through approved feedback rules.
 
 ### Learning
 
