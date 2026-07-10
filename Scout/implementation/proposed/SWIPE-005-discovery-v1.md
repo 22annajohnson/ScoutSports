@@ -1,4 +1,4 @@
-# Implementation Tech Plan: Discovery V1
+# Implementation Tech Plan: SWIPE-005 Discovery V1
 
 ## Status
 
@@ -25,6 +25,8 @@ Authoritative inputs:
 - `docs/architecture/API_BOUNDARIES.md`
 
 This document remains `Proposed` until the product owner explicitly approves it. SOCIAL-21 creates this plan for review only; it does not implement ranking, schemas, migrations, services, APIs, Supabase functions, or UI.
+
+This plan is numbered `SWIPE-005` so `SWIPE-002` can remain the recommendation inputs and eligibility plan, `SWIPE-003` can remain the candidate deck pipeline plan, and `SWIPE-004` can remain the discovery candidate queue plan. SWIPE-005 is an umbrella implementation-readiness plan for Discovery V1, not a competing SWIPE-002 authority.
 
 ## Problem Statement
 
