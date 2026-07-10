@@ -155,7 +155,7 @@ EventRepository owns event reads/writes, lifecycle transitions, capacity checks,
 | --- | --- | --- | --- | --- | --- |
 | 1 | `SOCIAL-116` | Events: Add Community Game domain models and repository protocol | 🤖 AI Implementation | 1 | EVENT-002 |
 | 2 | `SOCIAL-117` | Events: Create community games schema and RLS | 🤖 AI Implementation | 2 | DB-001, PROFILE-004, `SOCIAL-116` |
-| 3 | `SOCIAL-118` | Events: Implement EventRepository backend operations | 🤖 AI Implementation | 1.5 | `SOCIAL-116`, `SOCIAL-117` |
+| 3 | `SOCIAL-118` | Events: Implement EventRepository backend operations | 🤖 AI Implementation | 2 | `SOCIAL-116`, `SOCIAL-117` |
 | 4 | `SOCIAL-119` | Events: Build create edit and cancel organizer flows | 🤖 AI Implementation | 2 | `SOCIAL-118` |
-| 5 | `SOCIAL-120` | Events: Build event detail join and leave flows | 🤖 AI Implementation | 1.5 | `SOCIAL-118`, PROFILE-005 |
-| 6 | `SOCIAL-121` | Events: Add Feed Preview and Notification Summary hooks | 🤖 AI Implementation | 0.75 | `SOCIAL-116`, `SOCIAL-118` |
+| 5 | `SOCIAL-120` | Events: Build event detail join and leave flows | 🤖 AI Implementation | 2 | `SOCIAL-118`, PROFILE-005 |
+| 6 | `SOCIAL-121` | Events: Add Feed Preview and Notification Summary hooks | 🤖 AI Implementation | 1 | `SOCIAL-116`, `SOCIAL-118` |
