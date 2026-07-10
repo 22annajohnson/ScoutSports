@@ -46,6 +46,8 @@ Use the Scout software factory pipeline:
 
 - When starting work on a Jira ticket, move the ticket to `In Progress`.
 - Pull requests must follow the repository's GitHub PR template. Do not omit required template sections unless they are clearly not applicable and are marked as such.
+- PR titles and descriptions must mention only the Jira ticket actually being worked by that PR. Do not include other raw Jira issue keys or Jira links for next work, related stories, dependencies, follow-ups, or story ranges, because Jira automation may treat those tickets as completed when the PR merges.
+- When a PR needs to describe related work, use plain-language references without issue keys, such as "the next profile repository story", "the generated types follow-up", or "the parent epic". Put exact follow-up ticket keys in Jira comments, roadmap docs, or implementation plans instead of the GitHub PR body.
 - Jira automation moves tickets to `Awaiting CI` when a pull request is opened.
 - After opening a pull request, monitor your ticket. Jira automation may move it back to `In Progress` if CI checks fail. If this happens, inspect the PR/check failures again, make the needed fix, and push an update.
 - Jira automation may move the ticket to `Ready for Review` when CI passes and to `Done` when the PR is merged.

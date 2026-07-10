@@ -134,6 +134,10 @@ Agents are responsible for starting work and monitoring their own PRs:
 
 - When an agent starts a ticket, it must move the Jira ticket to `In Progress`.
 - Pull requests must follow the repository's GitHub PR template. Required template sections should be completed, or marked as not applicable with a short explanation.
+- PR titles and descriptions must include only the Jira ticket actually implemented by that PR.
+- Do not mention other raw Jira issue keys or Jira links in a PR title or body for dependencies, related work, follow-ups, "next" work, parent/child story ranges, or implementation order. Jira automation may interpret any mentioned issue key as connected to the PR and transition that ticket when the PR opens, passes CI, or merges.
+- If related work needs to be described in GitHub, use plain language that does not contain an issue key, such as "the next profile repository story", "the generated types follow-up", "the parent epic", or "the Design Factory verification story".
+- Keep exact follow-up ticket keys in Jira comments, implementation plans, roadmap documents, or the relevant epic rather than the GitHub PR body.
 
 Scout Jira automation handles PR, CI, review, and merge transitions:
 

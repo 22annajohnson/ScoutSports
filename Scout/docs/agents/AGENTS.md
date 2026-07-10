@@ -134,6 +134,21 @@ Implementation agents should inspect:
 - Existing feature code and tests.
 - The repository `Makefile` for validation.
 
+## Pull Request Jira References
+
+GitHub PR titles and descriptions should mention only the Jira ticket being worked by that PR.
+
+Do not include raw Jira issue keys or Jira links for related work, next work, follow-ups, dependency stories, parent/child story ranges, or implementation order. Jira automation may transition every issue key it sees in a PR when that PR opens, passes CI, or merges.
+
+Use plain language in PR bodies for related work instead:
+
+- "the next profile repository story"
+- "the generated types follow-up"
+- "the parent epic"
+- "the Design Factory verification story"
+
+Put exact follow-up ticket keys in Jira comments, implementation plans, roadmap documents, or the relevant epic instead of the GitHub PR body.
+
 ## Ticket Expectations
 
 Tickets generated for implementation should include:
