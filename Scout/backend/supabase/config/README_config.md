@@ -8,6 +8,8 @@ This directory is reserved for local Supabase configuration placeholders and set
 
 Future config work may document variable names, local setup, and project-linking expectations after the relevant Jira story approves that workflow. Do not commit secret values.
 
+Run `make supabase-doctor` from the repository root to check local CLI prerequisites before starting migration work.
+
 ## Environment Variable Names
 
 Use documentation or example files with variable names only. Do not commit real values.

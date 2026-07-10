@@ -13,3 +13,9 @@ YYYYMMDDHHMMSS_<jira-key>_<short_description>.sql
 ```
 
 Each migration should include the required Jira, tech plan, purpose, affected area, RLS impact, generated type impact, and rollback header fields documented in `docs/database/MIGRATIONS.md`.
+
+Use the root Makefile target when an approved schema story authorizes a new migration:
+
+```text
+make supabase-migration-new SUPABASE_MIGRATION_NAME=<jira-key>_<short_description>
+```
