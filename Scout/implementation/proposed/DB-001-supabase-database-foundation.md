@@ -175,9 +175,11 @@ Supabase owns persistence, RLS, storage policies, and database constraints. Priv
 ## Jira Breakdown
 
 - Epic: `INFRA-34` - DB-001: Supabase Database Foundation
-- `INFRA-35` - DB: Add Supabase repository structure without product schema
-- `INFRA-36` - DB: Add local Supabase migration workflow
-- `INFRA-37` - DB: Add generated Supabase type workflow
-- `INFRA-38` - DB: Add RLS seed and environment conventions
-- `INFRA-39` - DB: Add migration validation and deployment checklist
 
+| Order | Jira | Story | Type | Points | Dependencies |
+| --- | --- | --- | --- | --- | --- |
+| 1 | `INFRA-35` | DB: Add Supabase repository structure without product schema | 🤖 AI Implementation | 1 | DB-001 |
+| 2 | `INFRA-36` | DB: Add local Supabase migration workflow | 🤖 AI Implementation | 1 | `INFRA-35` |
+| 3 | `INFRA-37` | DB: Add generated Supabase type workflow | 🤖 AI Implementation | 1 | `INFRA-35`, `INFRA-36` |
+| 4 | `INFRA-38` | DB: Add RLS seed and environment conventions | 🤖 AI Implementation | 1 | `INFRA-36` |
+| 5 | `INFRA-39` | DB: Add migration validation and deployment checklist | 🤖 AI Implementation | 1 | `INFRA-36`, `INFRA-37`, `INFRA-38` |
