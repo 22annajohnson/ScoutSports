@@ -223,3 +223,53 @@ final class SessionStoreTests: XCTestCase {
         XCTAssertNil(sut.sessionUser)
     }
 }
+
+@MainActor
+final class ScoutHomeNavigationSmokeTests: XCTestCase {
+
+    func test_homeNavigation_defaultsToSwipeRouteWithBubbleChrome() {
+        let sut = ScoutHomeViewModel()
+
+        XCTAssertEqual(sut.selectedTab, .swipe)
+        XCTAssertEqual(sut.navigationStyle, .bubble)
+        XCTAssertEqual(sut.navigationVisibility, .shown)
+        XCTAssertEqual(sut.chromeMode, .expanded)
+    }
+
+    func test_homeNavigation_canReachEveryDeclaredTabRoute() {
+        let sut = ScoutHomeViewModel()
+
+        for tab in ScoutHomeTab.allCases {
+            sut.select(tab: tab)
+
+            XCTAssertEqual(sut.selectedTab, tab)
+            XCTAssertEqual(sut.chromeMode, .expanded)
+            XCTAssertEqual(sut.navigationVisibility, .shown)
+        }
+    }
+
+    func test_homeNavigation_selectingFeedUsesBarChromeAndClosesSwipeMenu() {
+        let sut = ScoutHomeViewModel()
+        sut.toggleSwipeMenu()
+
+        sut.select(tab: .feed)
+
+        XCTAssertEqual(sut.selectedTab, .feed)
+        XCTAssertEqual(sut.navigationStyle, .bar)
+        XCTAssertFalse(sut.isSwipeMenuExpanded)
+    }
+
+    func test_homeNavigation_scrollStateResetsWhenChangingRoutes() {
+        let sut = ScoutHomeViewModel()
+        sut.updateChrome(for: 60)
+
+        XCTAssertEqual(sut.chromeMode, .condensed)
+        XCTAssertEqual(sut.navigationVisibility, .hidden)
+
+        sut.select(tab: .feed)
+
+        XCTAssertEqual(sut.selectedTab, .feed)
+        XCTAssertEqual(sut.chromeMode, .expanded)
+        XCTAssertEqual(sut.navigationVisibility, .shown)
+    }
+}
