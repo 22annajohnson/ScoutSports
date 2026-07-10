@@ -343,6 +343,47 @@ Event will not happen. Participants should receive clear communication and recov
 
 Participant actions and organizer permissions must be defined for each lifecycle stage before implementation.
 
+### SOCIAL-11 Lifecycle Transition and Permission Review
+
+Jira story: `SOCIAL-11` (`Events: Define lifecycle transitions and permissions`).
+
+This review documents conceptual lifecycle behavior for future implementation plans. It does not implement enums, state machines, database constraints, RLS policies, APIs, or UI.
+
+Allowed lifecycle transitions:
+
+| From State | Allowed Next States | Organizer Permission | Participant Behavior | Notes |
+| --- | --- | --- | --- | --- |
+| `Draft` | `Published`, `Cancelled` | Create, edit all draft details, publish, or cancel. | No broad participant action. Invited collaborators, if any, require future approval. | Draft events are not broadly discoverable. |
+| `Published` | `Filling`, `Cancelled` | Update allowed pre-join details, manage visibility, cancel. | View event and take approved join/request action. | Transition to `Filling` when participant interest or requests exist. |
+| `Filling` | `Confirmed`, `Cancelled` | Manage requests, capacity, participant fit, updates, cancellation. | Join/request/leave behavior depends on participation model and capacity. | Organizer decisions must be auditable in future plans if approval/decline exists. |
+| `Confirmed` | `In Progress`, `Cancelled` | Confirm details, communicate updates, manage late changes, cancel with reason. | View coordination details allowed by visibility rules; leave/cancel participation rules require approval. | Exact location reveal rules may change here only through approved visibility guidance. |
+| `In Progress` | `Completed`, `Cancelled` | Mark completion or cancel if the event cannot proceed. | Participant actions should be limited to coordination and future check-in if approved. | Live state should not permit broad edits that confuse participants. |
+| `Completed` | `Archived` | Close out event and trigger approved follow-up. | Future feedback, attendance, or recap actions may apply. | No participation changes unless a future correction flow is approved. |
+| `Archived` | None by default | Read historical record; administrative correction only if approved. | Read only where history is visible. | Reopening archived events is out of scope. |
+| `Cancelled` | `Archived` | Provide cancellation reason and recovery guidance where applicable. | Receive safe cancellation/update information where notification support exists. | Reopening cancelled events is out of scope for v1. |
+
+Invalid transition principles:
+
+- Consumers must not mutate lifecycle state directly.
+- Lifecycle transitions must have one authoritative path.
+- Terminal states should not return to active states without a future approved correction process.
+- Participant actions must not imply lifecycle transitions unless the approved Events implementation plan says so.
+- Organizer actions must be valid for the current lifecycle state.
+- Notifications, chat, maps, feed, and recommendations must react to lifecycle state; they must not define lifecycle behavior.
+
+Conceptual permissions by lifecycle state:
+
+| State | Organizer Can | Participant Can | Consumers Can |
+| --- | --- | --- | --- |
+| `Draft` | Edit, publish, cancel. | No broad action. | Usually hidden from public discovery/feed. |
+| `Published` | Update approved details, cancel, manage visibility. | View and join/request if eligible. | Display Event Card/Detail according to visibility. |
+| `Filling` | Manage participant requests, capacity, updates, cancel. | Join/request/leave according to participation rules. | Display capacity and participant summary without full event internals. |
+| `Confirmed` | Communicate details, manage late changes, cancel with reason. | View allowed coordination details, leave only if approved. | Trigger reminders and summaries where notification strategy exists. |
+| `In Progress` | Mark complete or cancel if needed. | Coordinate/check in only if later approved. | Suppress new joins unless explicitly approved. |
+| `Completed` | Close out and initiate approved follow-up. | Provide future feedback/attendance signal if approved. | Show history/recap only through approved contracts. |
+| `Archived` | Administrative read/correction only if approved. | Read allowed history only. | Exclude from active discovery. |
+| `Cancelled` | Communicate cancellation and archive later. | Receive update and find alternatives where supported. | Remove from active discovery and show cancellation state where relevant. |
+
 ## Participation Contracts
 
 Consumers should not receive the full event model by default. They should receive context-specific event summaries.
