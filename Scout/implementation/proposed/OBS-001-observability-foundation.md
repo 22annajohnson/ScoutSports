@@ -143,9 +143,9 @@ Payloads should prefer booleans, counts, coarse categories, and internal IDs onl
 
 | Order | Jira | Story | Type | Points | Dependencies |
 | --- | --- | --- | --- | --- | --- |
-| 1 | `INFRA-41` | Observability: Add analytics crash and logging protocols | 🤖 AI Implementation | 0.75 | OBS-001 |
-| 2 | `INFRA-42` | Observability: Add no-op and local debug providers | 🤖 AI Implementation | 0.75 | `INFRA-41` |
+| 1 | `INFRA-41` | Observability: Add analytics crash and logging protocols | 🤖 AI Implementation | 1 | OBS-001 |
+| 2 | `INFRA-42` | Observability: Add no-op and local debug providers | 🤖 AI Implementation | 1 | `INFRA-41` |
 | 3 | `INFRA-43` | Observability: Define event naming constants and privacy rules | 🤖 AI Implementation | 0.5 | `INFRA-41` |
 | 4 | `INFRA-44` | Observability: Wire initial beta-relevant app and feature events | 🤖 AI Implementation | 1 | `INFRA-42`, `INFRA-43` |
-| 5 | `INFRA-45` | Observability: Add telemetry privacy regression tests | 🤖 AI Implementation | 0.75 | `INFRA-42`, `INFRA-43` |
+| 5 | `INFRA-45` | Observability: Add telemetry privacy regression tests | 🤖 AI Implementation | 1 | `INFRA-42`, `INFRA-43` |
 | 6 | `INFRA-46` | Observability: Decide beta analytics and crash reporting vendors | 👤 Owner Action | 0.25 | `INFRA-41` |
