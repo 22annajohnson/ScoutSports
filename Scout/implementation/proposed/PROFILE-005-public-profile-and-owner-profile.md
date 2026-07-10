@@ -19,7 +19,7 @@ References:
 - `tech-plans/approved/PROFILE-001-player-profile-system.md`
 - `implementation/proposed/PROFILE-002-v1-identity-field-set.md`
 - `implementation/proposed/PROFILE-004-profile-contracts.md`
-- `implementation/proposed/PROFILE-004-profile-database-schema.md` as the schema/RLS dependency for repository-backed profile surfaces.
+- `implementation/proposed/PROFILE-006-profile-database-schema.md` as the schema/RLS dependency for repository-backed profile surfaces.
 - `tech-plans/approved/DESIGN-001-design-system.md`
 
 ## Problem Statement
@@ -117,7 +117,7 @@ Supabase/RLS owns persistence and access control. Profile UI must assume unautho
 
 | Order | Jira | Story | Type | Points | Dependencies |
 | --- | --- | --- | --- | --- | --- |
-| 1 | `SOCIAL-93` | Profile: Add owner and public profile ViewModels | 🤖 AI Implementation | 1 | PROFILE-004 contracts, PROFILE-004 schema/RLS |
+| 1 | `SOCIAL-93` | Profile: Add owner and public profile ViewModels | 🤖 AI Implementation | 1 | PROFILE-004 contracts, PROFILE-006 schema/RLS |
 | 2 | `SOCIAL-94` | Profile: Build owner profile screen | 🤖 AI Implementation | 2 | `SOCIAL-93`, DESIGN-001 |
 | 3 | `SOCIAL-95` | Profile: Build V1 edit profile flow | 🤖 AI Implementation | 2 | `SOCIAL-93`, PROFILE-002, DESIGN-001 |
 | 4 | `SOCIAL-96` | Profile: Build public profile screen and navigation | 🤖 AI Implementation | 2 | `SOCIAL-93`, `SOCIAL-94`, DESIGN-001 |
