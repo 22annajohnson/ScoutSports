@@ -116,6 +116,104 @@ This matrix follows `DESIGN-001` and identifies which product area owns each des
 
 When ownership overlaps, agents should identify the primary user intent and the domain that owns the underlying product concept. Shared design areas should be extended before a domain creates a parallel pattern. If two domains need the same component behavior, document the overlap and route the change through design review before making it shared.
 
+## Component Contribution Rules
+
+These rules are guided by `tech-plans/approved/DESIGN-001-design-system.md` and `implementation/proposed/DESIGN-002-design-system-adoption.md`.
+
+### Reuse-First Workflow
+
+Before creating UI, contributors should:
+
+1. Inspect `ScoutDesign` for an existing component, token, modifier, or preview that fits the need.
+2. Prefer composing existing `ScoutDesign` primitives in the feature view.
+3. Extend an existing component only when the concept already fits and the change benefits more than one consumer.
+4. Create a new reusable component only when reuse is clear and the API can stay domain-free.
+5. Keep feature-specific composition, copy, routing, data mapping, and business logic inside the feature.
+
+Feature views should not copy package styling recipes for cards, chips, buttons, rows, states, or motion when a package component already fits.
+
+### Creating Reusable Components
+
+A new reusable component may be added to `ScoutDesign` when:
+
+- At least two screens need the same UI pattern, or one pattern is foundational enough to justify reuse.
+- The component can be expressed without feature-domain models.
+- It uses existing Scout colors, typography, spacing, radius, stroke, shadow, and motion tokens.
+- Its common states can be represented in Design Factory.
+- The API is small, stable, and easy for feature views to compose.
+- It does not duplicate an existing package component that could be extended.
+
+Every new reusable component should:
+
+- Live in `ScoutDesign`.
+- Include relevant previews when useful.
+- Include accessibility behavior or notes.
+- Be represented in Design Factory once the Design Factory shell exists.
+- Be referenced from the implementing Jira story.
+
+### Extending Existing Components
+
+Prefer extending an existing component when:
+
+- The current component is conceptually correct but missing a variant, state, or configuration.
+- The extension improves multiple consumers or an obvious cross-feature use case.
+- The API can remain backward-compatible.
+
+Do not extend an existing component when:
+
+- The requested behavior is feature-specific.
+- The change would move domain models, routing, or business logic into `ScoutDesign`.
+- The component would become a broad catch-all with unclear purpose.
+
+### Acceptable Duplication
+
+Temporary duplication is acceptable when:
+
+- A pattern appears only once.
+- The reusable API is not clear yet.
+- A feature is experimenting in a small surface area.
+- Extracting immediately would create the wrong abstraction.
+- The duplication is tracked as design debt if it is likely to spread.
+
+Duplication is not acceptable when:
+
+- A feature copies the visual behavior of an existing `ScoutDesign` component.
+- A feature introduces local color, typography, spacing, radius, shadow, or motion scales.
+- Multiple domains already need the same component.
+- A one-off local style becomes the default for new work.
+
+### Token Ownership
+
+`ScoutDesign` owns reusable color, typography, spacing, radius, stroke, shadow, and motion tokens. Feature code may combine existing tokens for local composition, but it must not introduce parallel token scales.
+
+Token changes require approved design work. New token names should describe semantic purpose rather than a single screen.
+
+### Design Factory Expectations
+
+Design Factory is the expected visual workbench for reusable UI once the approved debug entry and shell exist. Reusable components should have Design Factory coverage before broad production adoption.
+
+Design Factory examples should show:
+
+- Existing tokens and token names.
+- Component variants and common states.
+- Loading, empty, error, selected, disabled, pressed, and motion states where relevant.
+- Accessibility notes when a component has non-obvious behavior.
+
+Design Factory must remain internal/debug tooling according to the approved access policy. Production feature screens should compose reusable components from `ScoutDesign`; they should not become the first or only place where a reusable component state can be inspected.
+
+### UI Contribution Checklist
+
+Before opening a UI PR, confirm:
+
+- Existing `ScoutDesign` components and tokens were checked first.
+- Any new reusable component belongs in `ScoutDesign`, not a feature folder.
+- Any feature-local styling has a clear reason to remain local.
+- No duplicate tokens or local token scales were introduced.
+- Loading, empty, error, disabled, selected, and pressed states are covered where applicable.
+- Accessibility, Dynamic Type, touch targets, contrast, and reduced motion were considered.
+- Screenshots are included for visible UI changes.
+- Design Factory coverage is included or explicitly deferred for reusable component work.
+
 ## Interaction Patterns
 
 ### Onboarding
