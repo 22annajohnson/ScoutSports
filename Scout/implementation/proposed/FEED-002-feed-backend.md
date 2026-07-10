@@ -24,15 +24,18 @@ References:
 
 ## Problem Statement
 
-The Feed must stop relying on mock/static content. Scout needs a backend-backed FeedRepository that composes approved contracts from Events, Profile, and Discovery without owning their state or duplicating ranking logic.
+The Feed must stop relying on mock/static content and become Scout's ongoing social discovery surface. Scout needs a backend-backed, paginated FeedRepository that can support an endless feed experience similar to Instagram or Facebook while composing approved contracts from Events, Profile, and Discovery without owning their state or duplicating ranking logic.
+
+The first implementation should not attempt a sophisticated ranking algorithm, but it must establish the contracts and pagination behavior needed for a continuously scrollable feed that can grow as new feed sources are introduced.
 
 ## Goals
 
 - Define Feed contracts and repository boundary.
-- Replace mock feed with real repository data.
+- Replace mock feed with real paginated repository data.
 - Consume Event summaries, Profile summaries, and Discovery recommendation summaries.
 - Keep Feed from owning source domain state.
-- Add loading, empty, pagination, refresh, and error behavior.
+- Add loading, empty, pagination, pull-to-refresh, next-page loading, exhaustion, and error behavior.
+- Establish a feed contract that supports endless scrolling without exposing source-domain internals to the UI.
 
 ## Non-goals
 
@@ -41,17 +44,40 @@ The Feed must stop relying on mock/static content. Scout needs a backend-backed 
 - Comments/likes.
 - Notification delivery.
 - Event/Profile mutation.
+- Infinite content guarantees when no eligible feed items exist.
 
 ## Architecture
 
 ```text
 Feed ViewModel
   -> FeedRepository
+  -> FeedPage / FeedCursor
   -> FeedItem contracts
   -> EventSummary / ProfileSummary / RecommendationSummary providers
 ```
 
 Feed owns feed composition/presentation contracts. Events, Profile, and Discovery own their underlying data.
+
+## Endless Feed Model
+
+The Feed should behave as a continuously scrollable, paginated surface. The user should be able to open the Feed, see an initial page of relevant items, scroll to request additional pages, and pull to refresh for newer content.
+
+V1 should define:
+
+- `FeedPage`: a page of feed items plus cursor metadata.
+- `FeedCursor`: an opaque paging token owned by the repository/backend boundary.
+- `hasMore`: whether the repository believes more items may be available.
+- `nextPage`: a read method that loads more items after the current cursor.
+- `refresh`: a read method that reloads from the top of the feed.
+- `exhausted`: a state for when no additional items are currently available.
+
+The UI should not infer pagination from item counts alone. It should consume explicit page/cursor/exhaustion state from `FeedRepository`.
+
+## Feed Item Ordering
+
+V1 ordering may be simple and deterministic, such as source timestamp plus stable tie-breaking, until a future approved ranking plan exists. The important v1 requirement is that ordering is repository-owned and stable across pages, so users do not see duplicated or jumping content during pagination.
+
+Feed consumers must not implement their own ranking or source merging logic in SwiftUI views.
 
 ## Implementation Sequencing
 
@@ -64,7 +90,7 @@ Feed owns feed composition/presentation contracts. Events, Profile, and Discover
 
 ## Repository Ownership
 
-FeedRepository owns pagination, refresh, feed item composition, and error mapping. It does not mutate Event, Profile, or Discovery state.
+FeedRepository owns pagination, cursor handling, refresh, next-page loading, feed item composition, source merging, stable ordering, exhaustion state, and error mapping. It does not mutate Event, Profile, or Discovery state.
 
 ## Backend Ownership
 
@@ -73,22 +99,22 @@ Initial backend may be repository-composed from existing Supabase reads/contract
 ## iOS Responsibilities
 
 - Render feed items from contracts.
-- Support loading/empty/error/refresh states.
+- Support initial loading, next-page loading, empty, exhausted, error, retry, and refresh states.
 - Route actions to owning domains.
 - Avoid duplicating Event/Profile/Discovery business rules.
 
 ## Validation Strategy
 
 - Feed contract tests.
-- Repository tests for mixed sources, pagination, refresh, empty/error.
+- Repository tests for mixed sources, cursor pagination, refresh, next-page loading, stable ordering, exhaustion, empty/error.
 - ViewModel tests proving mock feed is removed.
-- UI screenshots for feed states.
+- UI screenshots for initial loading, next-page loading, empty, exhausted, and error states.
 
 ## Rollout Strategy
 
 1. Introduce repository behind existing Feed UI.
 2. Replace static mocks with source adapters.
-3. Enable internal/dev.
+3. Enable internal/dev with deterministic feed ordering.
 4. Add source expansion after Events/Discovery mature.
 
 ## Risks
@@ -96,6 +122,8 @@ Initial backend may be repository-composed from existing Supabase reads/contract
 - Feed becoming a second ranking system.
 - Feed mutating source domain state.
 - Mixed-source pagination becoming inconsistent.
+- Duplicate feed items appearing across pages.
+- Feed scroll behavior feeling finite if exhaustion and loading states are unclear.
 - Empty feed feeling broken without clear states.
 
 ## Definition of Done
@@ -103,7 +131,7 @@ Initial backend may be repository-composed from existing Supabase reads/contract
 - Feed uses FeedRepository.
 - Mock production content is removed.
 - Feed items consume source-domain contracts.
-- Loading, empty, error, pagination, refresh states are tested.
+- Loading, next-page loading, empty, exhausted, error, pagination, and refresh states are tested.
 
 ## Jira Breakdown
 
@@ -111,8 +139,8 @@ Initial backend may be repository-composed from existing Supabase reads/contract
 
 | Order | Jira | Story | Type | Points | Dependencies |
 | --- | --- | --- | --- | --- | --- |
-| 1 | `SOCIAL-110` | Feed: Define FeedItem contracts and source types | 🤖 AI Implementation | 1 | FEED-002 |
+| 1 | `SOCIAL-110` | Feed: Define FeedItem pagination contracts and source types | 🤖 AI Implementation | 1 | FEED-002 |
 | 2 | `SOCIAL-111` | Feed: Add FeedRepository protocol and mock repository | 🤖 AI Implementation | 1 | `SOCIAL-110` |
 | 3 | `SOCIAL-112` | Feed: Implement Event Profile and Discovery source adapters | 🤖 AI Implementation | 2 | `SOCIAL-110`, `SOCIAL-111`, source-domain contracts |
 | 4 | `SOCIAL-113` | Feed: Replace mock feed in Feed ViewModel | 🤖 AI Implementation | 2 | `SOCIAL-112` |
-| 5 | `SOCIAL-114` | Feed: Add pagination refresh and state regression tests | 🤖 AI Implementation | 1 | `SOCIAL-113` |
+| 5 | `SOCIAL-114` | Feed: Add endless-feed pagination refresh and state regression tests | 🤖 AI Implementation | 1 | `SOCIAL-113` |
