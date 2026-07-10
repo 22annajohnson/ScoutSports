@@ -421,6 +421,7 @@ Epic:
 
 Scout story point scale:
 
+- Story points may use `0.25` increments. Values such as `0.75`, `1.25`, and `1.5` are valid.
 - `0.25` = approximately 2 hours from implementation through review and merge.
 - `0.5` = approximately 4 hours.
 - `1` = approximately 1 focused day.
