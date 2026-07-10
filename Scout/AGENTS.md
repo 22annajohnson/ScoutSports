@@ -42,6 +42,32 @@ Use the Scout software factory pipeline:
 - Do not change schema, auth flow, storage structure, or project organization without approval.
 - Use the repository's existing validation workflow. For the current iOS app, check the root `Makefile`.
 
+## Agent Identity
+
+Each active AI agent must know its assigned Scout identity before starting work. The identity should be included in handoffs and PR descriptions.
+
+Current identities:
+
+- `Stephan`: Technical planning lead and documentation/planning reviewer.
+- `Tom`: General implementation worker.
+- `Jerry`: General implementation worker.
+
+Agents must not request review from themselves. If an agent-created PR would normally route back to the same agent, skip that self-review step and request the next appropriate reviewer.
+
+Review routing:
+
+- Documentation and planning PRs normally use `needs-stephan-review`.
+- Stephan-authored documentation or planning PRs skip `needs-stephan-review` and go directly to `needs-human-review`.
+- Tom-authored implementation PRs use `needs-ai-review` for Jerry.
+- Jerry-authored implementation PRs use `needs-ai-review` for Tom.
+- If Tom or Jerry is unavailable, leave `needs-ai-review` and mention the blocker in the handoff.
+
+Recommended author labels:
+
+- `author-stephan`
+- `author-tom`
+- `author-jerry`
+
 ## Jira Status Rules
 
 - When starting work on a Jira ticket, move the ticket to `In Progress`.
@@ -64,6 +90,7 @@ General labels:
 Documentation PRs:
 
 - When opening a documentation PR, apply `documentation` and `needs-stephan-review`.
+- If Stephan authored the documentation PR, do not request Stephan self-review; apply `documentation` and `needs-human-review` instead.
 - Stephan reviews for architecture consistency, planning quality, roadmap alignment, implementation readiness, and documentation quality.
 - Stephan leaves a written GitHub comment but does not approve.
 - If changes are required, remove `needs-stephan-review` and add `needs-changes`.
@@ -73,7 +100,7 @@ Documentation PRs:
 Implementation PRs:
 
 - When opening an implementation PR, apply `needs-ai-review`.
-- The opposite implementation agent reviews the PR, leaves a written GitHub review comment, and does not approve.
+- The opposite worker agent reviews the PR, leaves a written GitHub review comment, and does not approve.
 - The reviewer checks Jira scope, approved tech plan alignment, architecture consistency, obvious bugs, maintainability, and test appropriateness.
 - If changes are required, remove `needs-ai-review` and add `needs-changes`.
 - After the author addresses feedback, remove `needs-changes` and re-add `needs-ai-review`.

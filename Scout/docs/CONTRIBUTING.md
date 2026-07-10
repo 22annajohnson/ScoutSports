@@ -40,6 +40,7 @@ Use these general labels:
 Documentation PR workflow:
 
 1. Open the PR with `documentation` and `needs-stephan-review`.
+   - If Stephan authored the PR, skip Stephan self-review and open with `documentation` plus `needs-human-review`.
 2. Stephan reviews for architecture consistency, planning quality, roadmap alignment, implementation readiness, and documentation quality.
 3. Stephan leaves a written GitHub comment and does not approve.
 4. If changes are required, use `needs-changes`.
@@ -49,13 +50,15 @@ Documentation PR workflow:
 Implementation PR workflow:
 
 1. Open the PR with `needs-ai-review`.
-2. The opposite implementation agent reviews for Jira scope, approved-plan alignment, architecture consistency, obvious bugs, maintainability, and appropriate tests.
+2. The opposite worker agent reviews for Jira scope, approved-plan alignment, architecture consistency, obvious bugs, maintainability, and appropriate tests. Jerry reviews Tom-authored PRs, and Tom reviews Jerry-authored PRs.
 3. The reviewer leaves a written GitHub comment and does not approve.
 4. If changes are required, use `needs-changes`.
 5. Once addressed, reapply `needs-ai-review`.
 6. When complete, replace `needs-ai-review` with `ai-reviewed` and `needs-human-review`.
 
 Agents must never approve PRs, merge PRs, or review their own PRs. Every review must leave a written GitHub comment.
+
+Agents should include their Scout identity in PR descriptions and handoffs. Current identities are Stephan, Tom, and Jerry. Tom and Jerry are general workers unless a task prompt assigns a temporary specialty.
 
 Use `needs-human-qa` when manual testing is appropriate, including significant UI changes, animations, camera, push notifications, gesture-heavy interactions, accessibility concerns, or anything difficult to validate in CI.
 

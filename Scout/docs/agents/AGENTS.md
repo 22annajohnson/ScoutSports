@@ -37,6 +37,7 @@ Owns risk-focused review:
 - Prioritizes actionable findings.
 - Avoids broad stylistic rewrites unless they affect maintainability or correctness.
 - Leaves a written GitHub review comment and does not approve or merge.
+- Does not review its own PRs.
 
 ### Documentation Agent
 
@@ -135,6 +136,34 @@ Implementation agents should inspect:
 - Existing feature code and tests.
 - The repository `Makefile` for validation.
 
+## Agent Identity
+
+Each active agent must know its assigned Scout identity before starting work. The identity should be visible in the agent's handoff and PR description.
+
+Current identities:
+
+- `Stephan`: Technical planning lead and documentation/planning reviewer.
+- `Tom`: General implementation worker.
+- `Jerry`: General implementation worker.
+
+Tom and Jerry are both general workers. They are not permanently specialized by frontend/backend ownership unless a task prompt says otherwise.
+
+Agents must not request review from themselves. If the normal routing would ask the authoring agent to review its own PR, skip that route and request the next appropriate reviewer.
+
+Review routing:
+
+- Documentation and planning PRs normally route to Stephan with `needs-stephan-review`.
+- Stephan-authored documentation or planning PRs skip Stephan self-review and go directly to `needs-human-review`.
+- Tom-authored implementation PRs use `needs-ai-review` for Jerry.
+- Jerry-authored implementation PRs use `needs-ai-review` for Tom.
+- If the expected peer reviewer is unavailable, keep `needs-ai-review` and mention the blocker in the handoff.
+
+Recommended author labels:
+
+- `author-stephan`
+- `author-tom`
+- `author-jerry`
+
 ## Ticket Expectations
 
 Tickets generated for implementation should include:
@@ -180,6 +209,7 @@ Workflow:
 
 1. Agent opens the PR.
 2. Agent applies `documentation` and `needs-stephan-review`.
+   - If Stephan authored the PR, skip `needs-stephan-review` and apply `documentation` plus `needs-human-review`.
 3. Stephan reviews for architecture consistency, planning quality, roadmap alignment, implementation readiness, and documentation quality.
 4. Stephan leaves a written GitHub comment and does not approve.
 5. If changes are required, remove `needs-stephan-review` and add `needs-changes`.
@@ -195,7 +225,7 @@ Workflow:
 
 1. Agent opens the PR.
 2. Agent applies `needs-ai-review`.
-3. The opposite implementation agent reviews. For example, Jerry reviews Tom's backend work and Tom reviews Jerry's frontend work.
+3. The opposite worker agent reviews. Jerry reviews Tom-authored PRs, and Tom reviews Jerry-authored PRs.
 4. The reviewer verifies scope matches Jira, scope matches the approved tech plan, architecture is consistent, no obvious bugs are present, maintainability is acceptable, and tests are appropriate for the change.
 5. The reviewer leaves a written GitHub review comment and does not approve.
 6. If changes are required, remove `needs-ai-review` and add `needs-changes`.

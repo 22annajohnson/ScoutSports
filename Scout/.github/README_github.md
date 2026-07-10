@@ -9,7 +9,9 @@ Pull requests must follow the label workflow documented in `AGENTS.md`, `docs/ag
 In short:
 
 - Documentation PRs start with `documentation` and `needs-stephan-review`, then move to `needs-human-review` after Stephan review.
-- Implementation PRs start with `needs-ai-review`, then move to `ai-reviewed` and `needs-human-review` after the opposite implementation agent reviews.
+- Stephan-authored documentation PRs skip Stephan self-review and start with `documentation` plus `needs-human-review`.
+- Implementation PRs start with `needs-ai-review`, then move to `ai-reviewed` and `needs-human-review` after the opposite worker agent reviews.
 - Add `needs-human-qa` when manual testing is appropriate.
 - Use `architecture-risk`, `scope-risk`, and `follow-up-ticket` to make review concerns visible.
 - Agents do not approve, merge, or review their own PRs.
+- Agents should identify themselves as Stephan, Tom, or Jerry in PR descriptions and handoffs.

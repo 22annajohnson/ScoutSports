@@ -159,6 +159,7 @@ General PR labels:
 Documentation PRs:
 
 - Start with `documentation` and `needs-stephan-review`.
+- If Stephan authored the documentation PR, skip Stephan self-review and start with `documentation` and `needs-human-review`.
 - Stephan reviews for architecture consistency, planning quality, roadmap alignment, implementation readiness, and documentation quality.
 - Stephan leaves a written GitHub comment and does not approve.
 - If changes are required, use `needs-changes`.
@@ -167,7 +168,7 @@ Documentation PRs:
 Implementation PRs:
 
 - Start with `needs-ai-review`.
-- The opposite implementation agent reviews, leaves a written GitHub review comment, and does not approve.
+- The opposite worker agent reviews, leaves a written GitHub review comment, and does not approve. Jerry reviews Tom-authored PRs, and Tom reviews Jerry-authored PRs.
 - If changes are required, use `needs-changes`.
 - When AI review is complete, replace `needs-ai-review` with `ai-reviewed` and `needs-human-review`.
 
@@ -179,6 +180,8 @@ Manual QA and risk labels:
 - Use `follow-up-ticket` when deferred work or cleanup should be tracked separately.
 
 Agents must never approve PRs, merge PRs, or review their own PRs.
+
+Agents should include their Scout identity in PR descriptions and handoffs. Recommended author labels are `author-stephan`, `author-tom`, and `author-jerry`.
 
 ## Approval Rules
 
