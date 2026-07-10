@@ -158,12 +158,6 @@ Review routing:
 - Jerry-authored implementation PRs use `needs-ai-review` for Tom.
 - If the expected peer reviewer is unavailable, keep `needs-ai-review` and mention the blocker in the handoff.
 
-Recommended author labels:
-
-- `author-stephan`
-- `author-tom`
-- `author-jerry`
-
 ## Ticket Expectations
 
 Tickets generated for implementation should include:

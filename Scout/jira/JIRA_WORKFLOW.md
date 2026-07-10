@@ -181,7 +181,7 @@ Manual QA and risk labels:
 
 Agents must never approve PRs, merge PRs, or review their own PRs.
 
-Agents should include their Scout identity in PR descriptions and handoffs. Recommended author labels are `author-stephan`, `author-tom`, and `author-jerry`.
+Agents should include their Scout identity in PR descriptions and handoffs.
 
 ## Approval Rules
 

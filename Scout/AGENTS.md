@@ -62,12 +62,6 @@ Review routing:
 - Jerry-authored implementation PRs use `needs-ai-review` for Tom.
 - If Tom or Jerry is unavailable, leave `needs-ai-review` and mention the blocker in the handoff.
 
-Recommended author labels:
-
-- `author-stephan`
-- `author-tom`
-- `author-jerry`
-
 ## Jira Status Rules
 
 - When starting work on a Jira ticket, move the ticket to `In Progress`.
