@@ -379,11 +379,21 @@ Approved learning rules may update future candidate eligibility, ranking, divers
 
 Consumers should not receive the internal recommendation model. They should receive context-specific contracts.
 
+Recommendation contracts expose presentation-ready context and allowed actions. They do not expose raw ranking features, scoring weights, model outputs, exclusion internals, or private profile fields by default.
+
+| Contract | Primary Consumers | Purpose |
+| --- | --- | --- |
+| Candidate Card | Swipe Deck, future discovery surfaces | Present one candidate for an interest/pass decision. |
+| Discovery Queue | Swipe Deck, future recommendation surfaces | Provide ordered recommendation entries and queue state. |
+| Match Notification | Notifications, Match modal, Chat entry points | Communicate mutual interest and guide coordination. |
+| Recommendation Summary | Feed, Events, Search, Notifications | Explain relevance without exposing scoring internals. |
+| Future Feed Recommendation | Feed | Present discovery suggestions without Feed owning ranking. |
+
 ### Candidate Card
 
 Purpose: help a player decide whether another player seems compatible for play.
 
-Likely concepts:
+Conceptual fields:
 
 - Player Identity summary.
 - Sports compatibility.
@@ -393,51 +403,133 @@ Likely concepts:
 - Shared context.
 - Trust or reputation cues, if approved.
 - Primary decision actions.
+- Visibility-safe media references.
+- Candidate lifecycle metadata needed for idempotent decisions.
+
+Primary consumers:
+
+- Swipe Deck.
+- Match modal entry context.
+- Future discovery surfaces.
+
+Privacy boundaries:
+
+- Must use approved Player Identity contracts rather than the full Player Identity model.
+- Must not expose private preferences, precise location, safety state, hidden ranking features, or raw score internals by default.
+- Must degrade gracefully when optional availability, reputation, or shared-context fields are missing.
+
+Allowed actions:
+
+- Interest.
+- Pass.
+- Block or report only when the consuming surface has approved safety handling.
+- Undo or save-for-later only when future decision semantics are approved.
 
 ### Match Notification
 
 Purpose: communicate mutual interest and guide the next step.
 
-Likely concepts:
+Conceptual fields:
 
 - Matched player summary.
 - Match reason or context, if approved.
 - Suggested next action.
 - Privacy-safe notification copy.
+- Match identifier or reference.
+- Created timestamp or recency label.
+- Coordination entry point, such as Chat or Event suggestion, when approved.
+
+Primary consumers:
+
+- Push/local notification copy.
+- Match modal.
+- Chat entry points.
+- Feed or activity surfaces, if approved.
+
+Privacy boundaries:
+
+- Must not leak sensitive profile, exact location, or private recommendation reason details outside the app.
+- Notification copy should remain safe if displayed on a locked device.
+- Match reason text should be derived from approved, user-safe summary fields.
 
 ### Discovery Queue
 
 Purpose: provide an ordered set of recommendations for a discovery surface.
 
-Likely concepts:
+Conceptual fields:
 
 - Candidate ordering.
 - Pagination or refresh state.
 - Empty state reason.
 - Presentation metadata.
+- Queue cursor or page token when approved.
+- Candidate contract references or embedded Candidate Cards, depending on the future API shape.
+- Expiration or refresh guidance.
+- Retry/error classification for presentation.
+
+Primary consumers:
+
+- Swipe Deck.
+- Future recommendation list surfaces.
+- Future web discovery surfaces.
+
+Privacy boundaries:
+
+- Queue ordering must not reveal raw scores or ranking features.
+- Empty-state reasons should be user-safe, such as no eligible candidates, broaden filters, complete profile, or try later.
+- Client surfaces may consume queue order but must not recompute ranking or exclusions.
 
 ### Recommendation Summary
 
 Purpose: explain or preview why a recommendation may be relevant.
 
-Likely concepts:
+Conceptual fields:
 
 - Shared sport.
 - Similar skill.
 - Overlapping availability.
 - Nearby play area.
 - Mutual connection or event context, if approved.
+- Freshness or diversity cue when user-safe.
+- Recommended next action.
+
+Primary consumers:
+
+- Feed.
+- Events and organizer suggestions.
+- Search result ranking context.
+- Notifications, when copy is safe and approved.
+
+Privacy boundaries:
+
+- Explanations should be coarse and user-facing.
+- Must not expose exact scoring weights, private preferences, safety rules, hidden exclusions, or precise location.
+- Summary copy should be understandable without implying false certainty about compatibility.
 
 ### Future Feed Recommendations
 
 Purpose: allow Feed to present recommendations without owning ranking logic.
 
-Likely concepts:
+Conceptual fields:
 
 - Recommended player, event, or group.
 - Reason for recommendation.
 - Primary action.
 - Dismiss or feedback option.
+- Feed-safe thumbnail or summary media.
+- Source recommendation contract reference.
+- Recency or freshness label when approved.
+
+Primary consumers:
+
+- Feed.
+- Future home or activity surfaces.
+
+Privacy boundaries:
+
+- Feed may display recommendation content but must not own ranking, eligibility, or exclusion logic.
+- Feed should receive display-ready summaries and approved actions.
+- Dismissal or negative feedback should flow back through Discovery-owned feedback rules rather than Feed-local exclusion state.
 
 ## Ownership Matrix
 
