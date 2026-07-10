@@ -388,6 +388,23 @@ Conceptual permissions by lifecycle state:
 
 Consumers should not receive the full event model by default. They should receive context-specific event summaries.
 
+### SOCIAL-12 Event Contract Review
+
+Jira story: `SOCIAL-12` (`Events: Define participation contracts`).
+
+This review defines conceptual Event contracts for downstream planning. It does not create Swift models, APIs, queries, schema, views, RPCs, or services.
+
+| Contract | Primary Consumers | Required Concepts | Excluded Concepts | Privacy / Visibility Boundary |
+| --- | --- | --- | --- | --- |
+| Event Card | Feed, Discovery, Search, Maps previews | Event ID, sport, time window, approximate location, skill expectation, capacity status, lifecycle state, organizer summary, primary action eligibility | Full description, exact location before allowed, full participant list, private organizer notes, internal ranking signals | Must respect event visibility, lifecycle, viewer eligibility, location precision, and blocked/restricted users. |
+| Event Detail | Events, Maps, Chat entry, participant decision surfaces | Event identity, sport, schedule, venue detail appropriate to viewer, organizer summary, participant preview, participation state, lifecycle state, safety cues, allowed actions | Internal moderation notes, unrelated participant profile fields, exact location before allowed, raw recommendation scores | Detail depth depends on viewer relationship: non-participant, participant, organizer, admin/support. |
+| Participant Summary | Event detail, organizer tools, Chat, Notifications, Profiles | Profile contract reference, participation state, role, eligibility/status label, approved trust cue if available | Full Player Identity, private availability, exact home area, raw reputation internals | Must use approved Player Identity contracts and event participation state; blocked/removed/restricted participants need safe representation. |
+| Organizer Dashboard | Organizer tools, support/moderation planning | Event lifecycle state, capacity, participant requests, participant summaries, update/cancellation tools, moderation/reporting entry points | Raw recommendation internals, private participant profile fields, unsupported punitive reputation signals | Organizer permissions determine visibility; dashboard data must not leak beyond organizer/admin contexts. |
+| Feed Preview | Feed, local activity surfaces | Event ID, sport, time, safe location label, capacity/urgency cue, short context, primary action eligibility | Full event detail, exact location before allowed, full participants, private organizer notes | Feed should use the smallest event preview that drives useful action without exposing location or participant details too early. |
+| Notification Summary | Push/in-app notifications, email later if approved | Safe event label, time-sensitive update, actor reference through approved profile contract, required action, safe location language | Exact location unless already allowed, participant list, private notes, sensitive profile/event details | Push copy must assume lock-screen exposure; in-app notifications may use richer context only if visibility permits. |
+
+Contract implementation surface remains open. Future implementation plans must decide whether contracts are app-layer projections, SQL views, RPCs, Edge Functions, or service responses before multiple clients consume them.
+
 ### Event Card
 
 Purpose: help users quickly decide whether an event is relevant.
