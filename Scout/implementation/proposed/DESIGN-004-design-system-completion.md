@@ -146,8 +146,8 @@ DESIGN-004 covers:
 | Order | Jira | Story | Type | Points | Dependencies |
 | --- | --- | --- | --- | --- | --- |
 | 1 | `CORE-26` | Design: Complete Design Factory navigation and token galleries | 🤖 AI Implementation | 1 | DESIGN-003 |
-| 2 | `CORE-27` | Design: Add shared loading empty and error states to ScoutDesign | 🤖 AI Implementation | 1.5 | `CORE-26` |
-| 3 | `CORE-28` | Design: Standardize modal and sheet primitives | 🤖 AI Implementation | 1.5 | `CORE-26` |
-| 4 | `CORE-29` | Design: Add shared cards chips pills and stat tiles | 🤖 AI Implementation | 1.5 | `CORE-26` |
+| 2 | `CORE-27` | Design: Add shared loading empty and error states to ScoutDesign | 🤖 AI Implementation | 2 | `CORE-26` |
+| 3 | `CORE-28` | Design: Standardize modal and sheet primitives | 🤖 AI Implementation | 2 | `CORE-26` |
+| 4 | `CORE-29` | Design: Add shared cards chips pills and stat tiles | 🤖 AI Implementation | 2 | `CORE-26` |
 | 5 | `CORE-30` | Design: Migrate high-use duplicated UI to ScoutDesign | 🤖 AI Implementation | 2 | `CORE-27`, `CORE-28`, `CORE-29`, feature work |
-| 6 | `CORE-31` | Design: Add UI PR screenshot and Design Factory validation checklist | 🤖 AI Implementation | 0.75 | DESIGN-004, PR template conventions |
+| 6 | `CORE-31` | Design: Add UI PR screenshot and Design Factory validation checklist | 🤖 AI Implementation | 1 | DESIGN-004, PR template conventions |
