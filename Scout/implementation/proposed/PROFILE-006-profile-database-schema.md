@@ -1,4 +1,4 @@
-# Implementation Tech Plan: PROFILE-004 Profile Database Schema
+# Implementation Tech Plan: PROFILE-006 Profile Database Schema
 
 ## Status
 
@@ -15,6 +15,8 @@ SOCIAL
 ## Source of Truth
 
 This plan implements the approved Player Identity model in Supabase. It depends on DB-001 and narrows prior Profile plans into production schema work.
+
+This plan is numbered `PROFILE-006` so `PROFILE-004` can remain the profile contracts authority and `PROFILE-005` can remain the public/owner profile experience plan.
 
 References:
 
@@ -154,8 +156,11 @@ Private fields must be protected by RLS and contract mapping.
 
 ## Jira Breakdown
 
-- Epic: `SOCIAL-87` - PROFILE-004: Profile Database Schema
-- `SOCIAL-88` - Profile DB: Create V1 profile schema migration
-- `SOCIAL-89` - Profile DB: Add profile RLS policies
-- `SOCIAL-90` - Profile DB: Generate Supabase types for profile schema
-- `SOCIAL-91` - Profile DB: Add profile contract mapper tests
+- Epic: `SOCIAL-87` - PROFILE-006: Profile Database Schema
+
+| Order | Jira | Story | Type | Points | Dependencies |
+| --- | --- | --- | --- | --- | --- |
+| 1 | `SOCIAL-88` | Profile DB: Create V1 profile schema migration | 🤖 AI Implementation | 2 | DB-001, PROFILE-002, PROFILE-003 |
+| 2 | `SOCIAL-89` | Profile DB: Add profile RLS policies | 🤖 AI Implementation | 2 | `SOCIAL-88`, `docs/database/RLS.md` |
+| 3 | `SOCIAL-90` | Profile DB: Generate Supabase types for profile schema | 🤖 AI Implementation | 1 | `SOCIAL-88`, DB-001 |
+| 4 | `SOCIAL-91` | Profile DB: Add profile contract mapper tests | 🤖 AI Implementation | 1 | `SOCIAL-90`, PROFILE-004 |
