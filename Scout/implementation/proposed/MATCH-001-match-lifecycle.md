@@ -19,7 +19,8 @@ References:
 - `tech-plans/approved/SWIPE-001-discovery-and-recommendation.md`
 - `implementation/proposed/SWIPE-004-discovery-candidate-queue.md`
 - `implementation/proposed/CHAT-001-match-chat.md`
-- `implementation/proposed/EVENT-003-community-games-v1.md`
+- `implementation/proposed/EVENT-002-community-games-v1.md`
+- `implementation/proposed/EVENT-003-community-games-v1.md` for superseded Community Games context only; EVENT-002 is the current event authority for Match handoff planning.
 - `tech-plans/approved/PROFILE-001-player-profile-system.md`
 
 ## Problem Statement
@@ -119,8 +120,11 @@ Supabase owns match persistence, unique constraints, RLS, and idempotency guaran
 ## Jira Breakdown
 
 - Epic: `SOCIAL-103` - MATCH-001: Match Lifecycle
-- `SOCIAL-104` - Match: Add Match domain models and repository protocol
-- `SOCIAL-105` - Match: Create matches schema and RLS
-- `SOCIAL-106` - Match: Implement idempotent MatchRepository
-- `SOCIAL-107` - Match: Wire Discovery mutual interest to MatchRepository
-- `SOCIAL-108` - Match: Add Chat and Event handoff contracts
+
+| Order | Jira | Story | Type | Points | Dependencies |
+| --- | --- | --- | --- | --- | --- |
+| 1 | `SOCIAL-104` | Match: Add Match domain models and repository protocol | 🤖 AI Implementation | 1 | MATCH-001, SWIPE-001 |
+| 2 | `SOCIAL-105` | Match: Create matches schema and RLS | 🤖 AI Implementation | 2 | DB-001, PROFILE-004, `SOCIAL-104` |
+| 3 | `SOCIAL-106` | Match: Implement idempotent MatchRepository | 🤖 AI Implementation | 2 | `SOCIAL-104`, `SOCIAL-105` |
+| 4 | `SOCIAL-107` | Match: Wire Discovery mutual interest to MatchRepository | 🤖 AI Implementation | 2 | `SOCIAL-106`, SWIPE-004 |
+| 5 | `SOCIAL-108` | Match: Add Chat and Event handoff contracts | 🤖 AI Implementation | 1 | `SOCIAL-106`, CHAT-001, EVENT-002 |
