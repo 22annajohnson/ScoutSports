@@ -44,6 +44,20 @@ Every future table plan should define:
 - Required negative checks.
 - Manual verification notes when automated tests are not available.
 
+## Implementation Checklist
+
+Future schema implementation PRs should confirm each item before SQL is reviewed:
+
+- The authorizing Jira story and approved implementation plan are referenced in the migration header and PR description.
+- Every user-owned or user-visible table has RLS explicitly enabled.
+- Every table has read, insert, update, delete, and service role behavior documented.
+- Public or anonymous access is explicitly justified, or denied by default.
+- Owner and non-owner access are tested or manually verified.
+- Blocked, hidden, private, restricted, deleted, and suspended account cases are considered.
+- Seed data used for validation is local/dev only and does not contain production-like private data.
+- Generated type impact is stated as updated, unchanged, or deferred.
+- Any manual dashboard inspection is inspection-only and does not create durable schema drift.
+
 ## Access Scenario Checklist
 
 Future schema plans should consider these scenarios before proposing policies:
@@ -82,6 +96,23 @@ Future RLS implementation plans should include a test matrix or manual verificat
 - Hidden/private/restricted/deleted account behavior.
 - Service role use cases and boundaries.
 - Cross-domain consumer access through approved contracts.
+
+## Copyable Test Matrix
+
+Future schema plans can copy this matrix for each table or policy group:
+
+| Scenario | Expected Result | Verification Method | Notes |
+| --- | --- | --- | --- |
+| Owner read allowed | Owner can select only approved owner-visible fields/rows. | SQL/RLS test or manual local query. | |
+| Owner write allowed | Owner can insert/update only approved fields and states. | SQL/RLS test or manual local query. | |
+| Owner denied case | Owner cannot change system-only, moderation-only, or derived fields. | SQL/RLS test or manual local query. | |
+| Non-owner allowed case | Non-owner can read only approved public or relationship-visible rows. | SQL/RLS test or manual local query. | |
+| Non-owner denied case | Unrelated non-owner cannot read, write, or infer private rows. | SQL/RLS test or manual local query. | |
+| Anonymous denied case | Anonymous access is denied unless explicitly approved. | SQL/RLS test or manual local query. | |
+| Blocked user denied case | Blocked users cannot discover, read, write, or infer protected rows. | SQL/RLS test or manual local query. | |
+| Hidden/private/restricted/deleted case | Hidden/private/restricted/deleted state removes access as planned. | SQL/RLS test or manual local query. | |
+| Service role case | Service role access is limited to named operational use cases. | SQL/RLS test or code review. | |
+| Cross-domain consumer case | Consumer domain receives approved contract, not unrestricted rows. | Repository/contract review. | |
 
 ## Profile RLS Considerations
 

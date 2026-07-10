@@ -74,9 +74,9 @@ Shared contracts may include:
 
 Shared contracts should be versioned or documented before they are consumed by both iOS and web.
 
-## Discovery Boundaries
+## Discovery and Recommendation Boundaries
 
-Discovery and recommendation behavior should be exposed through documented contracts, not through duplicated ranking logic in consuming features.
+Discovery and recommendation behavior should be consumed through documented contracts rather than internal ranking, scoring, or eligibility state duplicated in consuming features.
 
 Discovery owns:
 
@@ -86,6 +86,16 @@ Discovery owns:
 - Match creation rules.
 - Exclusions and privacy-sensitive filtering.
 - Approved recommendation learning signals.
+
+For V1 discovery planning:
+
+- Player Identity remains the source authority for identity, sports, availability, preferences, privacy, reputation, and system lifecycle fields.
+- Discovery may consume approved profile contracts for candidate eligibility and presentation.
+- Privacy, blocking, trust, safety, visibility, and exclusion checks must be applied before recommendation presentation.
+- Recommendation scoring is server-owned unless an approved ADR says otherwise.
+- Clients may render candidate cards, queues, empty states, errors, and match feedback from approved contracts.
+- Clients should not duplicate ranking, eligibility, exclusion, match creation, or learning logic.
+- Future ML, analytics, or learning inputs require approved planning before they influence recommendations.
 
 Consumers such as Swipe Deck, Feed, Notifications, Events, Chat, Profiles, Recommendations, and future Teams may own their presentation surfaces. They may not recreate ranking, bypass exclusions, infer eligibility independently, or create matches outside the authoritative Discovery or Match contract.
 

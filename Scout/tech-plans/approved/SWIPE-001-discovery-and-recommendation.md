@@ -154,6 +154,65 @@ flowchart TB
     Location --> Engine
 ```
 
+## V1 Recommendation Inputs and Eligibility
+
+V1 recommendation planning should start with deterministic, explainable inputs. These inputs define candidate eligibility and ranking context; they do not approve a ranking algorithm, database schema, service implementation, or UI change.
+
+### Approved V1 Input Categories
+
+| Input Category | Source Authority | V1 Use | Boundary |
+| --- | --- | --- | --- |
+| Player identity summary | `PROFILE-001` profile contracts | Candidate recognition, trust context, profile completeness, and presentation eligibility. | Discovery consumes profile contracts and must not redefine identity fields. |
+| Sports compatibility | Player Identity / Sports | Match players by shared sport, primary sport, and approved sport-specific context. | Sport modeling remains profile-owned unless a later plan changes it. |
+| Skill compatibility | Player Identity / Sports | Prefer candidates within an approved skill compatibility range. | Exact scoring/range logic requires a future implementation plan. |
+| Availability | Player Identity / Availability | Prefer candidates with overlapping preferred days, times, or play intent when available. | Missing availability should degrade gracefully rather than automatically exclude unless approved. |
+| Location and travel radius | Player Identity / Privacy / Location | Filter or rank by approved approximate play area, distance, or travel constraints. | Precise location must not be exposed through recommendation contracts unless explicitly approved. |
+| Preferences | Player Identity / Preferences | Respect approved discovery preferences such as play format or match intent. | Preferences may personalize ranking without becoming broadly visible profile data. |
+| Event context | `EVENT-001` contracts | Future relevance for event participants, organizers, or nearby play opportunities. | Event state remains Events-owned; Discovery consumes event contracts. |
+| Reputation and reliability | Reputation / Profile | Future trust, attendance, completion, or safety cues when approved. | Reputation signals require careful product and safety approval before ranking impact. |
+| Account and lifecycle status | Auth / Profile / Trust and Safety | Exclude inactive, suspended, unsafe, or non-discoverable accounts. | System fields are not consumer-facing by default. |
+| Prior decisions | Discovery | Avoid repeated candidates after pass, interest, hide, block, report, or other approved decisions. | Decisions must be idempotent and centrally interpreted. |
+
+### Eligibility Rules
+
+A candidate is eligible for V1 recommendation only after the following gates are evaluated:
+
+1. The viewer and candidate are active, authorized users.
+2. The candidate is discoverable in the current context.
+3. Profile visibility allows this viewer to receive the relevant recommendation contract.
+4. Blocking, reporting, hidden-user, trust, and safety exclusions do not apply.
+5. The candidate has the minimum profile and sport data required by the consuming surface.
+6. The candidate satisfies approved sport, location, and availability constraints for the current recommendation context.
+7. The candidate has not already been decided, exhausted, or excluded under current lifecycle rules.
+
+Exclusions override ranking. A highly compatible candidate must still be withheld when privacy, blocking, safety, visibility, or lifecycle rules exclude them.
+
+### V1 Deterministic Inputs Versus Future Learning
+
+V1 deterministic inputs:
+
+- Shared sport.
+- Skill compatibility.
+- Profile completeness required for the surface.
+- Discoverability and visibility.
+- Approximate location or play area when approved.
+- Availability overlap when present.
+- Approved preferences.
+- Prior decisions and exclusions.
+- Account lifecycle and safety status.
+
+Future learning or ML inputs:
+
+- Collaborative filtering.
+- Predicted match acceptance.
+- Repeat-player satisfaction.
+- Completed-game outcomes.
+- Reliability models.
+- Diversity and freshness tuning beyond simple deterministic rules.
+- Event, venue, or organizer recommendation models.
+
+Future learning inputs require approved implementation planning before use. They must remain explainable enough for debugging, trust, privacy, safety, and user support.
+
 ## Domain Invariants
 
 The following rules must always remain true:
@@ -220,11 +279,43 @@ Candidate actions may include:
 
 Decisions must be idempotent and should not create duplicate state.
 
+Decision lifecycle:
+
+1. Candidate is presented through an approved recommendation contract.
+2. User submits one approved decision action for the candidate in that context.
+3. The authoritative decision owner validates current eligibility and lifecycle state.
+4. The decision is recorded once.
+5. The candidate is excluded from repeat presentation unless an approved rule allows re-entry.
+6. Any match check or feedback update happens through centralized Discovery/Match rules.
+
+Decision invariants:
+
+- The same user/candidate/context decision must be safe to retry.
+- Duplicate taps, network retries, or replayed requests must not create duplicate decision state.
+- A later decision cannot silently contradict an earlier decision unless a future undo or override rule is approved.
+- Client UI state is not the source of truth for whether a decision exists.
+- Decisions must be evaluated before a candidate re-enters a queue.
+
 ### Match
 
 Match represents mutual interest or another approved compatibility event.
 
 Match creation should have one authoritative source. Match behavior should support coordination toward real play.
+
+Match creation ownership:
+
+- Match creation belongs to an authoritative Discovery/Match service or repository boundary defined by a future implementation plan.
+- Presentation surfaces may request or display match outcomes, but they must not independently decide that a durable match exists.
+- Chat, Events, Feed, Notifications, and Profile may consume match contracts after creation.
+- Match creation must respect privacy, blocking, reporting, account status, and candidate eligibility at creation time.
+
+Match invariants:
+
+- Mutual interest or another approved compatibility event can create at most one active match for the same participants and context unless a future plan defines repeat-match semantics.
+- Match creation must be transactional or otherwise protected against duplicate creation.
+- A match cannot bypass exclusions or safety rules.
+- Match confirmation UI must be derived from authoritative match state.
+- Match state should support coordination toward real-world play rather than ending at swipe feedback.
 
 ### Feedback
 
@@ -258,6 +349,27 @@ Exclusions may include:
 - Safety restrictions.
 
 Exclusions override ranking.
+
+Exclusion categories:
+
+| Category | Meaning | Boundary |
+| --- | --- | --- |
+| Blocked | Viewer or candidate has blocked the other user. | Must always exclude before presentation. |
+| Reported or safety-restricted | Trust and safety state prevents recommendation. | Must override ranking and UI convenience. |
+| Hidden | User has hidden, muted, dismissed, or otherwise suppressed the candidate or related context. | Future semantics must define duration and scope. |
+| Already decided | Candidate has an existing pass, interest, or other terminal decision for this context. | Must be checked before queue presentation. |
+| Already matched | Candidate is already connected through an active match where repeat recommendation is not approved. | Match state must be authoritative. |
+| Ineligible | Candidate fails required sport, visibility, account status, privacy, or minimum profile gates. | Eligibility is evaluated before ranking. |
+| Exhausted | Candidate was previously shown enough times under approved presentation rules. | Re-entry requires explicit freshness or retry rules. |
+| Unavailable | Candidate is temporarily unavailable for the current context, such as schedule or location constraints. | Missing data should not equal unavailable unless approved. |
+
+Exclusion invariants:
+
+- Exclusions must be centralized and applied before presentation.
+- Ranking must never reintroduce excluded candidates.
+- Clients may render empty/recovery states, but they must not create feature-local exclusion systems.
+- Exclusion reasons exposed to users must be privacy-safe and should not reveal blocks, reports, safety state, or private preferences.
+- Future learning can consume exclusion outcomes only through approved feedback rules.
 
 ### Learning
 
@@ -320,11 +432,21 @@ Approved learning rules may update future candidate eligibility, ranking, divers
 
 Consumers should not receive the internal recommendation model. They should receive context-specific contracts.
 
+Recommendation contracts expose presentation-ready context and allowed actions. They do not expose raw ranking features, scoring weights, model outputs, exclusion internals, or private profile fields by default.
+
+| Contract | Primary Consumers | Purpose |
+| --- | --- | --- |
+| Candidate Card | Swipe Deck, future discovery surfaces | Present one candidate for an interest/pass decision. |
+| Discovery Queue | Swipe Deck, future recommendation surfaces | Provide ordered recommendation entries and queue state. |
+| Match Notification | Notifications, Match modal, Chat entry points | Communicate mutual interest and guide coordination. |
+| Recommendation Summary | Feed, Events, Search, Notifications | Explain relevance without exposing scoring internals. |
+| Future Feed Recommendation | Feed | Present discovery suggestions without Feed owning ranking. |
+
 ### Candidate Card
 
 Purpose: help a player decide whether another player seems compatible for play.
 
-Likely concepts:
+Conceptual fields:
 
 - Player Identity summary.
 - Sports compatibility.
@@ -334,51 +456,133 @@ Likely concepts:
 - Shared context.
 - Trust or reputation cues, if approved.
 - Primary decision actions.
+- Visibility-safe media references.
+- Candidate lifecycle metadata needed for idempotent decisions.
+
+Primary consumers:
+
+- Swipe Deck.
+- Match modal entry context.
+- Future discovery surfaces.
+
+Privacy boundaries:
+
+- Must use approved Player Identity contracts rather than the full Player Identity model.
+- Must not expose private preferences, precise location, safety state, hidden ranking features, or raw score internals by default.
+- Must degrade gracefully when optional availability, reputation, or shared-context fields are missing.
+
+Allowed actions:
+
+- Interest.
+- Pass.
+- Block or report only when the consuming surface has approved safety handling.
+- Undo or save-for-later only when future decision semantics are approved.
 
 ### Match Notification
 
 Purpose: communicate mutual interest and guide the next step.
 
-Likely concepts:
+Conceptual fields:
 
 - Matched player summary.
 - Match reason or context, if approved.
 - Suggested next action.
 - Privacy-safe notification copy.
+- Match identifier or reference.
+- Created timestamp or recency label.
+- Coordination entry point, such as Chat or Event suggestion, when approved.
+
+Primary consumers:
+
+- Push/local notification copy.
+- Match modal.
+- Chat entry points.
+- Feed or activity surfaces, if approved.
+
+Privacy boundaries:
+
+- Must not leak sensitive profile, exact location, or private recommendation reason details outside the app.
+- Notification copy should remain safe if displayed on a locked device.
+- Match reason text should be derived from approved, user-safe summary fields.
 
 ### Discovery Queue
 
 Purpose: provide an ordered set of recommendations for a discovery surface.
 
-Likely concepts:
+Conceptual fields:
 
 - Candidate ordering.
 - Pagination or refresh state.
 - Empty state reason.
 - Presentation metadata.
+- Queue cursor or page token when approved.
+- Candidate contract references or embedded Candidate Cards, depending on the future API shape.
+- Expiration or refresh guidance.
+- Retry/error classification for presentation.
+
+Primary consumers:
+
+- Swipe Deck.
+- Future recommendation list surfaces.
+- Future web discovery surfaces.
+
+Privacy boundaries:
+
+- Queue ordering must not reveal raw scores or ranking features.
+- Empty-state reasons should be user-safe, such as no eligible candidates, broaden filters, complete profile, or try later.
+- Client surfaces may consume queue order but must not recompute ranking or exclusions.
 
 ### Recommendation Summary
 
 Purpose: explain or preview why a recommendation may be relevant.
 
-Likely concepts:
+Conceptual fields:
 
 - Shared sport.
 - Similar skill.
 - Overlapping availability.
 - Nearby play area.
 - Mutual connection or event context, if approved.
+- Freshness or diversity cue when user-safe.
+- Recommended next action.
+
+Primary consumers:
+
+- Feed.
+- Events and organizer suggestions.
+- Search result ranking context.
+- Notifications, when copy is safe and approved.
+
+Privacy boundaries:
+
+- Explanations should be coarse and user-facing.
+- Must not expose exact scoring weights, private preferences, safety rules, hidden exclusions, or precise location.
+- Summary copy should be understandable without implying false certainty about compatibility.
 
 ### Future Feed Recommendations
 
 Purpose: allow Feed to present recommendations without owning ranking logic.
 
-Likely concepts:
+Conceptual fields:
 
 - Recommended player, event, or group.
 - Reason for recommendation.
 - Primary action.
 - Dismiss or feedback option.
+- Feed-safe thumbnail or summary media.
+- Source recommendation contract reference.
+- Recency or freshness label when approved.
+
+Primary consumers:
+
+- Feed.
+- Future home or activity surfaces.
+
+Privacy boundaries:
+
+- Feed may display recommendation content but must not own ranking, eligibility, or exclusion logic.
+- Feed should receive display-ready summaries and approved actions.
+- Dismissal or negative feedback should flow back through Discovery-owned feedback rules rather than Feed-local exclusion state.
 
 ## Ownership Matrix
 
@@ -413,9 +617,11 @@ Ownership constraints:
 
 Discovery consumes Player Identity contracts for candidate display and eligibility. It does not own player profile data.
 
+For v1 planning, Discovery should reference `implementation/proposed/PROFILE-002-v1-identity-field-set.md` for Discovery Ready inputs and approved/deferred profile assumptions. Discovery must not redefine required identity fields, profile media requirements, discoverability defaults, location precision, or profile visibility rules.
+
 Discovery may consume:
 
-- Player Identity summaries.
+- Swipe Summary or Search Summary profile contracts.
 - Availability and preference contracts.
 - Privacy and visibility rules.
 - Event contracts for play context.
@@ -572,6 +778,7 @@ Expected conceptual pattern:
 - View models manage presentation state, gestures, loading, empty, error, and match feedback.
 - Recommendation services own candidate fetching, eligibility, ranking, exclusions, decisions, and match creation when implementation is approved.
 - Player Identity supplies approved profile contracts.
+- `PROFILE-002` supplies v1 Discovery Ready assumptions: display name, selected sports, primary sport, primary sport skill, privacy/readiness fields, active account status, and coarse location only when location-based Discovery is active.
 - Events supplies approved coordination contracts when recommendations use event context.
 - Match creation behavior is documented before implementation.
 
@@ -654,6 +861,7 @@ Future AI agents must:
 ## Dependencies
 
 - Player Identity contracts for candidate display and eligibility.
+- `PROFILE-002` v1 identity field set and Discovery Ready rules.
 - Event contracts for coordination outcomes and future event recommendations.
 - Design system card and feedback patterns.
 - Database decisions for decisions, exclusions, and matches.
