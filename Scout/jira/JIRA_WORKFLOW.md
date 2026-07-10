@@ -73,7 +73,7 @@ Prefer tickets that can be completed in a few hours.
 
 Story points estimate developer-day effort for an AI-assisted workflow, including both agent implementation time and human review time.
 
-Use fractional story points:
+Use fractional story points in `0.25` increments. Values such as `0.75`, `1.25`, and `1.5` are valid when they best represent the combined implementation, validation, review, and revision effort.
 
 - `0.25`: Agent can complete the work and a human can review it in about 2 total hours.
 - `0.5`: Agent implementation takes about 2 hours and human review takes about 2 hours.
