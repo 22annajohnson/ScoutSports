@@ -81,6 +81,14 @@ General labels:
 - `documentation`: PR primarily changes documentation, tech plans, architecture docs, or planning artifacts.
 - `ruby`: PR primarily changes CI, GitHub Actions, Fastlane, Ruby scripts, Markdown validation, or repository automation.
 
+Author identity labels:
+
+- `author-stephan`: PR was authored by Stephan.
+- `author-tom`: PR was authored by Tom.
+- `author-jerry`: PR was authored by Jerry.
+
+When opening a PR, apply the author label that matches your Scout identity.
+
 Documentation PRs:
 
 - When opening a documentation PR, apply `documentation` and `needs-stephan-review`.
