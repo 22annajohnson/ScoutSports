@@ -135,6 +135,8 @@ Initial component families to document and standardize:
 
 New components should be added only when existing components cannot be extended cleanly.
 
+UI implementation tickets must follow the checklist in `jira/JIRA_WORKFLOW.md`, reference `DESIGN-001`, and document existing components reused, new components introduced, accessibility, loading, empty, error, screenshot, animation, and Apple HIG divergence expectations.
+
 ## Component Contribution Rules
 
 These rules are guided by `tech-plans/approved/DESIGN-001-design-system.md` and `implementation/proposed/DESIGN-002-design-system-adoption.md`.
