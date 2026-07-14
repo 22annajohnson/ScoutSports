@@ -23,8 +23,10 @@ SUPABASE_SEED_FILE ?= backend/supabase/seed.sql
 SUPABASE_TEST_DB_PATH ?= backend/supabase/tests/database
 SUPABASE_GEN_SCHEMA ?= public
 SUPABASE_SWIFT_TYPES ?= backend/supabase/types/swift/Database.generated.swift
+SUPABASE_PROJECT_REF ?=
+SUPABASE_DEV_PROJECT_REF := rwhyyujlcvwjdfssykkq
 
-.PHONY: help doctor build build-release run test clean supabase-doctor supabase-start supabase-stop supabase-status supabase-db-reset supabase-validate-reset-seed supabase-migration-new supabase-migration-up supabase-test-db supabase-gen-types-swift supabase-check-types-swift
+.PHONY: help doctor build build-release run test clean supabase-doctor supabase-start supabase-stop supabase-status supabase-db-reset supabase-validate-reset-seed supabase-migration-new supabase-migration-up supabase-test-db supabase-gen-types-swift supabase-check-types-swift supabase-link-dev supabase-deploy-dev
 
 help:
 	@printf "Targets:\n"
@@ -46,6 +48,8 @@ help:
 	@printf "  make supabase-test-db       Run local pgTAP database tests\n"
 	@printf "  make supabase-gen-types-swift Generate Swift Supabase types locally\n"
 	@printf "  make supabase-check-types-swift Check committed Swift Supabase types are fresh\n"
+	@printf "  make supabase-link-dev SUPABASE_PROJECT_REF=<dev-ref> Link CLI to Scout Sports V1.3 dev\n"
+	@printf "  make supabase-deploy-dev SUPABASE_PROJECT_REF=<dev-ref> Push migrations to Scout Sports V1.3 dev\n"
 	@printf "\nOverrides:\n"
 	@printf "  CONFIGURATION=Debug|Release\n"
 	@printf "  DESTINATION='generic/platform=iOS Simulator'\n"
@@ -59,6 +63,8 @@ help:
 	@printf "  SUPABASE_TEST_DB_PATH=backend/supabase/tests/database\n"
 	@printf "  SUPABASE_GEN_SCHEMA=public\n"
 	@printf "  SUPABASE_SWIFT_TYPES=backend/supabase/types/swift/Database.generated.swift\n"
+	@printf "  SUPABASE_PROJECT_REF=rwhyyujlcvwjdfssykkq\n"
+	@printf "  SUPABASE_DB_PASSWORD=<remote database password secret>\n"
 
 doctor:
 	@printf "Developer dir: "
@@ -172,3 +178,15 @@ supabase-check-types-swift:
 		diff -u "$(SUPABASE_SWIFT_TYPES)" "$$tmp_file"; \
 		exit 1; \
 	fi
+
+supabase-link-dev:
+	@test -n "$(SUPABASE_PROJECT_REF)" || (printf "Set SUPABASE_PROJECT_REF for Scout Sports V1.3 dev deployment\n"; exit 2)
+	@test "$(SUPABASE_PROJECT_REF)" = "$(SUPABASE_DEV_PROJECT_REF)" || (printf "Refusing to link non-dev Supabase project: $(SUPABASE_PROJECT_REF)\n"; exit 2)
+	@test -n "$${SUPABASE_DB_PASSWORD:-}" || (printf "Set SUPABASE_DB_PASSWORD for non-interactive Scout Sports V1.3 dev deployment\n"; exit 2)
+	@$(SUPABASE) link --project-ref "$(SUPABASE_PROJECT_REF)" --password "$$SUPABASE_DB_PASSWORD" --workdir "$(SUPABASE_WORKDIR)"
+
+supabase-deploy-dev:
+	@test -n "$(SUPABASE_PROJECT_REF)" || (printf "Set SUPABASE_PROJECT_REF for Scout Sports V1.3 dev deployment\n"; exit 2)
+	@test "$(SUPABASE_PROJECT_REF)" = "$(SUPABASE_DEV_PROJECT_REF)" || (printf "Refusing to deploy to non-dev Supabase project: $(SUPABASE_PROJECT_REF)\n"; exit 2)
+	@test -n "$${SUPABASE_DB_PASSWORD:-}" || (printf "Set SUPABASE_DB_PASSWORD for non-interactive Scout Sports V1.3 dev deployment\n"; exit 2)
+	@$(SUPABASE) db push --password "$$SUPABASE_DB_PASSWORD" --workdir "$(SUPABASE_WORKDIR)" --yes

@@ -318,9 +318,13 @@ Run:
 V0:
 
 - Use `Scout Sports V1.3/main` as the temporary development/integration remote.
-- Deploy from `develop` only.
-- Use GitHub Actions environment secrets scoped to staging.
+- Deploy from `develop` only, through manual `workflow_dispatch`.
+- Use the approved GitHub repo variable `SUPABASE_PROJECT_REF` and repo secret
+  `SUPABASE_ACCESS_TOKEN` for dev deployment.
+- Use the approved GitHub repo secret `SUPABASE_DB_PASSWORD` as the remote
+  database password for non-interactive Supabase CLI link and migration push.
 - Make migration validation a required check before deployment.
+- Treat this as dev deployment only until a separate staging or production project exists.
 
 ### Production Deployment
 
