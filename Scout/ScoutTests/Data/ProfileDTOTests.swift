@@ -465,4 +465,166 @@ final class ProfileDTOTests: XCTestCase {
         XCTAssertEqual(values.4, matchID)
         XCTAssertEqual(values.5, reviewedUserID)
     }
+
+    @MainActor
+    func test_ownerEditableProfileRepositoryProtocol_loadsCurrentProfileThroughMock() async throws {
+        let mock = MockProfileRepository()
+        let repository: OwnerEditableProfileProviding = mock
+
+        let profile = try await repository.currentEditableProfile(forceRefresh: true)
+
+        XCTAssertEqual(profile.id, "test-user")
+        XCTAssertEqual(profile.displayName, "Test")
+        XCTAssertEqual(mock.currentEditableProfileCalls, [true])
+    }
+
+    @MainActor
+    func test_mockOwnerEditableProfileRepository_updatesIdentityAndTracksCommand() async throws {
+        let mock = MockProfileRepository()
+        let repository: OwnerEditableProfileProviding = mock
+        let command = ProfileIdentityUpdateCommand(
+            displayName: " Anna ",
+            username: "anna_pb",
+            bio: "Weekend pickleball"
+        )
+
+        let profile = try await repository.updateIdentity(command)
+
+        XCTAssertEqual(profile.displayName, "Anna")
+        XCTAssertEqual(profile.username, "anna_pb")
+        XCTAssertEqual(profile.bio, "Weekend pickleball")
+        XCTAssertEqual(mock.updateIdentityCalls, [command])
+    }
+
+    @MainActor
+    func test_mockOwnerEditableProfileRepository_reportsMissingPermissionAndNetworkFailures() async {
+        let missingProfileMock = MockProfileRepository()
+        missingProfileMock.currentEditableProfileError = ProfileRepositoryError.profileMissing
+
+        do {
+            _ = try await missingProfileMock.currentEditableProfile(forceRefresh: false)
+            XCTFail("Expected missing profile error")
+        } catch let error as ProfileRepositoryError {
+            if case .profileMissing = error {
+                XCTAssertTrue(true)
+            } else {
+                XCTFail("Expected profileMissing, got \(error)")
+            }
+        } catch {
+            XCTFail("Expected ProfileRepositoryError, got \(error)")
+        }
+
+        let permissionMock = MockProfileRepository()
+        permissionMock.updatePrivacyError = ProfileRepositoryError.permissionDenied
+
+        do {
+            _ = try await permissionMock.updatePrivacy(
+                ProfilePrivacyUpdateCommand(
+                    profileVisibility: .authenticated,
+                    isDiscoverable: true,
+                    locationPrecision: .coarse
+                )
+            )
+            XCTFail("Expected permission error")
+        } catch let error as ProfileRepositoryError {
+            if case .permissionDenied = error {
+                XCTAssertTrue(true)
+            } else {
+                XCTFail("Expected permissionDenied, got \(error)")
+            }
+        } catch {
+            XCTFail("Expected ProfileRepositoryError, got \(error)")
+        }
+
+        let networkMock = MockProfileRepository()
+        networkMock.updateSportsError = ProfileRepositoryError.networkUnavailable
+
+        do {
+            _ = try await networkMock.updateSports(
+                ProfileSportsUpdateCommand(
+                    sports: ["pickleball"],
+                    primarySport: "pickleball",
+                    skillLevelBySport: ["pickleball": 3]
+                )
+            )
+            XCTFail("Expected network error")
+        } catch let error as ProfileRepositoryError {
+            if case .networkUnavailable = error {
+                XCTAssertTrue(true)
+            } else {
+                XCTFail("Expected networkUnavailable, got \(error)")
+            }
+        } catch {
+            XCTFail("Expected ProfileRepositoryError, got \(error)")
+        }
+    }
+
+    @MainActor
+    func test_mockOwnerEditableProfileRepository_convertsCommandValidationFailures() async {
+        let mock = MockProfileRepository()
+
+        do {
+            _ = try await mock.updateAvailability(
+                ProfileAvailabilityUpdateCommand(
+                    preferredDays: [.monday],
+                    preferredTimeWindows: [.morning],
+                    playIntent: .casual,
+                    homeArea: "Durham",
+                    travelRadiusMiles: 0,
+                    preferredPlayStyle: .open
+                )
+            )
+            XCTFail("Expected validation error")
+        } catch let error as ProfileRepositoryError {
+            if case .validationFailed(let errors) = error {
+                XCTAssertEqual(errors, [.travelRadiusOutOfRange])
+            } else {
+                XCTFail("Expected validationFailed, got \(error)")
+            }
+        } catch {
+            XCTFail("Expected ProfileRepositoryError, got \(error)")
+        }
+
+        XCTAssertEqual(mock.updateAvailabilityCalls.count, 1)
+    }
+
+    @MainActor
+    func test_mockOwnerEditableProfileRepository_updatesSportsAvailabilityAndPrivacyState() async throws {
+        let mock = MockProfileRepository()
+
+        let sportsProfile = try await mock.updateSports(
+            ProfileSportsUpdateCommand(
+                sports: ["pickleball", "tennis"],
+                primarySport: "tennis",
+                skillLevelBySport: ["pickleball": 3, "tennis": 2]
+            )
+        )
+        let availabilityProfile = try await mock.updateAvailability(
+            ProfileAvailabilityUpdateCommand(
+                preferredDays: [.saturday],
+                preferredTimeWindows: [.flexible],
+                playIntent: .flexible,
+                homeArea: "Raleigh",
+                travelRadiusMiles: 25,
+                preferredPlayStyle: .mixed
+            )
+        )
+        let privacyProfile = try await mock.updatePrivacy(
+            ProfilePrivacyUpdateCommand(
+                profileVisibility: .authenticated,
+                isDiscoverable: true,
+                locationPrecision: .hidden
+            )
+        )
+
+        XCTAssertEqual(sportsProfile.primarySport, "tennis")
+        XCTAssertEqual(availabilityProfile.preferredTimeWindows, [.flexible])
+        XCTAssertEqual(availabilityProfile.travelRadiusMiles, 25)
+        XCTAssertEqual(privacyProfile.profileVisibility, .authenticated)
+        XCTAssertTrue(privacyProfile.isDiscoverable)
+        XCTAssertEqual(privacyProfile.locationPrecision, .hidden)
+        XCTAssertEqual(mock.updateSportsCalls.count, 1)
+        XCTAssertEqual(mock.updateAvailabilityCalls.count, 1)
+        XCTAssertEqual(mock.updatePrivacyCalls.count, 1)
+    }
 }
