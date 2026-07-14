@@ -20,6 +20,7 @@ final class AppEnvironment {
   let profileRelationshipsRepository: PlayerProfileRelationshipsProviding
   let imageUploadService: ImageUploadProviding
   let swipeCardProvider: SwipeCardProviding
+  let discoveryRepository: DiscoveryRepository
 
   private init() {
       let options = SupabaseClientOptions(
@@ -45,6 +46,7 @@ final class AppEnvironment {
       bucket: "profile-photos"
     )
     swipeCardProvider = MockSwipeCardProvider()
+    discoveryRepository = MockDiscoveryRepository()
   }
 
   func makeSessionStore() -> SessionStore {
@@ -79,7 +81,7 @@ final class AppEnvironment {
   @MainActor
   func makeSwipeDeckViewModel(session: SessionStore) -> SwipeDeckViewModel {
     SwipeDeckViewModel(
-      cardProvider: swipeCardProvider,
+      discoveryRepository: discoveryRepository,
       session: session
     )
   }
