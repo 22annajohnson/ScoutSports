@@ -126,7 +126,8 @@ Required checks:
 - RLS impact is documented, including positive and negative checks when the migration changes user-owned or user-visible data.
 - Dashboard usage, if any, was inspection/debugging only and did not create durable schema drift.
 - Deployment target is identified as `Scout Sports V1.3/main`, the current temporary development database; staging and production are not part of the migration unless a later approved plan explicitly adds them.
-- Rollback or forward-fix approach is documented.
+- Rollback or forward-fix approach is documented, including whether the change is additive, reversible before remote deployment, requires a follow-up migration, or requires owner recovery planning.
+- Destructive data or schema impact is explicitly called out and approved before remote deployment.
 - No unrelated schema, auth, storage, Edge Function, generated type, seed, or CI changes are bundled into the PR.
 
 Suggested PR checklist text:
@@ -142,7 +143,7 @@ Migration validation:
 - [ ] RLS positive/negative checks are documented, or RLS impact is explicitly not applicable.
 - [ ] Dashboard inspection, if any, was inspection/debugging only.
 - [ ] Deployment target is `Scout Sports V1.3/main` only.
-- [ ] Rollback or forward-fix approach is documented.
+- [ ] Rollback or forward-fix approach is documented, including destructive-change impact if applicable.
 ```
 
 ## Local Validation
@@ -169,13 +170,38 @@ Makefile command shape:
 make supabase-doctor
 make supabase-start
 make supabase-migration-new SUPABASE_MIGRATION_NAME=<jira-key>_<short_description>
+make supabase-migration-up
 make supabase-db-reset
+make supabase-validate-reset-seed
+make supabase-test-db
 make supabase-stop
 ```
 
-These targets run the Supabase CLI with `SUPABASE_WORKDIR=backend/supabase` by default. The migration creation target must use the implementation story key, not only the epic key.
+These targets run the Supabase CLI with `SUPABASE_WORKDIR=backend` by default.
+The CLI project files remain under `backend/supabase/`. The migration creation
+target must use the implementation story key, not only the epic key.
 
-Generated type targets and output paths remain deferred to the generated type workflow story.
+`make supabase-validate-reset-seed` is the standard local validation target for
+future schema PRs that must prove migration ordering and seed loading from a
+clean local database. It runs `supabase db reset --workdir backend`, which
+applies repo-owned migrations and loads the configured root seed entrypoint at
+`backend/supabase/seed.sql`.
+
+The current seed entrypoint is intentionally data-free. Future seed data must be
+introduced only by the domain story that owns the schema/data contract, use
+clearly fake deterministic local/dev values, avoid secrets and production-like
+private data, and document whether seed loading is required for RLS validation,
+generated type validation, repository tests, or app smoke checks.
+
+`make supabase-test-db` runs pgTAP tests from
+`backend/supabase/tests/database`. Future migration PRs that create or change
+user-data tables, RLS policies, database functions, triggers, constraints, or
+RLS seed fixtures should add focused tests in that directory. If automated tests
+are not possible for a schema story, the PR must document the reason and include
+equivalent manual local verification steps.
+
+Swift generated type output is currently `backend/supabase/types/swift/Database.generated.swift`.
+Freshness validation remains owned by the generated type workflow story.
 
 Future database PRs should document:
 
@@ -207,6 +233,50 @@ Future migration deployment should follow this order:
 
 Staging and production projects are future environments. They must not be introduced through a migration PR alone. Adding staging/prod promotion requires explicit approval and may require an ADR if it changes CI, auth, deployment, secrets, or database ownership.
 
+## Production Approval Gate
+
+Production deployment is dormant until a separate production Supabase project exists and the repository owner approves the protected GitHub environment, secret names, and deployment trigger.
+
+Before a production database change is allowed, the release handoff must confirm:
+
+- The same migration set has passed local validation and the approved staging/integration deployment path.
+- The production GitHub environment requires manual owner approval.
+- Production Supabase secrets are scoped to the protected environment and are not available to ordinary PR validation.
+- Production seed loading is disabled unless a production data plan explicitly approves it.
+- The migration PR or release notes include rollback, forward-fix, or recovery notes appropriate to the risk.
+- Destructive migrations include owner approval, backup/restore expectations, and a data recovery or repair plan before deployment.
+- Deployment notes record the migration identifiers, target project, approver, validation evidence, and any follow-up checks.
+
+No migration PR should add production secrets, link production projects, or enable production deployment as an incidental side effect.
+
+## Drift Response
+
+Repository migrations are the durable schema authority. Dashboard edits are inspection/debugging only.
+
+If drift is suspected between a Supabase target and repository migrations:
+
+1. Stop additional remote migration deployment to that target until the difference is understood.
+2. Record the suspected drift source in the PR, release handoff, or Jira ticket.
+3. Inspect the target through approved read-only tools or Dashboard views.
+4. Convert any required durable schema change into a reviewed migration instead of preserving a dashboard-only edit.
+5. Re-run local reset validation and the approved remote/staging checks before continuing deployment.
+
+If a dashboard edit was made during emergency debugging, document it immediately and follow with a migration or explicit revert plan. Do not treat the live database as the source for future schema work.
+
+## Hotfix Flow
+
+Database hotfixes should stay forward-only and reviewable.
+
+Use a hotfix migration only when waiting for normal feature-branch flow would leave the approved development or production database in a broken or unsafe state. Hotfix PRs should:
+
+- Reference the incident, Jira ticket, and approved plan or owner approval that authorizes the emergency change.
+- Contain the smallest migration needed to repair the database state.
+- Avoid unrelated app, schema, generated type, seed, storage, auth, or Edge Function changes.
+- Run the same local reset, seed, type, and RLS validation expected for ordinary migration PRs unless the incident handoff explains why a check cannot run.
+- Include explicit post-deploy verification and follow-up cleanup notes.
+
+When production exists, production hotfix deployment still requires protected environment approval unless the owner documents a separate emergency break-glass process.
+
 ## Future CI Hooks
 
 Database CI is not approved by this document. Future CI work should consider hooks for:
@@ -231,7 +301,9 @@ These hooks require an approved CI implementation story before adding workflows,
 
 Prefer additive, forward-compatible migrations.
 
-For production later, rollbacks should be planned carefully and may use forward-fix migrations when data safety requires it.
+Local-only changes may be reset or rewritten before review if they have not been applied to any shared remote target. Once a migration has been applied to `Scout Sports V1.3/main`, staging, or production, prefer a new forward-fix migration over rewriting history.
+
+For production later, rollbacks should be planned carefully and may use forward-fix migrations when data safety requires it. Reverting Git alone is not a database rollback plan.
 
 ## Approval Boundary
 

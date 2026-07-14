@@ -16,7 +16,9 @@ Dependabot version updates are configured in `dependabot.yml` for the package su
 
 For the complete local pre-PR checklist, see `local-ci-validation.md`.
 
-Run the Swift tests check with safe placeholder Supabase configuration from the repository root:
+PR CI is the default first full validation pass for agents. Run the full Swift tests command locally only when targeted local validation is requested or when debugging a failed CI check.
+
+Run the Swift tests check with safe placeholder Supabase configuration from the repository root when needed:
 
 ```sh
 cd Scout

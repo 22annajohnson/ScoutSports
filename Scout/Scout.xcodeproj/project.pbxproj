@@ -47,6 +47,7 @@
 		9595DE492F5609E7002946A6 /* Exceptions for "ScoutTests" folder in "Scout" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Data/ProfileContractMapperTests.swift,
 				Data/ProfileDTOTests.swift,
 				Profile/ProfileBuilderViewModelTests.swift,
 				ScoutTests.swift,
@@ -57,6 +58,7 @@
 		9595DE4A2F5609E7002946A6 /* Exceptions for "ScoutTests" folder in "ScoutTests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Data/ProfileContractMapperTests.swift,
 				Data/ProfileDTOTests.swift,
 				Profile/ProfileBuilderViewModelTests.swift,
 				ScoutTests.swift,

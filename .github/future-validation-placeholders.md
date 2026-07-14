@@ -2,30 +2,34 @@
 
 Scout's v1 CI foundation intentionally validates the current iOS app, documentation, and GitHub configuration only. Supabase and web validation are deferred placeholders until the owning implementation plans approve concrete repository structure, commands, secrets, and required status checks.
 
-## Future Supabase Migration Validation
+## Supabase Pull Request Validation
 
-Status: deferred placeholder.
+Status: active local PR validation.
 
 Approval gates:
 
-- `Scout/implementation/proposed/INFRA-001-database-foundation.md` must be approved or superseded by an approved database foundation plan.
-- A schema-specific implementation story must approve the migration directory, local Supabase workflow, generated type strategy, seed data expectations, and RLS validation approach.
-- Any CI secret names or Supabase project linking must be owner-approved before being referenced by workflows.
+- `Scout/implementation/proposed/INFRA-004-supabase-development-pipeline.md`
+  defines the proposed end-to-end Supabase pipeline.
+- `INFRA-62` activates PR-safe local Supabase validation only. Remote
+  deployment, staging/prod credentials, preview branches, and Edge Function
+  deployment remain deferred until their own approved stories.
 
-Possible future checks:
+Current checks:
 
-- migration filename and header validation
-- local migration apply/reset
-- RLS positive and negative checks
-- generated type drift checks
-- seed data validation
-- Edge Function tests, only if Edge Functions are introduced by an approved plan
+- local Supabase CLI prerequisite check
+- local Supabase stack start/stop
+- migration reset and seed validation
+- pgTAP database tests when present
+- Swift generated type freshness
 
 Current boundary:
 
-- No Supabase migration workflow exists.
-- No Supabase validation check is required in branch protection.
-- No `backend/supabase/` implementation directories, migrations, generated types, storage buckets, or Edge Functions are created by the CI foundation.
+- No Supabase validation check is required in branch protection until the owner
+  explicitly configures it.
+- The workflow must not deploy to remote Supabase projects.
+- The workflow must not create preview branches.
+- The workflow must not require production secrets.
+- The workflow must not deploy Edge Functions.
 - Real Supabase secrets must not be exposed to ordinary pull request workflows.
 
 ## Future Web Validation

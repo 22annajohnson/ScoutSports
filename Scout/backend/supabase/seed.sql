@@ -1,0 +1,9 @@
+-- Jira: INFRA-59
+-- Purpose: Root local seed entrypoint for Supabase db reset validation.
+--
+-- This file is intentionally data-free. It lets `supabase db reset` prove that
+-- Scout's configured seed path exists and can be loaded without adding product
+-- data, secrets, or domain fixtures.
+--
+-- Domain seed data must be introduced by the schema story that owns it and must
+-- remain deterministic, resettable, and limited to local/dev validation.

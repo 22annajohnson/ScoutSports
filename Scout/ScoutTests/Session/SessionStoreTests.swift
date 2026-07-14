@@ -42,6 +42,36 @@ final class SessionStoreTests: XCTestCase {
         XCTAssertEqual(profiles.fetchMyProfileCallCount, 0)
     }
 
+    func test_repositoryMockConvention_supportsSuccessEmptyLoadingAndErrorStates() async throws {
+        let successRepository = MockProfileRepository.success(profile: ProfileFixtures.anna)
+        let emptyRepository = MockProfileRepository.empty()
+        let loadingRepository = MockProfileRepository()
+        loadingRepository.configureFetchMyProfile(.loading)
+        let failingRepository = MockProfileRepository.failure(TestError.boom)
+
+        let successProfile = try await successRepository.fetchMyProfile()
+        XCTAssertEqual(successProfile, ProfileFixtures.anna)
+
+        let emptyProfile = try await emptyRepository.fetchMyProfile()
+        XCTAssertEqual(emptyProfile, ProfileFixtures.empty)
+        let emptyFeedback = try await emptyRepository.fetchPrivateFeedbackReceived(for: UUID())
+        XCTAssertEqual(emptyFeedback, [])
+
+        do {
+            _ = try await loadingRepository.fetchMyProfile()
+            XCTFail("Expected unresolved loading state")
+        } catch RepositoryFixtureStateError.unresolvedLoadingState {
+            // expected
+        }
+
+        do {
+            _ = try await failingRepository.fetchMyProfile()
+            XCTFail("Expected configured repository error")
+        } catch TestError.boom {
+            // expected
+        }
+    }
+
     func test_signIn_whenAuthSucceeds_fetchesProfile_andStoresProfile() async throws {
         // Arrange
         let supabase = makeSupabaseClient()
@@ -191,5 +221,64 @@ final class SessionStoreTests: XCTestCase {
         XCTAssertNil(sut.profile)
         XCTAssertNil(sut.userID)
         XCTAssertNil(sut.sessionUser)
+    }
+}
+
+@MainActor
+final class ScoutHomeNavigationSmokeTests: XCTestCase {
+    private static var retainedViewModels: [ScoutHomeViewModel] = []
+
+    private func makeViewModel() -> ScoutHomeViewModel {
+        let viewModel = ScoutHomeViewModel()
+        // Xcode 26 hosted XCTest currently aborts when short-lived @Observable
+        // app-target instances deallocate before the test host exits.
+        Self.retainedViewModels.append(viewModel)
+        return viewModel
+    }
+
+    func test_homeNavigation_defaultsToSwipeRouteWithBubbleChrome() {
+        let sut = makeViewModel()
+
+        XCTAssertEqual(sut.selectedTab, .swipe)
+        XCTAssertEqual(sut.navigationStyle, .bubble)
+        XCTAssertEqual(sut.navigationVisibility, .shown)
+        XCTAssertEqual(sut.chromeMode, .expanded)
+    }
+
+    func test_homeNavigation_canReachEveryDeclaredTabRoute() {
+        let sut = makeViewModel()
+
+        for tab in ScoutHomeTab.allCases {
+            sut.select(tab: tab)
+
+            XCTAssertEqual(sut.selectedTab, tab)
+            XCTAssertEqual(sut.chromeMode, .expanded)
+            XCTAssertEqual(sut.navigationVisibility, .shown)
+        }
+    }
+
+    func test_homeNavigation_selectingFeedUsesBarChromeAndClosesSwipeMenu() {
+        let sut = makeViewModel()
+        sut.toggleSwipeMenu()
+
+        sut.select(tab: .feed)
+
+        XCTAssertEqual(sut.selectedTab, .feed)
+        XCTAssertEqual(sut.navigationStyle, .bar)
+        XCTAssertFalse(sut.isSwipeMenuExpanded)
+    }
+
+    func test_homeNavigation_scrollStateResetsWhenChangingRoutes() {
+        let sut = makeViewModel()
+        sut.updateChrome(for: 60)
+
+        XCTAssertEqual(sut.chromeMode, .condensed)
+        XCTAssertEqual(sut.navigationVisibility, .hidden)
+
+        sut.select(tab: .feed)
+
+        XCTAssertEqual(sut.selectedTab, .feed)
+        XCTAssertEqual(sut.chromeMode, .expanded)
+        XCTAssertEqual(sut.navigationVisibility, .shown)
     }
 }

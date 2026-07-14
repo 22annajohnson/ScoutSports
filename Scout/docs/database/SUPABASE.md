@@ -52,15 +52,21 @@ Expected future Supabase assets:
 - `backend/supabase/types/`
 - `docs/database/`
 
-These folders should not become active implementation surfaces until approved by implementation tech plans.
+These folders are active only for approved Supabase implementation stories. Do
+not add new classes of Supabase assets outside the authorizing story scope.
 
-Do not create Supabase folders, migrations, generated types, storage buckets, or Edge Functions until the relevant implementation tech plan is approved. Planning documents may reference expected future paths, but those paths are not implementation approval.
+Do not create migrations, storage buckets, Edge Functions, remote links, secrets,
+or new generated type outputs until the relevant implementation tech plan and
+Jira story approve that work. Planning documents may reference expected future
+paths, but those paths are not implementation approval.
 
 ## Local Development
 
-The local development workflow is not yet active. Future database implementation stories should use the proposed workflow in `docs/database/MIGRATIONS.md` unless the approved story intentionally revises it.
+The local development command surface is active through the root `Makefile`.
+Use `SUPABASE_WORKDIR=backend`; Supabase project files live under
+`backend/supabase/`.
 
-Expected local workflow coverage:
+Current local workflow coverage:
 
 - Supabase CLI start/stop usage.
 - Local database reset behavior.
@@ -71,7 +77,9 @@ Expected local workflow coverage:
 - Required environment variables.
 - Validation notes in the PR description.
 
-This document does not approve installing Supabase CLI in CI, linking a remote project, creating migrations, creating seed data, or committing generated types.
+This document does not approve installing Supabase CLI in CI, linking a remote
+project, creating new migrations, creating seed data, or committing additional
+generated type outputs.
 
 See `docs/database/GENERATED_TYPES.md` for proposed generated type options, command shapes, and schema PR requirements.
 
@@ -98,6 +106,21 @@ Expected future behavior:
 - PRs reference Jira tickets and approved implementation plans.
 - CI validates migrations and generated types when the strategy is approved.
 - Staging/prod promotion is introduced only after environment strategy approval.
+
+## Production Boundary
+
+Production Supabase deployment is not configured yet and should remain dormant until the production project exists.
+
+Before production deployment is enabled, Scout must approve:
+
+- The production Supabase project and project ref.
+- The protected GitHub environment and manual approval rule.
+- The production secret names and rotation owner.
+- The deployment trigger, such as release tag, protected `main`, or another approved release path.
+- The staging/integration success requirement.
+- The rollback, forward-fix, and destructive migration approval expectations in `docs/database/MIGRATIONS.md`.
+
+Production seed loading is disabled by default. It must not be enabled without a production data plan.
 
 ## Approval Boundary
 

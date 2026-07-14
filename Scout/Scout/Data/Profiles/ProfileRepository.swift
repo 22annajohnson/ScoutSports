@@ -474,7 +474,7 @@ final class ProfileRepository: ProfileProviding, OwnerEditableProfileProviding, 
                 .eq("profile_id", value: profileID)
                 .execute()
 
-            let normalizedSports = uniqueNonEmptyValues(command.sports)
+            let normalizedSports = Self.uniqueNonEmptyValues(command.sports)
             if !normalizedSports.isEmpty {
                 struct SportInsert: Encodable {
                     let profileId: UUID
@@ -937,13 +937,13 @@ final class ProfileRepository: ProfileProviding, OwnerEditableProfileProviding, 
             }
             throw ProfileRepositoryError.serverUnavailable
         } catch let error as PostgrestError {
-            throw profileRepositoryError(from: error)
+            throw Self.profileRepositoryError(from: error)
         } catch {
             throw ProfileRepositoryError.unknown
         }
     }
 
-    private func profileRepositoryError(from error: PostgrestError) -> ProfileRepositoryError {
+    static func profileRepositoryError(from error: PostgrestError) -> ProfileRepositoryError {
         switch error.code {
         case "42501":
             return .permissionDenied
@@ -962,7 +962,7 @@ final class ProfileRepository: ProfileProviding, OwnerEditableProfileProviding, 
         }
     }
 
-    private func uniqueNonEmptyValues(_ values: [String]) -> [String] {
+    static func uniqueNonEmptyValues(_ values: [String]) -> [String] {
         var seen: Set<String> = []
         var result: [String] = []
 

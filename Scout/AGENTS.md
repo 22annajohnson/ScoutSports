@@ -66,6 +66,8 @@ Review routing:
 
 - When starting work on a Jira ticket, move the ticket to `In Progress`.
 - Pull requests must follow the repository's GitHub PR template. Do not omit required template sections unless they are clearly not applicable and are marked as such.
+- PR titles and descriptions must mention only the Jira ticket actually being worked by that PR. Do not include other raw Jira issue keys or Jira links for next work, related stories, dependencies, follow-ups, or story ranges, because Jira automation may treat those tickets as completed when the PR merges.
+- When a PR needs to describe related work, use plain-language references without issue keys, such as "the next profile repository story", "the generated types follow-up", or "the parent epic". Put exact follow-up ticket keys in Jira comments, roadmap docs, or implementation plans instead of the GitHub PR body.
 - Jira automation moves tickets to `Awaiting CI` when a pull request is opened.
 - After opening a pull request, monitor your ticket. Jira automation may move it back to `In Progress` if CI checks fail. If this happens, inspect the PR/check failures again, make the needed fix, and push an update.
 - Jira automation may move the ticket to `Ready for Review` when CI passes and to `Done` when the PR is merged.
@@ -76,7 +78,9 @@ Review routing:
 
 - The first validation pass should run on the pull request through GitHub Actions.
 - Agents do not need to run local tests before opening a PR unless the ticket, implementation plan, or reviewer explicitly asks for local validation.
-- Run local tests when actively debugging a failed CI check, reproducing a CI failure, or validating a fix before pushing an update.
+- Run targeted local tests when actively debugging a failed CI check, reproducing a CI failure, capturing requested visual evidence, or validating a fix before pushing an update.
+- Use local simulator work only for debugging a failed UI test, reproducing a CI-only visual failure, capturing a requested screenshot, recording or updating an approved snapshot, or verifying a visual change that CI cannot explain clearly.
+- Avoid defaulting to `make test` for small changes while it may boot multiple simulators.
 - Documentation-only and workflow-only PRs should not run iOS tests locally unless they are debugging a failed CI check.
 - PR descriptions and handoffs should state that validation is expected to run in PR CI when no local tests were run.
 

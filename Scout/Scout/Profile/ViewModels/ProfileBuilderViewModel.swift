@@ -239,6 +239,11 @@ final class ProfileBuilderViewModel {
     var didSaveSuccessfully: Bool = false
     var profileLoadErrorMessage: String?
     private var didEditClubs: Bool = false
+    private var loadedPreferredDays: [ProfileWeekday] = []
+    private var loadedPreferredTimeWindows: [ProfileTimeWindow] = []
+    private var loadedPlayIntent: ProfilePlayIntent?
+    private var loadedTravelRadiusMiles: Int?
+    private var loadedPreferredPlayStyle: PreferredProfilePlayStyle?
     private var hasLoadedProfile: Bool = false
     private var isApplyingLoadedProfile: Bool = false
     private var editedMatchSignalFields: Set<MatchSignalField> = []
@@ -400,6 +405,12 @@ final class ProfileBuilderViewModel {
            let playStyle = PlayStyle(preferredProfilePlayStyle: preferredPlayStyle) {
             form.playStyle = playStyle
         }
+
+        loadedPreferredDays = profile.preferredDays
+        loadedPreferredTimeWindows = profile.preferredTimeWindows
+        loadedPlayIntent = profile.playIntent
+        loadedTravelRadiusMiles = profile.travelRadiusMiles
+        loadedPreferredPlayStyle = profile.preferredPlayStyle
     }
 
     // MARK: - Saving
@@ -453,12 +464,14 @@ final class ProfileBuilderViewModel {
             )
             _ = try await ownerEditableProfileRepository.updateAvailability(
                 ProfileAvailabilityUpdateCommand(
-                    preferredDays: [],
-                    preferredTimeWindows: [],
-                    playIntent: form.preferredMatchIntensity.playIntent,
+                    preferredDays: loadedPreferredDays,
+                    preferredTimeWindows: loadedPreferredTimeWindows,
+                    playIntent: editedMatchSignalFields.contains(.preferredMatchIntensity)
+                        ? form.preferredMatchIntensity.playIntent
+                        : loadedPlayIntent,
                     homeArea: homeCourtTrimmed.isEmpty ? nil : homeCourtTrimmed,
-                    travelRadiusMiles: nil,
-                    preferredPlayStyle: form.playStyle.preferredProfilePlayStyle
+                    travelRadiusMiles: loadedTravelRadiusMiles,
+                    preferredPlayStyle: form.playStyle.preferredProfilePlayStyle ?? loadedPreferredPlayStyle
                 )
             )
 

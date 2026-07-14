@@ -17,3 +17,9 @@ In short:
 - Agents do not approve, merge, or review their own PRs.
 - Agents should identify themselves as Stephan, Tom, or Jerry in PR descriptions and handoffs.
 - Review comments should use the template in `docs/agents/AGENTS.md`.
+
+## Jira Automation Safety
+
+GitHub PR titles and descriptions should mention only the Jira ticket actually being worked by that PR. Do not include other raw Jira issue keys or Jira links for next work, related stories, dependencies, follow-ups, or story ranges. Jira automation may transition every mentioned issue key when a PR opens, passes CI, or merges.
+
+Use plain-language references for related work in PR bodies, such as "the next repository story" or "the generated types follow-up". Keep exact follow-up ticket keys in Jira comments, roadmap docs, implementation plans, or epics instead of the GitHub PR body.

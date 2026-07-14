@@ -152,6 +152,21 @@ Implementation agents should inspect:
 
 For UI work, implementation agents should also inspect `docs/design/DESIGN_SYSTEM.md` and reference `DESIGN-001`. New foundations, shared components, component ownership changes, and platform behavior divergences require design review or an approved proposal before implementation.
 
+## Pull Request Jira References
+
+GitHub PR titles and descriptions should mention only the Jira ticket being worked by that PR.
+
+Do not include raw Jira issue keys or Jira links for related work, next work, follow-ups, dependency stories, parent/child story ranges, or implementation order. Jira automation may transition every issue key it sees in a PR when that PR opens, passes CI, or merges.
+
+Use plain language in PR bodies for related work instead:
+
+- "the next profile repository story"
+- "the generated types follow-up"
+- "the parent epic"
+- "the Design Factory verification story"
+
+Put exact follow-up ticket keys in Jira comments, implementation plans, roadmap documents, or the relevant epic instead of the GitHub PR body.
+
 ## Agent Identity
 
 Each active agent must know its assigned Scout identity before starting work. The identity should be visible in the agent's handoff and PR description.
@@ -208,9 +223,22 @@ For UI changes, include state coverage in the handoff: loading, empty, error, su
 
 ## Testing and CI Expectations
 
-Pull request CI is the default first validation pass for Scout agent work.
+PR CI is Scout's default first full validation pass. Agents should not run the full local test suite automatically after every small change.
 
-Agents do not need to run local tests before opening a pull request unless the Jira ticket, approved implementation plan, task prompt, or reviewer explicitly requires local validation. Local tests are expected when an agent is actively debugging a failed CI check, reproducing a CI-only failure, or validating a fix before pushing an update.
+Default workflow:
+
+1. Complete the change locally.
+2. Push the change and open or update the pull request.
+3. Let CI run the required build and test checks.
+4. If CI passes, do not rerun the full suite locally for a simple change.
+5. If CI fails, inspect the CI failure first.
+6. If the cause is clear, fix it and push again.
+7. If local reproduction is needed, run a targeted local test or one-simulator visual debugging command.
+8. Push the fix and let CI rerun as the source of truth.
+
+Local simulator work is appropriate for debugging a failed UI test, reproducing a CI-only visual failure, capturing a requested screenshot, recording or updating an approved snapshot, or verifying a visual change that CI cannot explain clearly.
+
+Avoid defaulting to `make test` for small changes while it may boot multiple simulators. Use targeted local commands when debugging.
 
 Documentation-only and workflow-only PRs should not run iOS tests locally unless the agent is investigating a failed CI check. When no local tests were run, the PR description and handoff should say that validation is expected to run in PR CI.
 

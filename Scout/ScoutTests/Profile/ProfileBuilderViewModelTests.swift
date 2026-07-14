@@ -149,6 +149,37 @@ final class ProfileBuilderViewModelTests: XCTestCase {
         XCTAssertEqual(profileRepository.replaceClubMembershipCalls.count, 0)
     }
 
+    func test_saveProfile_preservesLoadedAvailabilityFieldsThatBuilderDoesNotEdit() async throws {
+        let profileRepository = MockProfileRepository()
+        let imageUploadService = MockImageUploadService()
+        let userID = UUID()
+        profileRepository.currentEditableProfileResult.preferredDays = [.monday, .wednesday]
+        profileRepository.currentEditableProfileResult.preferredTimeWindows = [.evening]
+        profileRepository.currentEditableProfileResult.playIntent = .competitive
+        profileRepository.currentEditableProfileResult.travelRadiusMiles = 15
+        profileRepository.currentEditableProfileResult.preferredPlayStyle = .open
+
+        let viewModel = ProfileBuilderViewModel(
+            profileRepository: profileRepository,
+            ownerEditableProfileRepository: profileRepository,
+            matchSignalsRepository: profileRepository,
+            profileRelationshipsRepository: profileRepository,
+            imageUploadService: imageUploadService,
+            userIDProvider: { userID }
+        )
+
+        await viewModel.loadProfileIfNeeded()
+        viewModel.actionShotImage = UIImage()
+        await viewModel.saveProfile()
+
+        let input = try XCTUnwrap(profileRepository.updateAvailabilityCalls.first)
+        XCTAssertEqual(input.preferredDays, [.monday, .wednesday])
+        XCTAssertEqual(input.preferredTimeWindows, [.evening])
+        XCTAssertEqual(input.playIntent, .competitive)
+        XCTAssertEqual(input.travelRadiusMiles, 15)
+        XCTAssertEqual(input.preferredPlayStyle, .open)
+    }
+
     func test_saveProfile_whenOwnerRepositoryFails_preservesUnsavedInput() async {
         let profileRepository = MockProfileRepository()
         let imageUploadService = MockImageUploadService()
