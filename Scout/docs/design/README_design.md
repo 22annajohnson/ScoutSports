@@ -8,3 +8,4 @@ Use this area to document visual language, component patterns, interaction princ
 
 - `DESIGN_SYSTEM.md` defines the current design system starting point and product-level UX guidance.
 - `SCOUTDESIGN_USAGE_AUDIT.md` audits current iOS `ScoutDesign` adoption and migration gaps.
+- `UI_PATTERN_INVENTORY.md` inventories duplicated or reusable-looking UI patterns for future design-system adoption work.
