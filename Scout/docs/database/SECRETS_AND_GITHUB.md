@@ -26,7 +26,7 @@ Future local setup documentation should define values by category, not by commit
 
 | Category | Purpose | Notes |
 | --- | --- | --- |
-| Supabase project ref | Identifies the target project such as `scout-dev`. | Required only when a workflow links to a remote project. |
+| Supabase project ref | Identifies the target project, currently `Scout Sports V1.3/main` until a separate production project exists. | Required only when a workflow links to a remote project. |
 | Supabase URL | Client/API base URL. | Public client configuration, but still environment-specific. |
 | Supabase anon key | Client-safe key for authenticated user flows. | Public in app configuration, but should be environment-specific. |
 | Supabase service role key | Admin/server-side access. | Never use in client apps or commit to the repo. |

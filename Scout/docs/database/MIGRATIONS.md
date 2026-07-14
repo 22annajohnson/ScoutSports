@@ -110,6 +110,41 @@ Each migration PR should also confirm:
 - Dashboard inspection, if any, was inspection-only and did not create durable schema drift.
 - No unrelated schema, storage, Edge Function, generated type, or CI changes are bundled into the migration PR.
 
+## Migration PR Checklist
+
+Every future migration PR should include a completed checklist in the PR description before human review.
+
+Required checks:
+
+- Jira story is linked and authorizes the migration.
+- Approved implementation plan is linked and matches the migration scope.
+- Migration filename includes the authorizing Jira story key.
+- Migration header includes Jira, tech plan, purpose, affected area, RLS impact, generated type impact, and rollback or forward-fix notes.
+- Local apply or reset validation is documented.
+- Seed reset behavior is documented as loaded, skipped, or not applicable.
+- Generated type impact is documented as updated, not changed, or deferred.
+- RLS impact is documented, including positive and negative checks when the migration changes user-owned or user-visible data.
+- Dashboard usage, if any, was inspection/debugging only and did not create durable schema drift.
+- Deployment target is identified as `Scout Sports V1.3/main`, the current temporary development database; staging and production are not part of the migration unless a later approved plan explicitly adds them.
+- Rollback or forward-fix approach is documented.
+- No unrelated schema, auth, storage, Edge Function, generated type, seed, or CI changes are bundled into the PR.
+
+Suggested PR checklist text:
+
+```text
+Migration validation:
+- [ ] Jira story authorizes this migration.
+- [ ] Approved implementation plan is linked.
+- [ ] Migration filename and header include the Jira story key.
+- [ ] Local apply/reset validation result is documented.
+- [ ] Seed reset behavior is documented.
+- [ ] Generated type impact is documented.
+- [ ] RLS positive/negative checks are documented, or RLS impact is explicitly not applicable.
+- [ ] Dashboard inspection, if any, was inspection/debugging only.
+- [ ] Deployment target is `Scout Sports V1.3/main` only.
+- [ ] Rollback or forward-fix approach is documented.
+```
+
 ## Local Validation
 
 Future workflow should validate database changes against a local Supabase stack before PR review when the approved story requires a migration, seed change, generated type update, or RLS change.
@@ -152,7 +187,40 @@ Future database PRs should document:
 - Which app or repository tests were run.
 - Any manual dashboard inspection performed.
 
-Open questions:
+## Deployment Order
+
+`Scout Sports V1.3/main` is the only current deployment target for Scout database changes.
+
+This project is temporarily treated as the development database because Scout has no production users yet and Supabase branching is not available on the current plan. A separate production project should be created before real users are onboarded.
+
+Future migration deployment should follow this order:
+
+1. Confirm the PR is merged or otherwise approved for the target branch.
+2. Confirm the migration was validated locally, including reset behavior when applicable.
+3. Confirm seed behavior is documented as loaded, skipped, or not applicable.
+4. Confirm generated types were updated, not changed, or deferred according to `docs/database/GENERATED_TYPES.md`.
+5. Confirm RLS checks were performed for affected user data or explicitly marked not applicable.
+6. Confirm the Supabase dashboard has not been used for durable schema edits outside the migration.
+7. Apply the approved migration to `Scout Sports V1.3/main`.
+8. Inspect `Scout Sports V1.3/main` after apply for migration status, schema shape, RLS status, and obvious seed/type mismatches.
+9. Record deployment notes on the PR or release handoff, including the migration identifier, target, validation evidence, and any follow-up.
+
+Staging and production projects are future environments. They must not be introduced through a migration PR alone. Adding staging/prod promotion requires explicit approval and may require an ADR if it changes CI, auth, deployment, secrets, or database ownership.
+
+## Future CI Hooks
+
+Database CI is not approved by this document. Future CI work should consider hooks for:
+
+- Migration filename and header validation.
+- Migration apply/reset validation against a local Supabase stack.
+- Seed reset validation for approved dev/test seed data.
+- Generated type freshness checks once generated type outputs are approved.
+- RLS positive and negative test execution for schema plans that define RLS checks.
+- Drift detection between repository migrations and approved Supabase targets.
+
+These hooks require an approved CI implementation story before adding workflows, jobs, secrets, or deployment automation.
+
+## Open Questions
 
 - Whether every database PR requires `supabase db reset`.
 - Whether local seed data is required for all schema changes or only selected domains.

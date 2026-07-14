@@ -136,6 +136,20 @@ Scout work should follow this pipeline:
 
 Roadmap items should stay lightweight until work is imminent. Once a roadmap item is ready to begin, create a detailed implementation tech plan in `implementation/proposed/`. After approval, move it to `implementation/approved/`, create the Jira epic and stories, then move it through `implementation/in-progress/` and `implementation/complete/` as work progresses.
 
+## Planning Authority
+
+Jira controls execution, not upstream product or architecture decisions. Tickets must fit inside this authority chain:
+
+1. Product docs control product direction.
+2. Architecture docs and ADRs control system structure and durable technical direction.
+3. Approved tech plans control implementation approach.
+4. Jira epics group approved work.
+5. Jira stories control executable scope.
+
+If a Jira issue conflicts with product docs, architecture docs, an ADR, or an approved tech plan, the issue is not ready for implementation. Agents should stop, document the conflict, and wait for the owning planning artifact or ticket to be updated.
+
+Jira stories may narrow the scope of an approved plan, but they must not expand product behavior, architecture, repository organization, database ownership, auth strategy, shared contracts, CI behavior, or long-term technical direction without the required approval.
+
 ## Status Guidance
 
 Suggested Jira statuses:
@@ -156,6 +170,10 @@ Agents are responsible for starting work and monitoring their own PRs:
 
 - When an agent starts a ticket, it must move the Jira ticket to `In Progress`.
 - Pull requests must follow the repository's GitHub PR template. Required template sections should be completed, or marked as not applicable with a short explanation.
+- PR titles and descriptions must include only the Jira ticket actually implemented by that PR.
+- Do not mention other raw Jira issue keys or Jira links in a PR title or body for dependencies, related work, follow-ups, "next" work, parent/child story ranges, or implementation order. Jira automation may interpret any mentioned issue key as connected to the PR and transition that ticket when the PR opens, passes CI, or merges.
+- If related work needs to be described in GitHub, use plain language that does not contain an issue key, such as "the next profile repository story", "the generated types follow-up", "the parent epic", or "the Design Factory verification story".
+- Keep exact follow-up ticket keys in Jira comments, implementation plans, roadmap documents, or the relevant epic rather than the GitHub PR body.
 - Pull requests must follow the canonical GitHub label review workflow in `AGENTS.md` and `docs/agents/AGENTS.md`.
 
 Scout Jira automation handles PR, CI, review, and merge transitions:
