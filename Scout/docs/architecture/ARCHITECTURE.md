@@ -42,6 +42,17 @@ Use `docs/architecture/ARCHITECTURE_CHANGE_CHECKLIST.md` before creating tickets
 
 Scout is currently an iOS-focused repository with a Swift/SwiftUI application at the repository root.
 
+### Approved Repository State
+
+The approved state is defined by `tech-plans/approved/ARCH-001-app-architecture.md`:
+
+- iOS remains at the repository root; do not move app files into `apps/ios/` yet.
+- The web app remains in a separate repository; do not add or move web app code into `apps/web/` yet.
+- `apps/ios/` and `apps/web/` are placeholders until dedicated migration plans are approved.
+- `backend/supabase/` is documentation and planning only until backend implementation work is approved.
+- Do not edit Xcode project references, schemes, package paths, CI, Fastlane, or build settings as part of architecture foundation work.
+- Do not create migration implementation tickets from ARCH-001 alone.
+
 Current notable areas:
 
 - `Scout/App/`: app entry, root routing, app environment, and home screen wiring.
