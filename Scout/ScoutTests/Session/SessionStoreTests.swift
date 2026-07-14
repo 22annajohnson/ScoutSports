@@ -42,6 +42,36 @@ final class SessionStoreTests: XCTestCase {
         XCTAssertEqual(profiles.fetchMyProfileCallCount, 0)
     }
 
+    func test_repositoryMockConvention_supportsSuccessEmptyLoadingAndErrorStates() async throws {
+        let successRepository = MockProfileRepository.success(profile: ProfileFixtures.anna)
+        let emptyRepository = MockProfileRepository.empty()
+        let loadingRepository = MockProfileRepository()
+        loadingRepository.configureFetchMyProfile(.loading)
+        let failingRepository = MockProfileRepository.failure(TestError.boom)
+
+        let successProfile = try await successRepository.fetchMyProfile()
+        XCTAssertEqual(successProfile, ProfileFixtures.anna)
+
+        let emptyProfile = try await emptyRepository.fetchMyProfile()
+        XCTAssertEqual(emptyProfile, ProfileFixtures.empty)
+        let emptyFeedback = try await emptyRepository.fetchPrivateFeedbackReceived(for: UUID())
+        XCTAssertEqual(emptyFeedback, [])
+
+        do {
+            _ = try await loadingRepository.fetchMyProfile()
+            XCTFail("Expected unresolved loading state")
+        } catch RepositoryFixtureStateError.unresolvedLoadingState {
+            // expected
+        }
+
+        do {
+            _ = try await failingRepository.fetchMyProfile()
+            XCTFail("Expected configured repository error")
+        } catch TestError.boom {
+            // expected
+        }
+    }
+
     func test_signIn_whenAuthSucceeds_fetchesProfile_andStoresProfile() async throws {
         // Arrange
         let supabase = makeSupabaseClient()
