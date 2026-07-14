@@ -62,6 +62,11 @@ key unless a future workflow explicitly requires server-side API access. Do not
 commit the remote database password or expose it through Make command echoing,
 workflow logs, PR text, or app configuration.
 
+INFRA-55 extends the same workflow to run automatically on pushes to `develop`
+when committed migration files under `Scout/backend/supabase/migrations/`
+changed. The automatic path uses the same repo variable and secrets as the
+manual path.
+
 ## GitHub Integration Expectations
 
 Future GitHub/Supabase integration should remain proposed until approved:
