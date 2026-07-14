@@ -28,6 +28,171 @@ struct PlayerPublicProfile: Identifiable, Equatable, Sendable {
     var playStyle: String?
 }
 
+/// Owner-facing v1 profile state for repository-backed Profile ViewModels.
+/// System-owned lifecycle fields are read-only here and intentionally absent from owner update commands.
+struct OwnerEditableProfile: Identifiable, Equatable, Sendable {
+    let id: String
+    var displayName: String
+    var username: String?
+    var profilePhotoPath: String?
+    var actionPhotoPath: String?
+    var bio: String?
+    var sports: [String]
+    var primarySport: String?
+    /// Domain editing shape for sport-specific skills.
+    /// Repository mappers must convert this to approved storage skill labels/values.
+    var skillLevelBySport: [String: Int]
+    var preferredDays: [ProfileWeekday]
+    var preferredTimeWindows: [ProfileTimeWindow]
+    var playIntent: ProfilePlayIntent?
+    var homeArea: String?
+    var travelRadiusMiles: Int?
+    var preferredPlayStyle: PreferredProfilePlayStyle?
+    var profileVisibility: ProfileVisibility
+    var isDiscoverable: Bool
+    var locationPrecision: ProfileLocationPrecision
+    let completionState: ProfileCompletionState
+    let accountStatus: ProfileAccountStatus
+    let createdAt: Date
+    let lastActiveAt: Date?
+}
+
+enum ProfileWeekday: String, CaseIterable, Codable, Equatable, Sendable {
+    case monday
+    case tuesday
+    case wednesday
+    case thursday
+    case friday
+    case saturday
+    case sunday
+}
+
+enum ProfileTimeWindow: String, CaseIterable, Codable, Equatable, Sendable {
+    case morning
+    case afternoon
+    case evening
+    case flexible
+}
+
+enum ProfilePlayIntent: String, CaseIterable, Codable, Equatable, Sendable {
+    case casual
+    case competitive
+    case flexible
+}
+
+enum PreferredProfilePlayStyle: String, CaseIterable, Codable, Equatable, Sendable {
+    case singles
+    case doubles
+    case mixed
+    case open
+}
+
+enum ProfileVisibility: String, CaseIterable, Codable, Equatable, Sendable {
+    case publicProfile = "public"
+    case authenticated
+    case privateProfile = "private"
+}
+
+enum ProfileLocationPrecision: String, CaseIterable, Codable, Equatable, Sendable {
+    case hidden
+    case coarse
+}
+
+enum ProfileCompletionState: String, CaseIterable, Codable, Equatable, Sendable {
+    case accountCreated = "account_created"
+    case basicIdentity = "basic_identity"
+    case discoveryReady = "discovery_ready"
+    case eventReady = "event_ready"
+    case fullyComplete = "fully_complete"
+}
+
+enum ProfileAccountStatus: String, CaseIterable, Codable, Equatable, Sendable {
+    case active
+    case restricted
+    case disabled
+    case deleted
+}
+
+enum ProfileUpdateValidationError: Equatable, Sendable {
+    case displayNameLength
+    case usernameFormat
+    case primarySportNotSelected
+    case primarySportSkillMissing
+    case travelRadiusOutOfRange
+}
+
+struct ProfileIdentityUpdateCommand: Equatable, Sendable {
+    var displayName: String?
+    var username: String?
+    var bio: String?
+
+    func validationErrors() -> [ProfileUpdateValidationError] {
+        var errors: [ProfileUpdateValidationError] = []
+
+        if let displayName {
+            let trimmedName = displayName.trimmingCharacters(in: .whitespacesAndNewlines)
+            if !(2...40).contains(trimmedName.count) {
+                errors.append(.displayNameLength)
+            }
+        }
+
+        if let username, !username.isEmpty {
+            let allowed = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyz0123456789_")
+            let usesAllowedCharacters = username.unicodeScalars.allSatisfy { allowed.contains($0) }
+            if !(3...24).contains(username.count) || !usesAllowedCharacters || username != username.lowercased() {
+                errors.append(.usernameFormat)
+            }
+        }
+
+        return errors
+    }
+}
+
+struct ProfileSportsUpdateCommand: Equatable, Sendable {
+    var sports: [String]
+    var primarySport: String?
+    var skillLevelBySport: [String: Int]
+
+    func validationErrors() -> [ProfileUpdateValidationError] {
+        var errors: [ProfileUpdateValidationError] = []
+
+        if let primarySport {
+            if !sports.contains(primarySport) {
+                errors.append(.primarySportNotSelected)
+            }
+
+            if skillLevelBySport[primarySport] == nil {
+                errors.append(.primarySportSkillMissing)
+            }
+        }
+
+        return errors
+    }
+}
+
+struct ProfileAvailabilityUpdateCommand: Equatable, Sendable {
+    var preferredDays: [ProfileWeekday]
+    var preferredTimeWindows: [ProfileTimeWindow]
+    var playIntent: ProfilePlayIntent?
+    var homeArea: String?
+    var travelRadiusMiles: Int?
+    var preferredPlayStyle: PreferredProfilePlayStyle?
+
+    func validationErrors() -> [ProfileUpdateValidationError] {
+        if let travelRadiusMiles, !(1...100).contains(travelRadiusMiles) {
+            return [.travelRadiusOutOfRange]
+        }
+
+        return []
+    }
+}
+
+struct ProfilePrivacyUpdateCommand: Equatable, Sendable {
+    var profileVisibility: ProfileVisibility
+    var isDiscoverable: Bool
+    var locationPrecision: ProfileLocationPrecision
+}
+
 /// Editable payload for the user-owned profile layer.
 /// This should mirror fields the player can set directly, not system-computed metrics.
 struct PlayerPublicProfileUpdateInput: Equatable, Sendable {

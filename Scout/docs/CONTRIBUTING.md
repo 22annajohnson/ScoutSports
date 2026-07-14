@@ -37,6 +37,12 @@ Use these general labels:
 - `documentation`: Documentation, tech plans, architecture docs, or planning artifacts.
 - `ruby`: CI, GitHub Actions, Fastlane, Ruby scripts, Markdown validation, or repository automation.
 
+Use the author label that matches the PR author's Scout identity:
+
+- `author-stephan`: PR was authored by Stephan.
+- `author-tom`: PR was authored by Tom.
+- `author-jerry`: PR was authored by Jerry.
+
 Documentation PR workflow:
 
 1. Open the PR with `documentation` and `needs-stephan-review`.
@@ -70,7 +76,11 @@ Optional risk labels:
 
 ## CI and Validation
 
-Run the validation appropriate to the touched area and document it in the PR. Documentation-only changes should state that no build was run unless project configuration changed. After opening a PR, monitor Jira and GitHub; if automation moves a ticket back to `In Progress` because CI failed, inspect the failure, fix it, and push an update.
+PR CI is the default first validation pass. Agents do not need to run local tests before opening a PR unless the ticket, approved implementation plan, task prompt, or reviewer explicitly requires local validation.
+
+Run local tests when actively debugging a failed CI check, reproducing a CI failure, or validating a fix before pushing an update. Documentation-only and workflow-only changes should state that no local build or iOS test run was performed unless project configuration changed or the PR is investigating a failed CI check.
+
+After opening a PR, monitor Jira and GitHub. If automation moves a ticket back to `In Progress` because CI failed, inspect the failure, fix it, and push an update.
 
 ## Documentation Updates
 

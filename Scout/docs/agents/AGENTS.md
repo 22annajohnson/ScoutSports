@@ -69,6 +69,20 @@ Major feature implementation should not begin without an approved implementation
 
 Roadmaps in `roadmap/` are lightweight long-term backlogs. They should not contain detailed engineering design. When work is imminent, promote a roadmap item into `implementation/proposed/`.
 
+## Authority Chain
+
+Agents must follow Scout's planning authority in this order:
+
+1. Product docs define product direction.
+2. Architecture docs and ADRs define system structure and durable technical direction.
+3. Approved tech plans define implementation approach.
+4. Jira epics group approved work.
+5. Jira stories define executable scope.
+
+When these sources conflict, agents must stop implementation and document the conflict. Product conflicts belong in product planning, architecture conflicts belong in architecture docs or ADRs, implementation-plan conflicts belong in the tech plan, and execution-scope conflicts belong in Jira. Do not resolve conflicts by guessing in code.
+
+Implementation agents should use the most specific approved source for scope. A Jira story may narrow an approved plan, but it must not expand product behavior, architecture, database ownership, auth strategy, shared contracts, CI behavior, or repository structure.
+
 ## Domain-Level Plan Standard
 
 Major domains such as Profile, Events, Swipe, Feed, Chat, Maps, Search, Notifications, Teams, and Recommendations must use the domain-level plan structure.
@@ -136,6 +150,8 @@ Implementation agents should inspect:
 - Existing feature code and tests.
 - The repository `Makefile` for validation.
 
+For UI work, implementation agents should also inspect `docs/design/DESIGN_SYSTEM.md` and reference `DESIGN-001`. New foundations, shared components, component ownership changes, and platform behavior divergences require design review or an approved proposal before implementation.
+
 ## Agent Identity
 
 Each active agent must know its assigned Scout identity before starting work. The identity should be visible in the agent's handoff and PR description.
@@ -172,6 +188,8 @@ Tickets generated for implementation should include:
 - Validation steps.
 - Handoff expectations.
 
+UI implementation tickets must also follow the checklist in `jira/JIRA_WORKFLOW.md`, including `DESIGN-001`, existing component reuse, new component justification, accessibility, loading, empty, error, screenshot, animation, and Apple HIG divergence expectations.
+
 Tickets should be small enough to complete in a few hours when possible.
 
 ## Handoff Format
@@ -186,6 +204,16 @@ Agent handoffs should include:
 
 For documentation-only changes, say that no build was run unless project configuration changed.
 
+For UI changes, include state coverage in the handoff: loading, empty, error, success, recovery, accessibility, screenshots or recordings, and any motion or Reduced Motion impact.
+
+## Testing and CI Expectations
+
+Pull request CI is the default first validation pass for Scout agent work.
+
+Agents do not need to run local tests before opening a pull request unless the Jira ticket, approved implementation plan, task prompt, or reviewer explicitly requires local validation. Local tests are expected when an agent is actively debugging a failed CI check, reproducing a CI-only failure, or validating a fix before pushing an update.
+
+Documentation-only and workflow-only PRs should not run iOS tests locally unless the agent is investigating a failed CI check. When no local tests were run, the PR description and handoff should say that validation is expected to run in PR CI.
+
 ## Pull Request Review Workflow
 
 Scout uses GitHub labels as the canonical review handoff between agents, Stephan, and human reviewers.
@@ -194,6 +222,14 @@ Scout uses GitHub labels as the canonical review handoff between agents, Stephan
 
 - `documentation`: PR primarily changes documentation, tech plans, architecture docs, or planning artifacts.
 - `ruby`: PR primarily changes CI, GitHub Actions, Fastlane, Ruby scripts, Markdown validation, or repository automation.
+
+Author identity labels:
+
+- `author-stephan`: PR was authored by Stephan.
+- `author-tom`: PR was authored by Tom.
+- `author-jerry`: PR was authored by Jerry.
+
+Agents should apply the author label that matches their Scout identity when opening a PR. These labels make review routing visible without replacing the PR description or handoff identity.
 
 ### Documentation PRs
 

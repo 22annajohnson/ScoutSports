@@ -19,9 +19,14 @@ Related documents:
 
 ## Current Project Strategy
 
-- `scout-dev` is the current development Supabase project.
+- `Scout Sports V1.3` on Supabase `main` is the current temporary development database.
+- Supabase branching is not available on the current Supabase plan, so Scout will not use database branches for v1 development.
+- The current project has no production users; applying approved development migrations to `Scout Sports V1.3/main` is acceptable until a separate production project exists.
+- A separate production Supabase project is expected later before real users are onboarded.
 - Staging and production projects are expected later.
 - Introducing staging/prod requires explicit approval and may require an ADR if it changes CI, auth, deployment, or database ownership.
+
+Agents should not block current implementation work waiting for a `scout-dev` project or Supabase branching. When older docs or plans say `scout-dev`, read that as the current approved development target: `Scout Sports V1.3/main`, unless a newer approved plan creates a separate development or production project.
 
 ## Source of Truth
 

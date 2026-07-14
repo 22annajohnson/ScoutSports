@@ -67,13 +67,35 @@ Ticket descriptions should include:
 - Validation steps
 - Links to relevant docs, plans, and designs
 
+## UI Implementation Ticket Checklist
+
+UI implementation tickets must reference `DESIGN-001` and `docs/design/DESIGN_SYSTEM.md`. For iOS work, Apple's Human Interface Guidelines are the baseline for platform behavior unless an approved design plan documents a Scout-specific divergence.
+
+Every UI implementation ticket should include:
+
+- Existing design areas, components, modifiers, or patterns inspected.
+- Existing components reused.
+- New components introduced, if any.
+- Why any new component is necessary instead of extending an existing component.
+- Foundation changes proposed, if any, with the required design approval path.
+- Accessibility considerations, including Dynamic Type, VoiceOver, contrast, touch targets, and Reduced Motion where relevant.
+- Loading state expectations.
+- Empty state expectations.
+- Error state expectations, including the user recovery path.
+- Success or confirmation state expectations where relevant.
+- Screenshots or screen recordings required for review.
+- Animations or motion patterns affected.
+- Any divergence from Apple's Human Interface Guidelines.
+
+Tickets that introduce new shared components, change foundations, alter component ownership, or diverge from native platform behavior should be treated as blocked on design review or an approved design proposal unless an approved plan already authorizes the change.
+
 ## Ticket Sizing
 
 Prefer tickets that can be completed in a few hours.
 
 Story points estimate developer-day effort for an AI-assisted workflow, including both agent implementation time and human review time.
 
-Use fractional story points:
+Use fractional story points in `0.25` increments. Values such as `0.75`, `1.25`, and `1.5` are valid when they best represent the combined implementation, validation, review, and revision effort.
 
 - `0.25`: Agent can complete the work and a human can review it in about 2 total hours.
 - `0.5`: Agent implementation takes about 2 hours and human review takes about 2 hours.
@@ -113,6 +135,20 @@ Scout work should follow this pipeline:
 9. Complete
 
 Roadmap items should stay lightweight until work is imminent. Once a roadmap item is ready to begin, create a detailed implementation tech plan in `implementation/proposed/`. After approval, move it to `implementation/approved/`, create the Jira epic and stories, then move it through `implementation/in-progress/` and `implementation/complete/` as work progresses.
+
+## Planning Authority
+
+Jira controls execution, not upstream product or architecture decisions. Tickets must fit inside this authority chain:
+
+1. Product docs control product direction.
+2. Architecture docs and ADRs control system structure and durable technical direction.
+3. Approved tech plans control implementation approach.
+4. Jira epics group approved work.
+5. Jira stories control executable scope.
+
+If a Jira issue conflicts with product docs, architecture docs, an ADR, or an approved tech plan, the issue is not ready for implementation. Agents should stop, document the conflict, and wait for the owning planning artifact or ticket to be updated.
+
+Jira stories may narrow the scope of an approved plan, but they must not expand product behavior, architecture, repository organization, database ownership, auth strategy, shared contracts, CI behavior, or long-term technical direction without the required approval.
 
 ## Status Guidance
 
@@ -155,6 +191,14 @@ General PR labels:
 
 - `documentation`: Documentation, tech plans, architecture docs, or planning artifacts.
 - `ruby`: CI, GitHub Actions, Fastlane, Ruby scripts, Markdown validation, or repository automation.
+
+Author identity labels:
+
+- `author-stephan`: PR was authored by Stephan.
+- `author-tom`: PR was authored by Tom.
+- `author-jerry`: PR was authored by Jerry.
+
+Agents should apply the author label that matches their Scout identity when opening a PR.
 
 Documentation PRs:
 

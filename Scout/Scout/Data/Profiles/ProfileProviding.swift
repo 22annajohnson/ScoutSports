@@ -19,6 +19,31 @@ protocol ProfileProviding {
     func markProfileCompletedIfReady() async throws
 }
 
+/// Errors exposed by the Profile repository boundary.
+/// Keep these UI-safe and independent of Supabase/database error strings.
+enum ProfileRepositoryError: Error, Sendable {
+    case notAuthenticated
+    case profileMissing
+    case permissionDenied
+    case validationFailed([ProfileUpdateValidationError])
+    case networkUnavailable
+    case serverUnavailable
+    case decodingFailed
+    case mappingFailed
+    case conflictOrStaleWrite
+    case unknown
+}
+
+/// Owner-editable profile repository boundary for Profile ViewModels.
+/// Consumer contract reads remain separate until their feature contracts are approved.
+protocol OwnerEditableProfileProviding {
+    func currentEditableProfile(forceRefresh: Bool) async throws -> OwnerEditableProfile
+    func updateIdentity(_ command: ProfileIdentityUpdateCommand) async throws -> OwnerEditableProfile
+    func updateSports(_ command: ProfileSportsUpdateCommand) async throws -> OwnerEditableProfile
+    func updateAvailability(_ command: ProfileAvailabilityUpdateCommand) async throws -> OwnerEditableProfile
+    func updatePrivacy(_ command: ProfilePrivacyUpdateCommand) async throws -> OwnerEditableProfile
+}
+
 /// Future boundary for player-to-player feedback submitted after a match or session.
 /// Raw feedback should remain separate from editable profile state.
 protocol MatchFeedbackProviding {

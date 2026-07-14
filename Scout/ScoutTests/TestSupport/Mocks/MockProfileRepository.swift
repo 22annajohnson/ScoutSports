@@ -10,7 +10,7 @@ import Foundation
 /// Test double for `ProfileProviding`.
 /// - Configurable return values for fetch/update
 /// - Tracks calls and captured inputs
-final class MockProfileRepository: ProfileProviding, PlayerMatchSignalsProviding, PlayerProfileRelationshipsProviding, MatchFeedbackProviding, InternalMatchFeedbackProviding, PlayerMetricsProviding {
+final class MockProfileRepository: ProfileProviding, OwnerEditableProfileProviding, PlayerMatchSignalsProviding, PlayerProfileRelationshipsProviding, MatchFeedbackProviding, InternalMatchFeedbackProviding, PlayerMetricsProviding {
 
     // MARK: - Captured inputs
 
@@ -23,6 +23,11 @@ final class MockProfileRepository: ProfileProviding, PlayerMatchSignalsProviding
     private(set) var replaceClubMembershipCalls: [[String]] = []
     private(set) var submittedMatchFeedbackCalls: [MatchPlayerFeedbackInput] = []
     private(set) var markProfileCompletedCallCount: Int = 0
+    private(set) var currentEditableProfileCalls: [Bool] = []
+    private(set) var updateIdentityCalls: [ProfileIdentityUpdateCommand] = []
+    private(set) var updateSportsCalls: [ProfileSportsUpdateCommand] = []
+    private(set) var updateAvailabilityCalls: [ProfileAvailabilityUpdateCommand] = []
+    private(set) var updatePrivacyCalls: [ProfilePrivacyUpdateCommand] = []
 
     // MARK: - Configurable behavior
 
@@ -42,6 +47,35 @@ final class MockProfileRepository: ProfileProviding, PlayerMatchSignalsProviding
     var replaceClubMembershipError: Error?
     var submitMatchFeedbackError: Error?
     var markProfileCompletedError: Error?
+    var currentEditableProfileError: Error?
+    var updateIdentityError: Error?
+    var updateSportsError: Error?
+    var updateAvailabilityError: Error?
+    var updatePrivacyError: Error?
+    var currentEditableProfileResult = OwnerEditableProfile(
+        id: "test-user",
+        displayName: "Test",
+        username: "test_user",
+        profilePhotoPath: nil,
+        actionPhotoPath: nil,
+        bio: nil,
+        sports: ["pickleball"],
+        primarySport: "pickleball",
+        skillLevelBySport: ["pickleball": 3],
+        preferredDays: [],
+        preferredTimeWindows: [],
+        playIntent: nil,
+        homeArea: nil,
+        travelRadiusMiles: nil,
+        preferredPlayStyle: nil,
+        profileVisibility: .publicProfile,
+        isDiscoverable: false,
+        locationPrecision: .coarse,
+        completionState: .basicIdentity,
+        accountStatus: .active,
+        createdAt: Date(timeIntervalSince1970: 0),
+        lastActiveAt: nil
+    )
     var feedbackReceivedResult: [MatchPlayerFeedback] = []
     var feedbackReceivedState: RepositoryFixtureState<[MatchPlayerFeedback]>?
     var derivedMetricsResult = PlayerDerivedMetrics(
@@ -69,6 +103,11 @@ final class MockProfileRepository: ProfileProviding, PlayerMatchSignalsProviding
     var onReplaceClubMemberships: (([String]) -> Void)?
     var onSubmitMatchFeedback: ((MatchPlayerFeedbackInput) -> Void)?
     var onMarkProfileCompleted: (() -> Void)?
+    var onCurrentEditableProfile: ((Bool) -> Void)?
+    var onUpdateIdentity: ((ProfileIdentityUpdateCommand) -> Void)?
+    var onUpdateSports: ((ProfileSportsUpdateCommand) -> Void)?
+    var onUpdateAvailability: ((ProfileAvailabilityUpdateCommand) -> Void)?
+    var onUpdatePrivacy: ((ProfilePrivacyUpdateCommand) -> Void)?
 
     // MARK: - Fixture conventions
 
@@ -188,5 +227,85 @@ final class MockProfileRepository: ProfileProviding, PlayerMatchSignalsProviding
         markProfileCompletedCallCount += 1
         onMarkProfileCompleted?()
         if let markProfileCompletedError { throw markProfileCompletedError }
+    }
+
+    // MARK: - OwnerEditableProfileProviding
+
+    func currentEditableProfile(forceRefresh: Bool) async throws -> OwnerEditableProfile {
+        currentEditableProfileCalls.append(forceRefresh)
+        onCurrentEditableProfile?(forceRefresh)
+        if let currentEditableProfileError { throw currentEditableProfileError }
+        return currentEditableProfileResult
+    }
+
+    func updateIdentity(_ command: ProfileIdentityUpdateCommand) async throws -> OwnerEditableProfile {
+        updateIdentityCalls.append(command)
+        onUpdateIdentity?(command)
+
+        let validationErrors = command.validationErrors()
+        if !validationErrors.isEmpty {
+            throw ProfileRepositoryError.validationFailed(validationErrors)
+        }
+
+        if let updateIdentityError { throw updateIdentityError }
+
+        if let displayName = command.displayName {
+            currentEditableProfileResult.displayName = displayName.trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+        currentEditableProfileResult.username = command.username
+        currentEditableProfileResult.bio = command.bio
+
+        return currentEditableProfileResult
+    }
+
+    func updateSports(_ command: ProfileSportsUpdateCommand) async throws -> OwnerEditableProfile {
+        updateSportsCalls.append(command)
+        onUpdateSports?(command)
+
+        let validationErrors = command.validationErrors()
+        if !validationErrors.isEmpty {
+            throw ProfileRepositoryError.validationFailed(validationErrors)
+        }
+
+        if let updateSportsError { throw updateSportsError }
+
+        currentEditableProfileResult.sports = command.sports
+        currentEditableProfileResult.primarySport = command.primarySport
+        currentEditableProfileResult.skillLevelBySport = command.skillLevelBySport
+
+        return currentEditableProfileResult
+    }
+
+    func updateAvailability(_ command: ProfileAvailabilityUpdateCommand) async throws -> OwnerEditableProfile {
+        updateAvailabilityCalls.append(command)
+        onUpdateAvailability?(command)
+
+        let validationErrors = command.validationErrors()
+        if !validationErrors.isEmpty {
+            throw ProfileRepositoryError.validationFailed(validationErrors)
+        }
+
+        if let updateAvailabilityError { throw updateAvailabilityError }
+
+        currentEditableProfileResult.preferredDays = command.preferredDays
+        currentEditableProfileResult.preferredTimeWindows = command.preferredTimeWindows
+        currentEditableProfileResult.playIntent = command.playIntent
+        currentEditableProfileResult.homeArea = command.homeArea
+        currentEditableProfileResult.travelRadiusMiles = command.travelRadiusMiles
+        currentEditableProfileResult.preferredPlayStyle = command.preferredPlayStyle
+
+        return currentEditableProfileResult
+    }
+
+    func updatePrivacy(_ command: ProfilePrivacyUpdateCommand) async throws -> OwnerEditableProfile {
+        updatePrivacyCalls.append(command)
+        onUpdatePrivacy?(command)
+        if let updatePrivacyError { throw updatePrivacyError }
+
+        currentEditableProfileResult.profileVisibility = command.profileVisibility
+        currentEditableProfileResult.isDiscoverable = command.isDiscoverable
+        currentEditableProfileResult.locationPrecision = command.locationPrecision
+
+        return currentEditableProfileResult
     }
 }

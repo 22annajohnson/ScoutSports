@@ -40,7 +40,7 @@ Scout needs a reproducible Supabase workflow before production schemas are added
 - Define generated type workflow for iOS/backend consumers.
 - Define RLS implementation and testing expectations.
 - Define seed data boundaries for dev/test only.
-- Define environment and secrets strategy for `scout-dev` now, staging/prod later.
+- Define environment and secrets strategy for `Scout Sports V1.3/main` as the temporary development database now, staging/prod later.
 - Prepare domain ownership boundaries without creating domain schemas.
 
 ## Non-goals
@@ -54,7 +54,7 @@ Scout needs a reproducible Supabase workflow before production schemas are added
 ## Architecture
 
 ```text
-Supabase project: scout-dev
+Supabase project: Scout Sports V1.3/main
   <- repo migrations
   <- repo seeds
   -> generated types
@@ -135,7 +135,7 @@ Supabase owns persistence, RLS, storage policies, and database constraints. Priv
 
 ## Environment Strategy
 
-- `scout-dev` is active now.
+- `Scout Sports V1.3/main` is active now as the temporary development database.
 - Staging/prod are future environments.
 - Secrets live outside git.
 - `.env.example` may document required variable names only.
@@ -152,7 +152,7 @@ Supabase owns persistence, RLS, storage policies, and database constraints. Priv
 ## Rollout Strategy
 
 1. Land foundation without product tables.
-2. Validate local workflow against `scout-dev`.
+2. Validate local workflow against `Scout Sports V1.3/main`.
 3. Use DB-001 workflow for Profile schema first.
 4. Promote later environments only after staging/prod strategy approval.
 
