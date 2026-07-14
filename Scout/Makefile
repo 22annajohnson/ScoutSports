@@ -19,10 +19,11 @@ XCPRETTY := $(shell command -v xcbeautify >/dev/null 2>&1 && printf "xcbeautify"
 SUPABASE ?= supabase
 SUPABASE_WORKDIR ?= backend
 SUPABASE_MIGRATION_NAME ?=
+SUPABASE_SEED_FILE ?= backend/supabase/seed.sql
 SUPABASE_GEN_SCHEMA ?= public
 SUPABASE_SWIFT_TYPES ?= backend/supabase/types/swift/Database.generated.swift
 
-.PHONY: help doctor build build-release run test clean supabase-doctor supabase-start supabase-stop supabase-status supabase-db-reset supabase-migration-new supabase-migration-up supabase-test-db supabase-gen-types-swift
+.PHONY: help doctor build build-release run test clean supabase-doctor supabase-start supabase-stop supabase-status supabase-db-reset supabase-validate-reset-seed supabase-migration-new supabase-migration-up supabase-test-db supabase-gen-types-swift supabase-check-types-swift
 
 help:
 	@printf "Targets:\n"
@@ -38,10 +39,12 @@ help:
 	@printf "  make supabase-stop          Stop local Supabase stack\n"
 	@printf "  make supabase-status        Show local Supabase stack status\n"
 	@printf "  make supabase-db-reset      Reset local Supabase database\n"
+	@printf "  make supabase-validate-reset-seed Reset local database and validate seed loading\n"
 	@printf "  make supabase-migration-new SUPABASE_MIGRATION_NAME=INFRA-123_short_name\n"
 	@printf "  make supabase-migration-up  Apply pending local migrations\n"
 	@printf "  make supabase-test-db       Run local pgTAP database tests\n"
 	@printf "  make supabase-gen-types-swift Generate Swift Supabase types locally\n"
+	@printf "  make supabase-check-types-swift Check committed Swift Supabase types are fresh\n"
 	@printf "\nOverrides:\n"
 	@printf "  CONFIGURATION=Debug|Release\n"
 	@printf "  DESTINATION='generic/platform=iOS Simulator'\n"
@@ -51,6 +54,7 @@ help:
 	@printf "  DERIVED_DATA=.build/DerivedData\n"
 	@printf "  SUPABASE_WORKDIR=backend\n"
 	@printf "  SUPABASE_MIGRATION_NAME=INFRA-123_short_name\n"
+	@printf "  SUPABASE_SEED_FILE=backend/supabase/seed.sql\n"
 	@printf "  SUPABASE_GEN_SCHEMA=public\n"
 	@printf "  SUPABASE_SWIFT_TYPES=backend/supabase/types/swift/Database.generated.swift\n"
 
@@ -108,6 +112,7 @@ supabase-doctor:
 	@test -d "$(SUPABASE_WORKDIR)/supabase/seed"
 	@test -d "$(SUPABASE_WORKDIR)/supabase/types"
 	@test -d "$(SUPABASE_WORKDIR)/supabase/config"
+	@test -f "$(SUPABASE_SEED_FILE)"
 	@if command -v docker >/dev/null 2>&1; then \
 		if docker info >/dev/null 2>&1; then \
 			printf "docker: available\n"; \
@@ -135,6 +140,10 @@ supabase-status:
 supabase-db-reset:
 	$(SUPABASE) db reset --workdir "$(SUPABASE_WORKDIR)"
 
+supabase-validate-reset-seed:
+	@test -f "$(SUPABASE_SEED_FILE)" || (printf "Missing seed file: $(SUPABASE_SEED_FILE)\n"; exit 2)
+	$(SUPABASE) db reset --workdir "$(SUPABASE_WORKDIR)"
+
 supabase-migration-new:
 	@test -n "$(SUPABASE_MIGRATION_NAME)" || (printf "Set SUPABASE_MIGRATION_NAME=INFRA-123_short_name\n"; exit 2)
 	$(SUPABASE) migration new "$(SUPABASE_MIGRATION_NAME)" --workdir "$(SUPABASE_WORKDIR)"
@@ -147,3 +156,16 @@ supabase-test-db:
 
 supabase-gen-types-swift:
 	$(SUPABASE) gen types --local --lang swift --schema "$(SUPABASE_GEN_SCHEMA)" --swift-access-control internal --workdir "$(SUPABASE_WORKDIR)" > "$(SUPABASE_SWIFT_TYPES)"
+
+supabase-check-types-swift:
+	@test -f "$(SUPABASE_SWIFT_TYPES)" || (printf "Missing generated Swift types: $(SUPABASE_SWIFT_TYPES)\n"; exit 2)
+	@tmp_file=$$(mktemp); \
+	trap 'rm -f "$$tmp_file"' EXIT; \
+	$(SUPABASE) gen types --local --lang swift --schema "$(SUPABASE_GEN_SCHEMA)" --swift-access-control internal --workdir "$(SUPABASE_WORKDIR)" > "$$tmp_file"; \
+	if diff -u "$(SUPABASE_SWIFT_TYPES)" "$$tmp_file" >/dev/null; then \
+		printf "Swift Supabase generated types are fresh: $(SUPABASE_SWIFT_TYPES)\n"; \
+	else \
+		printf "Swift Supabase generated types are stale. Run make supabase-gen-types-swift after resetting the local database.\n"; \
+		diff -u "$(SUPABASE_SWIFT_TYPES)" "$$tmp_file"; \
+		exit 1; \
+	fi
