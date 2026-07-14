@@ -18,12 +18,13 @@ concurrency:
 jobs:
   deploy-dev:
     name: Deploy To Scout Sports V1.3 Dev
-    if: github.ref == 'refs/heads/develop' && inputs.confirm_dev_target == 'Scout Sports V1.3'
+    if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: Scout
     env:
+      CONFIRM_DEV_TARGET: ${{ github.event.inputs.confirm_dev_target }}
       SUPABASE_PROJECT_REF: ${{ vars.SUPABASE_PROJECT_REF }}
       SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
       SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
@@ -43,6 +44,12 @@ jobs:
       - name: Confirm dev deployment target
         run: |
           set -euo pipefail
+
+          if [ "${CONFIRM_DEV_TARGET}" != "Scout Sports V1.3" ]; then
+            printf "Invalid confirmation input: %s\n" "${CONFIRM_DEV_TARGET}"
+            printf "Type exactly: Scout Sports V1.3\n"
+            exit 2
+          fi
 
           test "${SUPABASE_PROJECT_REF}" = "rwhyyujlcvwjdfssykkq"
           test -n "${SUPABASE_ACCESS_TOKEN}"
