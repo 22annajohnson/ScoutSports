@@ -7,6 +7,9 @@ import SwiftUI
 import ScoutDesign
 
 struct OwnerProfileScreen: View {
+    @Environment(\.appEnvironment) private var appEnvironment
+    @State private var editingProfile: OwnerEditableProfile?
+
     let vm: OwnerProfileViewModel
     var onEditProfile: () -> Void
     var onPreviewPublicProfile: () -> Void
@@ -54,6 +57,13 @@ struct OwnerProfileScreen: View {
         .refreshable {
             await vm.load(forceRefresh: true)
         }
+        .sheet(item: $editingProfile) { profile in
+            OwnerEditProfileScreen(
+                vm: appEnvironment.makeOwnerEditProfileViewModel(profile: profile)
+            ) {
+                Task { await vm.load(forceRefresh: true) }
+            }
+        }
     }
 
     @ViewBuilder
@@ -94,7 +104,7 @@ struct OwnerProfileScreen: View {
     private func loadedProfile(_ profile: OwnerEditableProfile) -> some View {
         VStack(alignment: .leading, spacing: ScoutLayout.Spacing.lg) {
             profileHero(profile)
-            actionRow
+            actionRow(profile)
             readinessSection(profile)
             sportsSection(profile)
             aboutSection(profile)
@@ -151,9 +161,11 @@ struct OwnerProfileScreen: View {
         }
     }
 
-    private var actionRow: some View {
+    private func actionRow(_ profile: OwnerEditableProfile) -> some View {
         HStack(spacing: ScoutLayout.Spacing.md) {
-            ScoutButton(action: onEditProfile) {
+            ScoutButton(action: {
+                beginEditing(profile)
+            }) {
                 Label("Edit Profile", systemImage: "pencil")
                     .frame(maxWidth: .infinity)
             }
@@ -297,6 +309,11 @@ struct OwnerProfileScreen: View {
         let skill = profile.skillLevelBySport[sport].map { "Skill \($0)" }
         let primary = sport == profile.primarySport ? "Primary" : nil
         return [base, skill, primary].compactMap { $0 }.joined(separator: " - ")
+    }
+
+    private func beginEditing(_ profile: OwnerEditableProfile) {
+        onEditProfile()
+        editingProfile = profile
     }
 }
 
