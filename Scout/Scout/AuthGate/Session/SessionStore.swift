@@ -18,6 +18,7 @@ final class SessionStore {
     
     private(set) var sessionUser: SessionUser?
     private(set) var userID: UUID?
+    private(set) var authenticatedEmail: String?
     var profile: Profile?
     var isLoading = true
     
@@ -36,9 +37,11 @@ final class SessionStore {
     private func updateSessionFromCurrentUser() {
         if let current = supabase.auth.currentUser {
             userID = current.id
-            sessionUser = SessionUser(id: current.id)
+            authenticatedEmail = current.email
+            sessionUser = SessionUser(id: current.id, email: current.email)
         } else {
             userID = nil
+            authenticatedEmail = nil
             sessionUser = nil
         }
     }
@@ -60,12 +63,18 @@ final class SessionStore {
     func signIn(email: String, password: String) async throws {
         try await auth.signIn(email: email, password: password)
         updateSessionFromCurrentUser()
+        if userID != nil && authenticatedEmail == nil {
+            authenticatedEmail = email
+        }
         try await fetchProfile()
     }
     
     func signUp(email: String, password: String) async throws {
         try await auth.signUp(email: email, password: password)
         updateSessionFromCurrentUser()
+        if userID != nil && authenticatedEmail == nil {
+            authenticatedEmail = email
+        }
         try await fetchProfile()
     }
     
@@ -78,6 +87,13 @@ final class SessionStore {
     func fetchProfile() async throws {
         profile = try await profiles.fetchMyProfile()
     }
+
+    var canAccessDesignFactory: Bool {
+        DesignFactoryAccess.canAccess(
+            isAuthenticated: userID != nil,
+            email: authenticatedEmail
+        )
+    }
 }
 
 // MARK: - Domain Session Model
@@ -85,4 +101,5 @@ final class SessionStore {
 /// Lightweight domain representation of an authenticated user.
 struct SessionUser: Equatable {
     let id: UUID
+    let email: String?
 }

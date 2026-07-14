@@ -9,9 +9,11 @@ import SwiftUI
 import ScoutDesign
 
 struct ScoutHomeScreen: View {
+    @Environment(SessionStore.self) private var session
     @State private var vm = ScoutHomeViewModel()
     @State private var swipeViewModel: SwipeDeckViewModel
     @State private var feedViewModel: FeedViewModel
+    @State private var isShowingDesignFactory = false
 
     init(
         swipeViewModel: SwipeDeckViewModel,
@@ -44,6 +46,34 @@ struct ScoutHomeScreen: View {
         .animation(ScoutMotion.selection, value: vm.chromeMode)
         .animation(ScoutMotion.selection, value: vm.navigationStyle)
         .animation(ScoutMotion.selection, value: vm.navigationVisibility)
+        .overlay(alignment: .topTrailing) {
+            designFactoryEntry
+                .padding(.top, ScoutLayout.Spacing.md)
+                .padding(.trailing, ScoutLayout.Spacing.lg)
+        }
+        .sheet(isPresented: $isShowingDesignFactory) {
+            if session.canAccessDesignFactory {
+                DesignFactoryScreen()
+            } else {
+                DesignFactoryAccessDeniedScreen()
+            }
+        }
+        .onChange(of: session.canAccessDesignFactory) { _, canAccess in
+            if !canAccess {
+                isShowingDesignFactory = false
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var designFactoryEntry: some View {
+        if session.canAccessDesignFactory {
+            ScoutIconButton(
+                systemImage: "hammer.fill",
+                accessibilityLabel: "Open Design Factory",
+                action: { isShowingDesignFactory = true }
+            )
+        }
     }
 
     @ViewBuilder
@@ -61,6 +91,21 @@ struct ScoutHomeScreen: View {
                 bottomContentInset: ScoutChrome.bottomBarReservedHeight,
                 onScrollOffsetChange: vm.updateChrome(for:)
             )
+        }
+    }
+}
+
+private struct DesignFactoryAccessDeniedScreen: View {
+    var body: some View {
+        ZStack {
+            ScoutTheme.screenBackground.ignoresSafeArea()
+
+            ScoutStateCard(
+                state: .error,
+                title: "Design Factory unavailable",
+                message: "This internal tooling is only available to authenticated Scout Sports employees."
+            )
+            .padding(ScoutLayout.Spacing.lg)
         }
     }
 }
