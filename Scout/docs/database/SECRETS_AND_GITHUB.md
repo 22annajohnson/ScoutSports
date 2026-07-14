@@ -56,6 +56,20 @@ Future GitHub/Supabase integration should remain proposed until approved:
 - Supabase project changes should be reviewed through PRs rather than dashboard-only edits.
 - Required checks and branch protection changes require owner approval and may belong to a CI/CD plan.
 
+## Protected Environment Expectations
+
+Production deployment must remain unavailable until the owner creates and approves a protected GitHub environment for it.
+
+That environment should require:
+
+- Manual owner approval before any production database deployment job can access production secrets.
+- Environment-scoped Supabase access token and production project ref secrets.
+- No service role key exposure unless a future approved workflow proves it is required.
+- A required staging/integration success signal before production deployment.
+- Audit-friendly deployment notes that identify the approver, migration identifiers, target, and verification steps.
+
+Development or staging deployment secrets must not be reused for production. PR-only validation should continue to avoid remote production credentials.
+
 ## ADR Triggers
 
 Create or update an ADR before implementation when a change affects:
