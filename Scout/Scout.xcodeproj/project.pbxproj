@@ -53,6 +53,7 @@
 				ScoutTests.swift,
 				Session/SessionStoreTests.swift,
 				Swipe/DiscoveryContractsTests.swift,
+				Swipe/MockDiscoveryRepositoryTests.swift,
 			);
 			target = 954A49122F47530800BFAC10 /* Scout */;
 		};
@@ -65,6 +66,7 @@
 				ScoutTests.swift,
 				Session/SessionStoreTests.swift,
 				Swipe/DiscoveryContractsTests.swift,
+				Swipe/MockDiscoveryRepositoryTests.swift,
 			);
 			target = 954A491F2F47530800BFAC10 /* ScoutTests */;
 		};
