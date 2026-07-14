@@ -100,6 +100,7 @@ final class SwipeDeckViewModel {
         discoveryQueue = exhaustedQueue
         queuePresentationState = .exhausted(reason)
         candidateCards = []
+        cards = []
     }
 
     func signOut() async {
@@ -153,22 +154,26 @@ final class SwipeDeckViewModel {
         case .ready:
             discoveryQueue = queue
             candidateCards = queue.candidates
+            cards = queue.candidates.map { $0.toCardViewModel() }
             lastDiscoveryFailure = nil
             queuePresentationState = .ready
         case .empty:
             discoveryQueue = queue
             candidateCards = []
+            cards = []
             lastDiscoveryFailure = nil
             queuePresentationState = .empty(queue.emptyReason)
         case .exhausted:
             discoveryQueue = queue
             candidateCards = []
+            cards = []
             lastDiscoveryFailure = nil
             queuePresentationState = .exhausted(queue.exhaustedReason)
         case .failed:
             if !preserveExistingQueueOnFailure {
                 discoveryQueue = queue
                 candidateCards = []
+                cards = []
             }
 
             if let failure = queue.failure {

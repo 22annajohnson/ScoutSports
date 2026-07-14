@@ -53,3 +53,24 @@ extension SwipeCandidate {
         )
     }
 }
+
+extension CandidateCard {
+    func toCardViewModel() -> CardViewModel {
+        CardViewModel(
+            name: displayName,
+            bio: bioSummary,
+            sports: [primarySport.displayName],
+            heroImageURL: heroImageURL,
+            stats: [],
+            didLike: false
+        )
+    }
+
+    private var heroImageURL: URL {
+        if let profilePhotoPath, let url = URL(string: profilePhotoPath), url.scheme != nil {
+            return url
+        }
+
+        return URL(string: "https://picsum.photos/seed/\(id.uuidString)/400/800")!
+    }
+}

@@ -20,6 +20,7 @@ final class SwipeDeckViewModelQueueStateTests: XCTestCase {
 
         XCTAssertEqual(viewModel.queuePresentationState, .ready)
         XCTAssertEqual(viewModel.candidateCards, MockDiscoveryRepository.defaultCandidates)
+        XCTAssertEqual(viewModel.cards.map(\.name), ["Anna", "Jordan"])
         XCTAssertFalse(viewModel.isLoading)
     }
 
@@ -32,6 +33,7 @@ final class SwipeDeckViewModelQueueStateTests: XCTestCase {
 
         XCTAssertEqual(viewModel.queuePresentationState, .empty(.noEligibleCandidates))
         XCTAssertTrue(viewModel.candidateCards.isEmpty)
+        XCTAssertTrue(viewModel.cards.isEmpty)
         XCTAssertFalse(viewModel.isLoading)
     }
 
@@ -82,6 +84,7 @@ final class SwipeDeckViewModelQueueStateTests: XCTestCase {
 
         XCTAssertEqual(viewModel.queuePresentationState, .ready)
         XCTAssertEqual(viewModel.candidateCards, MockDiscoveryRepository.defaultCandidates)
+        XCTAssertEqual(viewModel.cards.map(\.name), ["Anna", "Jordan"])
         XCTAssertEqual(repository.refreshCallCount, 1)
         XCTAssertEqual(repository.lastRetriedFailure, failure)
     }
