@@ -1,5 +1,5 @@
 -- Jira: SOCIAL-89
--- Tech Plan: implementation/proposed/PROFILE-006-profile-database-schema.md
+-- Tech Plan: implementation/approved/PROFILE-006-profile-database-schema.md
 -- Purpose: Add RLS policies for V1 profile schema tables.
 -- Affected Area: Supabase
 -- RLS Impact: Adds owner access, safe visible contract views, and default denial for private profile data.
