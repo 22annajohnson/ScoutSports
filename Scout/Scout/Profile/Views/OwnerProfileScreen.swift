@@ -9,6 +9,7 @@ import ScoutDesign
 struct OwnerProfileScreen: View {
     @Environment(\.appEnvironment) private var appEnvironment
     @State private var editingProfile: OwnerEditableProfile?
+    @State private var publicPreview: PublicProfilePreview?
 
     let vm: OwnerProfileViewModel
     var onEditProfile: () -> Void
@@ -63,6 +64,11 @@ struct OwnerProfileScreen: View {
             ) {
                 Task { await vm.load(forceRefresh: true) }
             }
+        }
+        .sheet(item: $publicPreview) { preview in
+            PublicProfileScreen(
+                vm: appEnvironment.makePublicProfileViewModel(profileID: preview.profileID)
+            )
         }
     }
 
@@ -170,7 +176,9 @@ struct OwnerProfileScreen: View {
                     .frame(maxWidth: .infinity)
             }
 
-            ScoutButton(variant: .secondary, action: onPreviewPublicProfile) {
+            ScoutButton(variant: .secondary, action: {
+                beginPublicPreview(profile)
+            }) {
                 Label("Public Preview", systemImage: "person.crop.circle")
                     .frame(maxWidth: .infinity)
             }
@@ -315,6 +323,19 @@ struct OwnerProfileScreen: View {
         onEditProfile()
         editingProfile = profile
     }
+
+    private func beginPublicPreview(_ profile: OwnerEditableProfile) {
+        onPreviewPublicProfile()
+        if let profileID = UUID(uuidString: profile.id) {
+            publicPreview = PublicProfilePreview(profileID: profileID)
+        }
+    }
+}
+
+private struct PublicProfilePreview: Identifiable {
+    let profileID: UUID
+
+    var id: UUID { profileID }
 }
 
 private struct FlowLayout: Layout {
