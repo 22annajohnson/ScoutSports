@@ -2,6 +2,162 @@ import Foundation
 import Supabase
 
 internal enum PublicSchema {
+  internal struct CommunityGameParticipantsSelect: Codable, Hashable, Sendable {
+    internal let communityGameId: UUID
+    internal let createdAt: String
+    internal let id: UUID
+    internal let participantState: String
+    internal let profileId: UUID
+    internal let updatedAt: String
+    internal enum CodingKeys: String, CodingKey {
+      case communityGameId = "community_game_id"
+      case createdAt = "created_at"
+      case id = "id"
+      case participantState = "participant_state"
+      case profileId = "profile_id"
+      case updatedAt = "updated_at"
+    }
+  }
+  internal struct CommunityGameParticipantsInsert: Codable, Hashable, Sendable {
+    internal let communityGameId: UUID
+    internal let createdAt: String?
+    internal let id: UUID?
+    internal let participantState: String?
+    internal let profileId: UUID
+    internal let updatedAt: String?
+    internal enum CodingKeys: String, CodingKey {
+      case communityGameId = "community_game_id"
+      case createdAt = "created_at"
+      case id = "id"
+      case participantState = "participant_state"
+      case profileId = "profile_id"
+      case updatedAt = "updated_at"
+    }
+  }
+  internal struct CommunityGameParticipantsUpdate: Codable, Hashable, Sendable {
+    internal let communityGameId: UUID?
+    internal let createdAt: String?
+    internal let id: UUID?
+    internal let participantState: String?
+    internal let profileId: UUID?
+    internal let updatedAt: String?
+    internal enum CodingKeys: String, CodingKey {
+      case communityGameId = "community_game_id"
+      case createdAt = "created_at"
+      case id = "id"
+      case participantState = "participant_state"
+      case profileId = "profile_id"
+      case updatedAt = "updated_at"
+    }
+  }
+  internal struct CommunityGamesSelect: Codable, Hashable, Sendable {
+    internal let cancellationReason: String?
+    internal let capacityMax: Int32
+    internal let capacityMin: Int32?
+    internal let createdAt: String
+    internal let description: String?
+    internal let endsAt: String?
+    internal let id: UUID
+    internal let lifecycleState: String
+    internal let organizerProfileId: UUID
+    internal let sportSlug: String
+    internal let startsAt: String
+    internal let title: String
+    internal let updatedAt: String
+    internal let venueArea: String
+    internal let venueName: String?
+    internal let visibility: String
+    internal enum CodingKeys: String, CodingKey {
+      case cancellationReason = "cancellation_reason"
+      case capacityMax = "capacity_max"
+      case capacityMin = "capacity_min"
+      case createdAt = "created_at"
+      case description = "description"
+      case endsAt = "ends_at"
+      case id = "id"
+      case lifecycleState = "lifecycle_state"
+      case organizerProfileId = "organizer_profile_id"
+      case sportSlug = "sport_slug"
+      case startsAt = "starts_at"
+      case title = "title"
+      case updatedAt = "updated_at"
+      case venueArea = "venue_area"
+      case venueName = "venue_name"
+      case visibility = "visibility"
+    }
+  }
+  internal struct CommunityGamesInsert: Codable, Hashable, Sendable {
+    internal let cancellationReason: String?
+    internal let capacityMax: Int32
+    internal let capacityMin: Int32?
+    internal let createdAt: String?
+    internal let description: String?
+    internal let endsAt: String?
+    internal let id: UUID?
+    internal let lifecycleState: String?
+    internal let organizerProfileId: UUID
+    internal let sportSlug: String
+    internal let startsAt: String
+    internal let title: String
+    internal let updatedAt: String?
+    internal let venueArea: String
+    internal let venueName: String?
+    internal let visibility: String?
+    internal enum CodingKeys: String, CodingKey {
+      case cancellationReason = "cancellation_reason"
+      case capacityMax = "capacity_max"
+      case capacityMin = "capacity_min"
+      case createdAt = "created_at"
+      case description = "description"
+      case endsAt = "ends_at"
+      case id = "id"
+      case lifecycleState = "lifecycle_state"
+      case organizerProfileId = "organizer_profile_id"
+      case sportSlug = "sport_slug"
+      case startsAt = "starts_at"
+      case title = "title"
+      case updatedAt = "updated_at"
+      case venueArea = "venue_area"
+      case venueName = "venue_name"
+      case visibility = "visibility"
+    }
+  }
+  internal struct CommunityGamesUpdate: Codable, Hashable, Sendable {
+    internal let cancellationReason: String?
+    internal let capacityMax: Int32?
+    internal let capacityMin: Int32?
+    internal let createdAt: String?
+    internal let description: String?
+    internal let endsAt: String?
+    internal let id: UUID?
+    internal let lifecycleState: String?
+    internal let organizerProfileId: UUID?
+    internal let sportSlug: String?
+    internal let startsAt: String?
+    internal let title: String?
+    internal let updatedAt: String?
+    internal let venueArea: String?
+    internal let venueName: String?
+    internal let visibility: String?
+    internal enum CodingKeys: String, CodingKey {
+      case cancellationReason = "cancellation_reason"
+      case capacityMax = "capacity_max"
+      case capacityMin = "capacity_min"
+      case createdAt = "created_at"
+      case description = "description"
+      case endsAt = "ends_at"
+      case id = "id"
+      case lifecycleState = "lifecycle_state"
+      case organizerProfileId = "organizer_profile_id"
+      case sportSlug = "sport_slug"
+      case startsAt = "starts_at"
+      case title = "title"
+      case updatedAt = "updated_at"
+      case venueArea = "venue_area"
+      case venueName = "venue_name"
+      case visibility = "visibility"
+    }
+  }
   internal struct ProfileAvailabilitySelect: Codable, Hashable, Sendable {
     internal let createdAt: String
     internal let homeArea: String?
