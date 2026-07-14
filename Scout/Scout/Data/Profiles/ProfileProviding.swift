@@ -44,6 +44,13 @@ protocol OwnerEditableProfileProviding {
     func updatePrivacy(_ command: ProfilePrivacyUpdateCommand) async throws -> OwnerEditableProfile
 }
 
+/// Public-safe profile read boundary for profile surfaces owned by other users.
+/// This contract intentionally excludes owner-only fields such as user ID,
+/// action photos, availability, privacy settings, account status, and timestamps.
+protocol PublicProfileProviding {
+    func publicProfile(profileID: UUID) async throws -> PublicProfile
+}
+
 /// Future boundary for player-to-player feedback submitted after a match or session.
 /// Raw feedback should remain separate from editable profile state.
 protocol MatchFeedbackProviding {

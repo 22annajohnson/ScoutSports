@@ -40,19 +40,34 @@ struct ProfilePrivacyRow: Equatable, Sendable {
     let locationPrecision: String
 }
 
-struct ProfilePublicSummaryRow: Equatable, Sendable {
+struct ProfilePublicSummaryRow: Decodable, Equatable, Sendable {
     let bio: String?
     let displayName: String?
     let profileId: UUID?
     let profilePhotoPath: String?
     let username: String?
+
+    enum CodingKeys: String, CodingKey {
+        case bio
+        case displayName = "display_name"
+        case profileId = "profile_id"
+        case profilePhotoPath = "profile_photo_path"
+        case username
+    }
 }
 
-struct ProfileSportSummaryRow: Equatable, Sendable {
+struct ProfileSportSummaryRow: Decodable, Equatable, Sendable {
     let isPrimary: Bool?
     let profileId: UUID?
     let skillLevel: String?
     let sportSlug: String?
+
+    enum CodingKeys: String, CodingKey {
+        case isPrimary = "is_primary"
+        case profileId = "profile_id"
+        case skillLevel = "skill_level"
+        case sportSlug = "sport_slug"
+    }
 }
 
 enum ProfileContractMapper {
