@@ -260,96 +260,118 @@ final class ProfileDTOTests: XCTestCase {
         XCTAssertTrue(values.6)
     }
 
-    func test_ownerEditableProfile_keepsSystemOwnedFieldsReadOnlyOnProfileState() {
+    func test_ownerEditableProfile_keepsSystemOwnedFieldsReadOnlyOnProfileState() async {
         let createdAt = Date(timeIntervalSince1970: 100)
         let lastActiveAt = Date(timeIntervalSince1970: 200)
 
-        let profile = OwnerEditableProfile(
-            id: "owner-1",
-            displayName: "Anna",
-            username: "anna_pb",
-            profilePhotoPath: nil,
-            actionPhotoPath: nil,
-            bio: "Weekend games",
-            sports: ["pickleball"],
-            primarySport: "pickleball",
-            skillLevelBySport: ["pickleball": 3],
-            preferredDays: [.saturday],
-            preferredTimeWindows: [.morning],
-            playIntent: .flexible,
-            homeArea: "Raleigh",
-            travelRadiusMiles: 10,
-            preferredPlayStyle: .doubles,
-            profileVisibility: .publicProfile,
-            isDiscoverable: true,
-            locationPrecision: .coarse,
-            completionState: .discoveryReady,
-            accountStatus: .active,
-            createdAt: createdAt,
-            lastActiveAt: lastActiveAt
-        )
+        let values = await MainActor.run {
+            let profile = OwnerEditableProfile(
+                id: "owner-1",
+                displayName: "Anna",
+                username: "anna_pb",
+                profilePhotoPath: nil,
+                actionPhotoPath: nil,
+                bio: "Weekend games",
+                sports: ["pickleball"],
+                primarySport: "pickleball",
+                skillLevelBySport: ["pickleball": 3],
+                preferredDays: [.saturday],
+                preferredTimeWindows: [.morning],
+                playIntent: .flexible,
+                homeArea: "Raleigh",
+                travelRadiusMiles: 10,
+                preferredPlayStyle: .doubles,
+                profileVisibility: .publicProfile,
+                isDiscoverable: true,
+                locationPrecision: .coarse,
+                completionState: .discoveryReady,
+                accountStatus: .active,
+                createdAt: createdAt,
+                lastActiveAt: lastActiveAt
+            )
 
-        XCTAssertEqual(profile.completionState, .discoveryReady)
-        XCTAssertEqual(profile.accountStatus, .active)
-        XCTAssertEqual(profile.createdAt, createdAt)
-        XCTAssertEqual(profile.lastActiveAt, lastActiveAt)
+            return (
+                profile.completionState == .discoveryReady,
+                profile.accountStatus == .active,
+                profile.createdAt == createdAt,
+                profile.lastActiveAt == lastActiveAt
+            )
+        }
+
+        XCTAssertTrue(values.0)
+        XCTAssertTrue(values.1)
+        XCTAssertTrue(values.2)
+        XCTAssertTrue(values.3)
     }
 
-    func test_profileIdentityUpdateCommand_validatesDisplayNameAndUsernameOnly() {
-        let invalid = ProfileIdentityUpdateCommand(
-            displayName: " A ",
-            username: "Bad Handle",
-            bio: "Short bio"
-        )
+    func test_profileIdentityUpdateCommand_validatesDisplayNameAndUsernameOnly() async {
+        let validations = await MainActor.run {
+            let invalid = ProfileIdentityUpdateCommand(
+                displayName: " A ",
+                username: "Bad Handle",
+                bio: "Short bio"
+            )
+            let valid = ProfileIdentityUpdateCommand(
+                displayName: "Anna",
+                username: "anna_pb",
+                bio: nil
+            )
 
-        XCTAssertEqual(invalid.validationErrors(), [.displayNameLength, .usernameFormat])
+            return (
+                invalid.validationErrors() == [.displayNameLength, .usernameFormat],
+                valid.validationErrors().isEmpty
+            )
+        }
 
-        let valid = ProfileIdentityUpdateCommand(
-            displayName: "Anna",
-            username: "anna_pb",
-            bio: nil
-        )
-
-        XCTAssertEqual(valid.validationErrors(), [])
+        XCTAssertTrue(validations.0)
+        XCTAssertTrue(validations.1)
     }
 
-    func test_profileSportsUpdateCommand_validatesPrimarySportSelectionAndSkill() {
-        let missingSelection = ProfileSportsUpdateCommand(
-            sports: ["tennis"],
-            primarySport: "pickleball",
-            skillLevelBySport: ["pickleball": 3]
-        )
+    func test_profileSportsUpdateCommand_validatesPrimarySportSelectionAndSkill() async {
+        let validations = await MainActor.run {
+            let missingSelection = ProfileSportsUpdateCommand(
+                sports: ["tennis"],
+                primarySport: "pickleball",
+                skillLevelBySport: ["pickleball": 3]
+            )
+            let missingSkill = ProfileSportsUpdateCommand(
+                sports: ["pickleball"],
+                primarySport: "pickleball",
+                skillLevelBySport: [:]
+            )
+            let valid = ProfileSportsUpdateCommand(
+                sports: ["pickleball"],
+                primarySport: "pickleball",
+                skillLevelBySport: ["pickleball": 3]
+            )
 
-        XCTAssertEqual(missingSelection.validationErrors(), [.primarySportNotSelected])
+            return (
+                missingSelection.validationErrors() == [.primarySportNotSelected],
+                missingSkill.validationErrors() == [.primarySportSkillMissing],
+                valid.validationErrors().isEmpty
+            )
+        }
 
-        let missingSkill = ProfileSportsUpdateCommand(
-            sports: ["pickleball"],
-            primarySport: "pickleball",
-            skillLevelBySport: [:]
-        )
-
-        XCTAssertEqual(missingSkill.validationErrors(), [.primarySportSkillMissing])
-
-        let valid = ProfileSportsUpdateCommand(
-            sports: ["pickleball"],
-            primarySport: "pickleball",
-            skillLevelBySport: ["pickleball": 3]
-        )
-
-        XCTAssertEqual(valid.validationErrors(), [])
+        XCTAssertTrue(validations.0)
+        XCTAssertTrue(validations.1)
+        XCTAssertTrue(validations.2)
     }
 
-    func test_profileAvailabilityUpdateCommand_rejectsNegativeTravelRadius() {
-        let invalid = ProfileAvailabilityUpdateCommand(
-            preferredDays: [.monday, .wednesday],
-            preferredTimeWindows: [.evening],
-            playIntent: .casual,
-            homeArea: "Durham",
-            travelRadiusMiles: -1,
-            preferredPlayStyle: .open
-        )
+    func test_profileAvailabilityUpdateCommand_rejectsNegativeTravelRadius() async {
+        let isInvalid = await MainActor.run {
+            let invalid = ProfileAvailabilityUpdateCommand(
+                preferredDays: [.monday, .wednesday],
+                preferredTimeWindows: [.evening],
+                playIntent: .casual,
+                homeArea: "Durham",
+                travelRadiusMiles: -1,
+                preferredPlayStyle: .open
+            )
 
-        XCTAssertEqual(invalid.validationErrors(), [.negativeTravelRadius])
+            return invalid.validationErrors() == [.negativeTravelRadius]
+        }
+
+        XCTAssertTrue(isInvalid)
     }
 
     func test_mockProfileRepository_tracks_newBoundaryCalls() async throws {
