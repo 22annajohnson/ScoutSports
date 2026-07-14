@@ -19,7 +19,7 @@ References:
 - `tech-plans/approved/PROFILE-001-player-profile-system.md`
 - `implementation/proposed/PROFILE-002-v1-identity-field-set.md`
 - `implementation/proposed/PROFILE-004-profile-contracts.md`
-- `implementation/proposed/PROFILE-006-profile-database-schema.md` as the schema/RLS dependency for repository-backed profile surfaces.
+- `implementation/approved/PROFILE-006-profile-database-schema.md` as the schema/RLS dependency for repository-backed profile surfaces.
 - `tech-plans/approved/DESIGN-001-design-system.md`
 
 ## Problem Statement
