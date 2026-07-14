@@ -1,0 +1,81 @@
+name: Supabase Validation
+
+on:
+  pull_request:
+  push:
+    branches: [ develop ]
+
+jobs:
+  supabase-change-detection:
+    name: Supabase Change Detection
+    runs-on: ubuntu-latest
+    outputs:
+      should-run-supabase: ${{ steps.changed-files.outputs.should-run-supabase }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Detect Supabase validation changes
+        id: changed-files
+        env:
+          BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ] || ! git cat-file -e "$BASE_SHA^{commit}" 2>/dev/null; then
+            git ls-tree -r --name-only "$HEAD_SHA" > changed-files.txt
+          else
+            git diff --name-only "$BASE_SHA" "$HEAD_SHA" > changed-files.txt
+          fi
+
+          cat changed-files.txt
+
+          if grep -E '^(Scout/Makefile|Scout/backend/supabase/|Scout/docs/database/|Scout/implementation/(proposed|approved)/.*supabase.*|\.github/workflows/supabase-validation\.yml)$' changed-files.txt; then
+            echo "should-run-supabase=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "should-run-supabase=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  supabase-validation:
+    name: Supabase Validation
+    needs: supabase-change-detection
+    if: needs.supabase-change-detection.outputs.should-run-supabase == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Scout
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: 2.95.4
+
+      - name: Install zsh
+        run: sudo apt-get update && sudo apt-get install -y zsh
+
+      - name: Check Supabase prerequisites
+        run: make supabase-doctor
+
+      - name: Start local Supabase
+        run: make supabase-start
+
+      - name: Validate local reset and seed
+        run: make supabase-validate-reset-seed
+
+      - name: Run pgTAP database tests
+        run: make supabase-test-db
+
+      - name: Check Swift generated type freshness
+        run: make supabase-check-types-swift
+
+      - name: Stop local Supabase
+        if: always()
+        run: make supabase-stop

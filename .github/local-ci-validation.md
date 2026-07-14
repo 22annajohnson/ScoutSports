@@ -43,6 +43,26 @@ ruby .github/scripts/validate-yaml.rb .github/yaml-validation.yml
 
 This matches the `GitHub Actions Validation` workflow. It checks the YAML paths listed in `.github/yaml-validation.yml`, including basic workflow shape for files under `.github/workflows/`.
 
+## Supabase Validation
+
+Use this targeted validation for Supabase schema, seed, RLS, generated type, or
+workflow changes:
+
+```sh
+cd Scout
+make supabase-doctor
+make supabase-start
+make supabase-validate-reset-seed
+make supabase-test-db
+make supabase-check-types-swift
+make supabase-stop
+```
+
+The `Supabase Validation` workflow runs the same local-only sequence for
+Supabase-relevant pull requests. It does not use production secrets, link to a
+remote project, deploy migrations, create preview branches, or deploy Edge
+Functions.
+
 ## GitHub-Only Validation
 
 Some CI behavior can only be verified after a pull request is open:
@@ -67,4 +87,4 @@ Future `INFRA-52` work should add a documented one-simulator visual debugging fl
 
 ## Deferred Checks
 
-Supabase migration validation, web validation, SwiftLint, release automation, and deployment checks are not part of the current v1 CI foundation unless a future approved implementation plan adds them.
+Web validation, SwiftLint, release automation, and deployment checks are not part of the current v1 CI foundation unless a future approved implementation plan adds them.
