@@ -13,7 +13,7 @@
 | Proposed Tech Plan ID | Status | Title | Description | Why Now? | Dependencies | Priority | Complexity |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | CHAT-001 | 🟦 Not Started | Chat Domain Foundation | Define Chat philosophy, lifecycle, ownership, contracts, consumers, AI rules, and safety boundaries. | Chat touches trust, safety, Profile, Events, Discovery, and Notifications, so it needs domain rules before any messaging implementation. | ARCH-001, DESIGN-001, PROFILE-001 | High | L |
-| CHAT-002 | 🟦 Not Started | Match Conversation Scope | Define the first conversation model for matched players coordinating play. | This enables the first post-match coordination path and depends on Discovery and Player Identity contracts. | CHAT-001, SWIPE-001, PROFILE-001 | High | M |
+| CHAT-002 | 🟦 Not Started | Match Conversation Scope | Define the first conversation model for matched players coordinating play. | This enables the first post-match coordination path and depends on Discovery and Player Identity contracts. | CHAT-001, SWIPE-001, PROFILE-001, PROFILE-002 | High | M |
 
 ## ⚪ Soon
 

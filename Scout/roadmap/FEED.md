@@ -19,7 +19,7 @@
 
 | Proposed Tech Plan ID | Status | Title | Description | Dependencies | Priority | Complexity |
 | --- | --- | --- | --- | --- | --- | --- |
-| FEED-003 | 🟦 Not Started | Feed Card Contracts | Define contracts for profile prompts, event previews, discovery recommendations, and local activity. | FEED-001, DESIGN-001 | Medium | M |
+| FEED-003 | 🟦 Not Started | Feed Card Contracts | Define contracts for profile prompts, event previews, discovery recommendations, and local activity. | FEED-001, PROFILE-002, DESIGN-001 | Medium | M |
 | FEED-004 | 🟦 Not Started | Feed Ranking Principles | Define lightweight ordering rules that do not duplicate recommendation logic. | FEED-001, SWIPE-001 | Medium | L |
 
 ## ⚪ Later

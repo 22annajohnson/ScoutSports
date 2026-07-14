@@ -2,14 +2,15 @@
 
 ## Purpose
 
-This document defines the proposed migration workflow for Scout Supabase changes. It is not active until approved through `implementation/proposed/INFRA-001-database-foundation.md`.
+This document defines the migration workflow for Scout Supabase changes. DB-001 activates the local command workflow, but individual migrations still require their own approved implementation plan and authorizing Jira story.
 
 Related documents:
 
 - `docs/database/DATABASE.md`: database planning overview and domain ownership.
 - `docs/database/SUPABASE.md`: Supabase operating model.
 - `docs/database/RLS.md`: RLS planning expectations.
-- `implementation/proposed/INFRA-001-database-foundation.md`: proposed database foundation plan.
+- `implementation/proposed/INFRA-001-database-foundation.md`: database foundation plan.
+- `implementation/proposed/DB-001-supabase-database-foundation.md`: Supabase database foundation plan.
 - `implementation/proposed/PROFILE-002-v1-identity-field-set.md`: proposed v1 profile field set.
 - `implementation/proposed/PROFILE-003-profile-schema-and-rls.md`: future/proposed profile schema and RLS plan.
 
@@ -27,9 +28,9 @@ Future migrations should live under:
 backend/supabase/migrations/
 ```
 
-This directory should be created by an approved implementation ticket before the first migration is written.
+This directory is created by `INFRA-35`. The directory may exist before the first migration is written.
 
-Do not create the Supabase folder structure, migration files, generated types, storage buckets, or Edge Functions until the relevant implementation tech plan is approved.
+Do not create migration files, generated types, storage buckets, or Edge Functions until the relevant implementation tech plan and Jira story approve that work.
 
 ## Naming Convention
 
@@ -109,34 +110,72 @@ Each migration PR should also confirm:
 - Dashboard inspection, if any, was inspection-only and did not create durable schema drift.
 - No unrelated schema, storage, Edge Function, generated type, or CI changes are bundled into the migration PR.
 
+## Migration PR Checklist
+
+Every future migration PR should include a completed checklist in the PR description before human review.
+
+Required checks:
+
+- Jira story is linked and authorizes the migration.
+- Approved implementation plan is linked and matches the migration scope.
+- Migration filename includes the authorizing Jira story key.
+- Migration header includes Jira, tech plan, purpose, affected area, RLS impact, generated type impact, and rollback or forward-fix notes.
+- Local apply or reset validation is documented.
+- Seed reset behavior is documented as loaded, skipped, or not applicable.
+- Generated type impact is documented as updated, not changed, or deferred.
+- RLS impact is documented, including positive and negative checks when the migration changes user-owned or user-visible data.
+- Dashboard usage, if any, was inspection/debugging only and did not create durable schema drift.
+- Deployment target is identified as `scout-dev`; staging and production are not part of the migration unless a later approved plan explicitly adds them.
+- Rollback or forward-fix approach is documented.
+- No unrelated schema, auth, storage, Edge Function, generated type, seed, or CI changes are bundled into the PR.
+
+Suggested PR checklist text:
+
+```text
+Migration validation:
+- [ ] Jira story authorizes this migration.
+- [ ] Approved implementation plan is linked.
+- [ ] Migration filename and header include the Jira story key.
+- [ ] Local apply/reset validation result is documented.
+- [ ] Seed reset behavior is documented.
+- [ ] Generated type impact is documented.
+- [ ] RLS positive/negative checks are documented, or RLS impact is explicitly not applicable.
+- [ ] Dashboard inspection, if any, was inspection/debugging only.
+- [ ] Deployment target is scout-dev only.
+- [ ] Rollback or forward-fix approach is documented.
+```
+
 ## Local Validation
 
 Future workflow should validate database changes against a local Supabase stack before PR review when the approved story requires a migration, seed change, generated type update, or RLS change.
 
-Proposed local workflow:
+Local workflow:
 
 1. Pull latest `develop`.
 2. Review the approved implementation plan and Jira story.
 3. Confirm the Supabase CLI is available.
-4. Start the local Supabase stack.
-5. Create or apply the approved migration.
-6. Reset the local database when validating migration ordering, seed data, or RLS behavior.
-7. Load seed data if the approved schema plan requires it.
-8. Regenerate generated types if the approved type strategy requires it.
-9. Run required RLS checks and affected app or repository tests.
-10. Stop the local Supabase stack when validation is complete.
+4. Run `make supabase-doctor` and resolve any local prerequisite gaps.
+5. Start the local Supabase stack when the approved story requires migration validation.
+6. Create or apply the approved migration.
+7. Reset the local database when validating migration ordering, seed data, or RLS behavior.
+8. Load seed data if the approved schema plan requires it.
+9. Regenerate generated types if the approved type strategy requires it.
+10. Run required RLS checks and affected app or repository tests.
+11. Stop the local Supabase stack when validation is complete.
 
-Proposed command shape:
+Makefile command shape:
 
 ```text
-supabase start
-supabase migration new <jira-key>_<short_description>
-supabase db reset
-supabase gen types <target> > <approved-generated-type-path>
-supabase stop
+make supabase-doctor
+make supabase-start
+make supabase-migration-new SUPABASE_MIGRATION_NAME=<jira-key>_<short_description>
+make supabase-db-reset
+make supabase-stop
 ```
 
-These commands are examples until Scout approves exact CLI usage, project linking, generated type targets, and output paths.
+These targets run the Supabase CLI with `SUPABASE_WORKDIR=backend/supabase` by default. The migration creation target must use the implementation story key, not only the epic key.
+
+Generated type targets and output paths remain deferred to the generated type workflow story.
 
 Future database PRs should document:
 
@@ -148,7 +187,38 @@ Future database PRs should document:
 - Which app or repository tests were run.
 - Any manual dashboard inspection performed.
 
-Open questions:
+## Deployment Order
+
+`scout-dev` is the only current deployment target for Scout database changes.
+
+Future migration deployment should follow this order:
+
+1. Confirm the PR is merged or otherwise approved for the target branch.
+2. Confirm the migration was validated locally, including reset behavior when applicable.
+3. Confirm seed behavior is documented as loaded, skipped, or not applicable.
+4. Confirm generated types were updated, not changed, or deferred according to `docs/database/GENERATED_TYPES.md`.
+5. Confirm RLS checks were performed for affected user data or explicitly marked not applicable.
+6. Confirm the Supabase dashboard has not been used for durable schema edits outside the migration.
+7. Apply the approved migration to `scout-dev`.
+8. Inspect `scout-dev` after apply for migration status, schema shape, RLS status, and obvious seed/type mismatches.
+9. Record deployment notes on the PR or release handoff, including the migration identifier, target, validation evidence, and any follow-up.
+
+Staging and production projects are future environments. They must not be introduced through a migration PR alone. Adding staging/prod promotion requires explicit approval and may require an ADR if it changes CI, auth, deployment, secrets, or database ownership.
+
+## Future CI Hooks
+
+Database CI is not approved by this document. Future CI work should consider hooks for:
+
+- Migration filename and header validation.
+- Migration apply/reset validation against a local Supabase stack.
+- Seed reset validation for approved dev/test seed data.
+- Generated type freshness checks once generated type outputs are approved.
+- RLS positive and negative test execution for schema plans that define RLS checks.
+- Drift detection between repository migrations and approved Supabase targets.
+
+These hooks require an approved CI implementation story before adding workflows, jobs, secrets, or deployment automation.
+
+## Open Questions
 
 - Whether every database PR requires `supabase db reset`.
 - Whether local seed data is required for all schema changes or only selected domains.
