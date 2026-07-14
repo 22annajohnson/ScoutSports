@@ -343,9 +343,67 @@ Event will not happen. Participants should receive clear communication and recov
 
 Participant actions and organizer permissions must be defined for each lifecycle stage before implementation.
 
+### SOCIAL-11 Lifecycle Transition and Permission Review
+
+Jira story: `SOCIAL-11` (`Events: Define lifecycle transitions and permissions`).
+
+This review documents conceptual lifecycle behavior for future implementation plans. It does not implement enums, state machines, database constraints, RLS policies, APIs, or UI.
+
+Allowed lifecycle transitions:
+
+| From State | Allowed Next States | Organizer Permission | Participant Behavior | Notes |
+| --- | --- | --- | --- | --- |
+| `Draft` | `Published`, `Cancelled` | Create, edit all draft details, publish, or cancel. | No broad participant action. Invited collaborators, if any, require future approval. | Draft events are not broadly discoverable. |
+| `Published` | `Filling`, `Cancelled` | Update allowed pre-join details, manage visibility, cancel. | View event and take approved join/request action. | Transition to `Filling` when participant interest or requests exist. |
+| `Filling` | `Confirmed`, `Cancelled` | Manage requests, capacity, participant fit, updates, cancellation. | Join/request/leave behavior depends on participation model and capacity. | Organizer decisions must be auditable in future plans if approval/decline exists. |
+| `Confirmed` | `In Progress`, `Cancelled` | Confirm details, communicate updates, manage late changes, cancel with reason. | View coordination details allowed by visibility rules; leave/cancel participation rules require approval. | Exact location reveal rules may change here only through approved visibility guidance. |
+| `In Progress` | `Completed`, `Cancelled` | Mark completion or cancel if the event cannot proceed. | Participant actions should be limited to coordination and future check-in if approved. | Live state should not permit broad edits that confuse participants. |
+| `Completed` | `Archived` | Close out event and trigger approved follow-up. | Future feedback, attendance, or recap actions may apply. | No participation changes unless a future correction flow is approved. |
+| `Archived` | None by default | Read historical record; administrative correction only if approved. | Read only where history is visible. | Reopening archived events is out of scope. |
+| `Cancelled` | `Archived` | Provide cancellation reason and recovery guidance where applicable. | Receive safe cancellation/update information where notification support exists. | Reopening cancelled events is out of scope for v1. |
+
+Invalid transition principles:
+
+- Consumers must not mutate lifecycle state directly.
+- Lifecycle transitions must have one authoritative path.
+- Terminal states should not return to active states without a future approved correction process.
+- Participant actions must not imply lifecycle transitions unless the approved Events implementation plan says so.
+- Organizer actions must be valid for the current lifecycle state.
+- Notifications, chat, maps, feed, and recommendations must react to lifecycle state; they must not define lifecycle behavior.
+
+Conceptual permissions by lifecycle state:
+
+| State | Organizer Can | Participant Can | Consumers Can |
+| --- | --- | --- | --- |
+| `Draft` | Edit, publish, cancel. | No broad action. | Usually hidden from public discovery/feed. |
+| `Published` | Update approved details, cancel, manage visibility. | View and join/request if eligible. | Display Event Card/Detail according to visibility. |
+| `Filling` | Manage participant requests, capacity, updates, cancel. | Join/request/leave according to participation rules. | Display capacity and participant summary without full event internals. |
+| `Confirmed` | Communicate details, manage late changes, cancel with reason. | View allowed coordination details, leave only if approved. | Trigger reminders and summaries where notification strategy exists. |
+| `In Progress` | Mark complete or cancel if needed. | Coordinate/check in only if later approved. | Suppress new joins unless explicitly approved. |
+| `Completed` | Close out and initiate approved follow-up. | Provide future feedback/attendance signal if approved. | Show history/recap only through approved contracts. |
+| `Archived` | Administrative read/correction only if approved. | Read allowed history only. | Exclude from active discovery. |
+| `Cancelled` | Communicate cancellation and archive later. | Receive update and find alternatives where supported. | Remove from active discovery and show cancellation state where relevant. |
+
 ## Participation Contracts
 
 Consumers should not receive the full event model by default. They should receive context-specific event summaries.
+
+### SOCIAL-12 Event Contract Review
+
+Jira story: `SOCIAL-12` (`Events: Define participation contracts`).
+
+This review defines conceptual Event contracts for downstream planning. It does not create Swift models, APIs, queries, schema, views, RPCs, or services.
+
+| Contract | Primary Consumers | Required Concepts | Excluded Concepts | Privacy / Visibility Boundary |
+| --- | --- | --- | --- | --- |
+| Event Card | Feed, Discovery, Search, Maps previews | Event ID, sport, time window, approximate location, skill expectation, capacity status, lifecycle state, organizer summary, primary action eligibility | Full description, exact location before allowed, full participant list, private organizer notes, internal ranking signals | Must respect event visibility, lifecycle, viewer eligibility, location precision, and blocked/restricted users. |
+| Event Detail | Events, Maps, Chat entry, participant decision surfaces | Event identity, sport, schedule, venue detail appropriate to viewer, organizer summary, participant preview, participation state, lifecycle state, safety cues, allowed actions | Internal moderation notes, unrelated participant profile fields, exact location before allowed, raw recommendation scores | Detail depth depends on viewer relationship: non-participant, participant, organizer, admin/support. |
+| Participant Summary | Event detail, organizer tools, Chat, Notifications, Profiles | Profile contract reference, participation state, role, eligibility/status label, approved trust cue if available | Full Player Identity, private availability, exact home area, raw reputation internals | Must use approved Player Identity contracts and event participation state; blocked/removed/restricted participants need safe representation. |
+| Organizer Dashboard | Organizer tools, support/moderation planning | Event lifecycle state, capacity, participant requests, participant summaries, update/cancellation tools, moderation/reporting entry points | Raw recommendation internals, private participant profile fields, unsupported punitive reputation signals | Organizer permissions determine visibility; dashboard data must not leak beyond organizer/admin contexts. |
+| Feed Preview | Feed, local activity surfaces | Event ID, sport, time, safe location label, capacity/urgency cue, short context, primary action eligibility | Full event detail, exact location before allowed, full participants, private organizer notes | Feed should use the smallest event preview that drives useful action without exposing location or participant details too early. |
+| Notification Summary | Push/in-app notifications, email later if approved | Safe event label, time-sensitive update, actor reference through approved profile contract, required action, safe location language | Exact location unless already allowed, participant list, private notes, sensitive profile/event details | Push copy must assume lock-screen exposure; in-app notifications may use richer context only if visibility permits. |
+
+Contract implementation surface remains open. Future implementation plans must decide whether contracts are app-layer projections, SQL views, RPCs, Edge Functions, or service responses before multiple clients consume them.
 
 ### Event Card
 
@@ -468,6 +526,46 @@ Organizer responsibilities may include:
 
 Organizer tools should be powerful enough to keep games viable but constrained enough to protect participants from unfair or opaque behavior.
 
+### SOCIAL-13 Organizer Responsibility Review
+
+Jira story: `SOCIAL-13` (`Events: Document organizer responsibilities and trust rules`).
+
+This review clarifies organizer responsibilities for future planning. It does not implement organizer dashboards, verification, reputation, moderation, messaging, participant states, or permissions.
+
+Authoritative V1 organizer responsibilities:
+
+| Responsibility | V1 Guidance | Future Hooks |
+| --- | --- | --- |
+| Event accuracy | Organizer is responsible for accurate sport, time, capacity, skill expectations, venue/location language, and description. | Repeated inaccurate events may inform future trust or moderation review. |
+| Communication | Organizer should communicate material changes and cancellations clearly through approved update, notification, or chat surfaces. | Automated reminders, announcement tools, and event chat require later plans. |
+| Participant fit | Organizer may approve, decline, remove, or waitlist participants only when the approved participation model allows it. | Approval history and fairness review may inform future moderation. |
+| Capacity management | Organizer should keep capacity and participation state aligned with actual event viability. | Waitlist automation and capacity optimization are future work. |
+| Cancellation | Organizer should cancel when the event is no longer viable and provide a reason or recovery path where supported. | Cancellation patterns may inform future reliability signals. |
+| Safety escalation | Organizer may report abuse or unsafe behavior through approved safety channels. | Moderation workflow, evidence handling, and enforcement are future Trust & Safety work. |
+| Trust maintenance | Organizer reliability is a product signal, but not a punitive v1 mechanic by itself. | Verification, reputation, badges, no-show handling, and organizer scoring require explicit approval. |
+
+V1 permission boundaries:
+
+- Organizer permissions are scoped to the event they organize.
+- Organizer actions must be valid for the current event lifecycle state.
+- Organizer permissions do not allow bypassing visibility, location precision, blocked-user, restricted-account, or participant privacy rules.
+- Organizer decisions that affect participant access should be understandable and reviewable in future implementation plans.
+- Organizer tools must not expose full Player Identity data; they consume approved profile contracts.
+- Organizer actions that affect notifications, chat, maps, recommendations, or feed visibility require approved downstream contracts.
+
+Deferred trust and reputation hooks:
+
+- Organizer verification.
+- Organizer reliability score.
+- Participant reputation or attendance score.
+- No-show penalties.
+- Late-cancellation penalties.
+- Automated moderation or enforcement.
+- Public organizer badges.
+- Organizer dashboard analytics.
+
+These hooks should remain conceptual until approved Trust & Safety, reputation, analytics, and Events implementation plans define data ownership, fairness rules, appeal/recovery behavior, and privacy boundaries.
+
 ## Safety & Trust Principles
 
 Safety and trust are first-class event concerns.
@@ -485,6 +583,53 @@ Conceptual principles:
 - Safety decisions should not be hidden inside UI-only logic.
 
 These are conceptual principles only. They do not approve implementation details.
+
+### SOCIAL-14 Safety Visibility and Location Review
+
+This review defines conceptual safety and location guidance for Events V1. It does not approve location precision logic, reporting flows, moderation policy, RLS, storage policy, or implementation-specific enforcement.
+
+Visibility rules must override convenience. Event consumers should receive only the information needed for their current relationship to the event, and exact location details must not be exposed simply because they make discovery, notifications, maps, or feed cards easier to build.
+
+Conceptual visibility rules:
+
+| Viewer or state | Appropriate V1 visibility | Safety boundary |
+| --- | --- | --- |
+| Discovery viewer | Sport, time window, approximate location, capacity status, skill expectations, organizer summary, and safe primary action. | Do not reveal exact address, court details, access notes, full participant list, or private participant profile details. |
+| Pre-join detail viewer | Event description, schedule, approximate venue area, participation requirements, organizer summary, and safe trust cues. | Exact location and private participant context remain gated by participation, lifecycle, and safety rules. |
+| Pending participant | Request status, organizer response path, and any detail needed to understand whether the request is still viable. | Pending state alone should not guarantee exact location reveal. |
+| Approved or joined participant | Coordination detail appropriate to the event lifecycle, including exact location only when approved by the final implementation plan. | Location reveal timing must be explicit and testable before implementation. |
+| Organizer | Full owned-event management context, participant requests, lifecycle controls, and safety controls approved for V1. | Organizer tools must remain bounded by participant privacy and abuse-prevention rules. |
+| Cancelled or archived event viewer | Safe event status, relevant recovery path, and historical context where approved. | Cancelled or archived events should not remain active discovery surfaces or leak stale coordination details. |
+
+Location precision rules:
+
+- Approximate location may mean city, neighborhood, venue area, park area, or another coarse location label approved by the implementation plan.
+- Exact location may include street address, named court, reservation details, entry notes, parking notes, or any instruction that materially helps someone find the participants.
+- Exact location reveal must be gated by event visibility, participation state, lifecycle state, organizer intent, and safety review.
+- Notifications, feed previews, maps, and shared links must use the same location precision contract as the in-app event consumer they represent.
+- Profile privacy contracts from `PROFILE-001` apply to event participants and organizers; Events must consume context-appropriate profile summaries rather than full Player Identity records.
+
+Safety topics requiring future approval before implementation:
+
+- Abuse reporting, escalation, and moderation handoff.
+- Blocked-user discovery, joining, and co-participation behavior.
+- Organizer verification and organizer trust signals.
+- Participant list visibility by lifecycle state and viewer relationship.
+- Exact location reveal timing and revocation behavior.
+- No-show, late-cancellation, and reliability consequences.
+- Safety-oriented notification copy and redaction rules.
+- RLS, service-layer enforcement, and audit requirements.
+
+Open questions requiring approval before implementation:
+
+- Which concrete visibility states are required for Events V1?
+- At what lifecycle and participation state can exact location be revealed?
+- Can pending participants see participant previews, organizer contact paths, or venue names?
+- How should blocked users affect discovery, event detail access, joining, and organizer management?
+- What is the minimum abuse reporting surface required for V1 launch?
+- Which organizer verification signals, if any, are required before public event discovery?
+- Who can see the participant list, and how much profile context can each viewer see?
+- How should cancelled events handle recovery paths without leaking stale location details?
 
 ## Downstream Consumers
 
@@ -562,6 +707,54 @@ Future versions may add:
 - Weather-aware coordination.
 
 Advanced features should not expand v1 scope unless explicitly approved. They should be introduced through new versioned plans that preserve existing lifecycle, ownership, visibility, and contract assumptions.
+
+### SOCIAL-10 V1 Community Game Scope
+
+Jira story: `SOCIAL-10` (`Events: Define V1 community game scope and success metrics`).
+
+This review narrows the approved EVENT-001 direction into the V1 implementation-planning baseline. It does not authorize UI, schema, service, notification, chat, map, payment, reservation, league, or tournament implementation.
+
+V1 should support lightweight community games where one organizer helps compatible players coordinate real-world play.
+
+In V1 scope:
+
+- Single-session community games or open-play style meetups.
+- One organizer responsible for event accuracy, updates, cancellation, and participant coordination.
+- One sport per event.
+- Clear time, approximate location, skill expectation, capacity, and participation status.
+- Join or request-to-join flow, depending on the future participant-permission plan.
+- Basic participant list or participant summary, subject to approved Event and Player Identity contracts.
+- Basic organizer updates and cancellation messaging, subject to future notification/chat plans.
+- Location visibility that starts coarse and reveals more detail only through approved visibility rules.
+
+Out of V1 scope unless a later approved plan explicitly expands it:
+
+- Tournaments.
+- Leagues.
+- Payments.
+- Court or venue reservations.
+- Recurring-event automation.
+- Advanced organizer dashboard workflows.
+- Automated waitlist optimization.
+- Attendance verification or check-in.
+- No-show scoring or reputation penalties.
+- Public web event pages.
+- Weather automation.
+- Club or team management.
+
+V1 success metrics should prioritize completed, positive play outcomes:
+
+| Metric | Why It Matters | Planning Notes |
+| --- | --- | --- |
+| Completed games | Measures whether Scout turns interest into actual play. | Primary health signal; should outweigh raw event creation count. |
+| Join conversion | Shows whether event detail and expectations are clear enough to commit. | Interpret with capacity and visibility context. |
+| Attendance rate | Measures reliability after commitment. | Requires careful future attendance semantics before punitive use. |
+| Cancellation rate | Surfaces organizer reliability and event quality issues. | Track organizer-initiated and participant-initiated cancellations separately in future plans. |
+| Organizer reliability | Indicates whether organizers keep event details accurate and communicate changes. | Reputation or trust use remains future work. |
+| Participant satisfaction | Captures whether the game was worthwhile after completion. | Collection method is future analytics/product work. |
+| Repeat participation | Shows whether Events creates durable real-world value. | Should be interpreted alongside safety and inclusion signals. |
+
+Event creation volume is a diagnostic signal only. It should not be treated as a V1 success metric unless paired with completion, attendance, cancellation, and satisfaction outcomes.
 
 ## Goals / Non-goals
 

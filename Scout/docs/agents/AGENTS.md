@@ -36,6 +36,8 @@ Owns risk-focused review:
 - Checks correctness, regressions, missing tests, and mismatch with the approved plan.
 - Prioritizes actionable findings.
 - Avoids broad stylistic rewrites unless they affect maintainability or correctness.
+- Leaves a written GitHub review comment and does not approve or merge.
+- Does not review its own PRs.
 
 ### Documentation Agent
 
@@ -136,6 +138,28 @@ Implementation agents should inspect:
 
 For UI work, implementation agents should also inspect `docs/design/DESIGN_SYSTEM.md` and reference `DESIGN-001`. New foundations, shared components, component ownership changes, and platform behavior divergences require design review or an approved proposal before implementation.
 
+## Agent Identity
+
+Each active agent must know its assigned Scout identity before starting work. The identity should be visible in the agent's handoff and PR description.
+
+Current identities:
+
+- `Stephan`: Technical planning lead and documentation/planning reviewer.
+- `Tom`: General implementation worker.
+- `Jerry`: General implementation worker.
+
+Tom and Jerry are both general workers. They are not permanently specialized by frontend/backend ownership unless a task prompt says otherwise.
+
+Agents must not request review from themselves. If the normal routing would ask the authoring agent to review its own PR, skip that route and request the next appropriate reviewer.
+
+Review routing:
+
+- Documentation and planning PRs normally route to Stephan with `needs-stephan-review`.
+- Stephan-authored documentation or planning PRs skip Stephan self-review and go directly to `needs-human-review`.
+- Tom-authored implementation PRs use `needs-ai-review` for Jerry.
+- Jerry-authored implementation PRs use `needs-ai-review` for Tom.
+- If the expected peer reviewer is unavailable, keep `needs-ai-review` and mention the blocker in the handoff.
+
 ## Ticket Expectations
 
 Tickets generated for implementation should include:
@@ -149,6 +173,8 @@ Tickets generated for implementation should include:
 - Dependencies.
 - Validation steps.
 - Handoff expectations.
+
+UI implementation tickets must also follow the checklist in `jira/JIRA_WORKFLOW.md`, including `DESIGN-001`, existing component reuse, new component justification, accessibility, loading, empty, error, screenshot, animation, and Apple HIG divergence expectations.
 
 Tickets should be small enough to complete in a few hours when possible.
 
@@ -164,16 +190,168 @@ Agent handoffs should include:
 
 For documentation-only changes, say that no build was run unless project configuration changed.
 
+## Pull Request Review Workflow
+
+Scout uses GitHub labels as the canonical review handoff between agents, Stephan, and human reviewers.
+
+### General PR Labels
+
+- `documentation`: PR primarily changes documentation, tech plans, architecture docs, or planning artifacts.
+- `ruby`: PR primarily changes CI, GitHub Actions, Fastlane, Ruby scripts, Markdown validation, or repository automation.
+
+Author identity labels:
+
+- `author-stephan`: PR was authored by Stephan.
+- `author-tom`: PR was authored by Tom.
+- `author-jerry`: PR was authored by Jerry.
+
+Agents should apply the author label that matches their Scout identity when opening a PR. These labels make review routing visible without replacing the PR description or handoff identity.
+
+### Documentation PRs
+
+Documentation PRs include docs, architecture docs, tech plans, roadmap updates, Jira documentation, and other planning artifacts.
+
+Workflow:
+
+1. Agent opens the PR.
+2. Agent applies `documentation` and `needs-stephan-review`.
+   - If Stephan authored the PR, skip `needs-stephan-review` and apply `documentation` plus `needs-human-review`.
+3. Stephan reviews for architecture consistency, planning quality, roadmap alignment, implementation readiness, and documentation quality.
+4. Stephan leaves a written GitHub comment and does not approve.
+5. If changes are required, remove `needs-stephan-review` and add `needs-changes`.
+6. Once the author addresses feedback, remove `needs-changes` and re-add `needs-stephan-review`.
+7. Repeat until acceptable.
+8. When complete, remove `needs-stephan-review` and add `needs-human-review`.
+
+### Implementation PRs
+
+Implementation PRs include iOS, Supabase, backend, CI, automation, or production behavior changes.
+
+Workflow:
+
+1. Agent opens the PR.
+2. Agent applies `needs-ai-review`.
+3. The opposite worker agent reviews. Jerry reviews Tom-authored PRs, and Tom reviews Jerry-authored PRs.
+4. The reviewer verifies scope matches Jira, scope matches the approved tech plan, architecture is consistent, no obvious bugs are present, maintainability is acceptable, and tests are appropriate for the change.
+5. The reviewer leaves a written GitHub review comment and does not approve.
+6. If changes are required, remove `needs-ai-review` and add `needs-changes`.
+7. The author addresses feedback.
+8. Reapply `needs-ai-review`.
+9. Repeat until review passes.
+10. When complete, remove `needs-ai-review`, add `ai-reviewed`, and add `needs-human-review`.
+
+### Human QA
+
+If either reviewer believes manual testing is appropriate, add `needs-human-qa`.
+
+Use `needs-human-qa` for significant UI changes, animations, camera, push notifications, gesture-heavy interactions, accessibility concerns, or anything difficult to validate in CI.
+
+### Optional Risk And Follow-Up Labels
+
+- `architecture-risk`: Use when a PR violates approved architecture, introduces technical debt, bypasses repository boundaries, or uses a questionable abstraction.
+- `scope-risk`: Use when PR scope exceeds Jira, includes feature creep, or bundles unrelated changes.
+- `follow-up-ticket`: Use when an improvement, intentionally deferred work, or future cleanup should be tracked after the PR.
+
+### Review Rules
+
+- Agents must never approve PRs.
+- Agents must never merge PRs.
+- Agents must never review their own PRs.
+- Every review must leave a written GitHub comment.
+- Every implementation PR should eventually have `ai-reviewed` and `needs-human-review`.
+- Every documentation PR should eventually have `needs-human-review`.
+
+### GitHub Review Comment Template
+
+Use this template for top-level GitHub PR review comments. Keep it concise and remove sections that do not apply.
+
+Start with one state emoji:
+
+- `🟢 Review passed`: No blocking issues found. Do not approve; update labels according to the workflow.
+- `🟡 Changes requested`: Specific changes are required before the PR should advance.
+- `🔴 Blocked`: The PR cannot be reviewed safely because required context, CI, plan approval, or dependencies are missing.
+
+Template:
+
+```md
+🟢 Review passed
+
+Summary:
+- <One or two sentences describing what was reviewed and why it is acceptable.>
+
+Checks:
+- Scope: <Matches Jira / minor concern / exceeds Jira.>
+- Architecture: <Aligned / concern noted.>
+- Tests/validation: <Appropriate / missing / not applicable.>
+- Maintainability: <Acceptable / concern noted.>
+
+Risk labels:
+- architecture-risk: <yes/no, reason if yes>
+- scope-risk: <yes/no, reason if yes>
+- needs-human-qa: <yes/no, reason if yes>
+- follow-up-ticket: <yes/no, reason if yes>
+
+Suggestions:
+- <Optional non-blocking suggestion or follow-up.>
+
+Label next step:
+- <For implementation: replace needs-ai-review with ai-reviewed and needs-human-review.>
+- <For documentation: replace needs-stephan-review with needs-human-review.>
+```
+
+```md
+🟡 Changes requested
+
+Summary:
+- <One or two sentences describing the blocking concern.>
+
+Required changes:
+- <Specific change required before review can pass.>
+
+Checks:
+- Scope: <Matches Jira / exceeds Jira.>
+- Architecture: <Aligned / architecture-risk because...>
+- Tests/validation: <Appropriate / missing because...>
+- Maintainability: <Acceptable / concern because...>
+
+Risk labels:
+- architecture-risk: <yes/no, reason if yes>
+- scope-risk: <yes/no, reason if yes>
+- needs-human-qa: <yes/no, reason if yes>
+- follow-up-ticket: <yes/no, reason if yes>
+
+Suggestions:
+- <Optional implementation suggestion.>
+
+Label next step:
+- Remove <needs-ai-review or needs-stephan-review>.
+- Add needs-changes.
+```
+
+```md
+🔴 Blocked
+
+Summary:
+- <Why this PR cannot be reviewed safely yet.>
+
+Blocked by:
+- <Missing approved plan / missing Jira ticket / failing or unavailable CI / dependency PR / unclear ownership.>
+
+Needed before review resumes:
+- <Specific unblock step.>
+
+Risk labels:
+- architecture-risk: <yes/no, reason if yes>
+- scope-risk: <yes/no, reason if yes>
+- follow-up-ticket: <yes/no, reason if yes>
+
+Label next step:
+- Keep or add needs-changes, or document the blocking label/status used for this PR.
+```
+
 ## Current Repository Guardrails
 
 - Do not move the iOS project into `apps/ios/` yet.
 - Do not move the web app into `apps/web/` yet.
 - Do not alter Xcode references, package paths, schemes, CI, or build settings without an approved plan.
 - Do not implement product features during planning-only tasks.
-
-## Open Agent Workflow Questions
-
-- What exact Jira fields should be required for AI-generated tickets?
-- What review checklist should be mandatory before merge?
-- Should plans include implementation prompts for agents?
-- How should agent handoffs be stored or linked from Jira?
