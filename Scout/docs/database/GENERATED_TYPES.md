@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This document defines Scout's proposed Supabase generated type workflow. It is planning guidance only until the relevant implementation tech plans are approved.
+This document defines Scout's Supabase generated type workflow. DB-001 activates command and ownership guidance, but generated output files are committed only when an approved schema or platform story authorizes them.
 
 Related documents:
 
@@ -10,12 +10,13 @@ Related documents:
 - `docs/database/SUPABASE.md`: Supabase operating model.
 - `docs/database/MIGRATIONS.md`: proposed migration workflow.
 - `implementation/proposed/INFRA-001-database-foundation.md`: proposed database foundation plan.
+- `implementation/proposed/DB-001-supabase-database-foundation.md`: Supabase database foundation plan.
 
 ## Current Strategy
 
 Generated Supabase types are not checked in yet.
 
-Proposed decision:
+Current decision:
 
 - Do not generate or commit type files until the owning platform strategy is approved.
 - iOS type output should be approved before any Swift-facing generated file is added.
@@ -34,19 +35,30 @@ This keeps the first schema migrations from silently creating platform contracts
 | Generate locally but do not commit | Useful for validation, but does not create durable client contracts. | Allowed as validation guidance when a schema story asks for it. |
 | Defer all generated type work | Keeps repo clean, but increases schema drift risk if schema changes begin without a follow-up plan. | Acceptable only until the first schema-specific implementation plan decides type ownership. |
 
-## Proposed Command Shape
+## Command Shape
 
-Exact commands, flags, output paths, and targets must be approved before first use.
+Exact output paths and generation targets must be confirmed by the authorizing schema or platform story before generated files are committed.
 
-Possible command shapes:
+Use the Supabase CLI `gen types` command with an explicit language, target, schema, and output path.
 
 ```text
-supabase gen types typescript --local > <approved-web-type-path>
-supabase gen types swift --local > <approved-ios-type-path>
-supabase gen types typescript --project-id <project-ref> > <approved-web-type-path>
+supabase gen types --local --lang swift --schema public > backend/supabase/types/swift/Database.generated.swift
+supabase gen types --local --lang typescript --schema public > backend/supabase/types/typescript/database.generated.ts
+supabase gen types --project-id <project-ref> --lang typescript --schema public > backend/supabase/types/typescript/database.generated.ts
 ```
 
 The local target is preferred for migration PR validation when local Supabase workflow is approved. Remote project generation should be used only when the approved plan says the remote project is the expected target for that validation.
+
+## Output Ownership
+
+Reserved output locations:
+
+| Platform | Reserved Path | Current Status |
+| --- | --- | --- |
+| iOS / Swift data layer | `backend/supabase/types/swift/Database.generated.swift` | Reserved; do not commit generated output until Swift generated type ownership is approved. |
+| Future web / TypeScript data layer | `backend/supabase/types/typescript/database.generated.ts` | Reserved; do not commit generated output until web generated type ownership is approved. |
+
+Generated types are data-layer artifacts. SwiftUI views, domain models, and feature view models should not consume generated database types directly. Repository and mapping layers own translation from generated rows to approved domain contracts.
 
 ## Schema PR Requirements
 
