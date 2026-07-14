@@ -16,8 +16,11 @@ APP_BUNDLE_ID ?= RCL.Scout
 APP_PATH := $(DERIVED_DATA)/Build/Products/$(CONFIGURATION)-iphonesimulator/Scout.app
 XCODEBUILD := xcodebuild
 XCPRETTY := $(shell command -v xcbeautify >/dev/null 2>&1 && printf "xcbeautify" || printf "cat")
+SUPABASE ?= supabase
+SUPABASE_WORKDIR ?= backend/supabase
+SUPABASE_MIGRATION_NAME ?=
 
-.PHONY: help doctor build build-release run test clean
+.PHONY: help doctor build build-release run test clean supabase-doctor supabase-start supabase-stop supabase-status supabase-db-reset supabase-migration-new
 
 help:
 	@printf "Targets:\n"
@@ -28,6 +31,12 @@ help:
 	@printf "  make run           Build, install, and launch the app in Simulator\n"
 	@printf "  make test          Run unit/UI tests on the configured simulator\n"
 	@printf "  make clean         Remove local build artifacts\n"
+	@printf "  make supabase-doctor        Check local Supabase CLI prerequisites\n"
+	@printf "  make supabase-start         Start local Supabase stack\n"
+	@printf "  make supabase-stop          Stop local Supabase stack\n"
+	@printf "  make supabase-status        Show local Supabase stack status\n"
+	@printf "  make supabase-db-reset      Reset local Supabase database\n"
+	@printf "  make supabase-migration-new SUPABASE_MIGRATION_NAME=INFRA-123_short_name\n"
 	@printf "\nOverrides:\n"
 	@printf "  CONFIGURATION=Debug|Release\n"
 	@printf "  DESTINATION='generic/platform=iOS Simulator'\n"
@@ -35,6 +44,8 @@ help:
 	@printf "  RUN_DESTINATION='platform=iOS Simulator,name=iPhone 17 Pro'\n"
 	@printf "  SIM_DEVICE='iPhone 17 Pro'\n"
 	@printf "  DERIVED_DATA=.build/DerivedData\n"
+	@printf "  SUPABASE_WORKDIR=backend/supabase\n"
+	@printf "  SUPABASE_MIGRATION_NAME=INFRA-123_short_name\n"
 
 doctor:
 	@printf "Developer dir: "
@@ -81,3 +92,42 @@ test:
 clean:
 	@if [ -d .build ]; then chmod -R +w .build 2>/dev/null || true; fi
 	rm -rf .build
+
+supabase-doctor:
+	@printf "supabase: "
+	@command -v $(SUPABASE)
+	@$(SUPABASE) --version
+	@test -d "$(SUPABASE_WORKDIR)/migrations"
+	@test -d "$(SUPABASE_WORKDIR)/seed"
+	@test -d "$(SUPABASE_WORKDIR)/types"
+	@test -d "$(SUPABASE_WORKDIR)/config"
+	@if command -v docker >/dev/null 2>&1; then \
+		if docker info >/dev/null 2>&1; then \
+			printf "docker: available\n"; \
+		else \
+			printf "docker: unavailable or not running\n"; \
+		fi; \
+	else \
+		printf "docker: not installed\n"; \
+	fi
+	@if [ -f "$(SUPABASE_WORKDIR)/config.toml" ]; then \
+		printf "supabase config: present\n"; \
+	else \
+		printf "supabase config: not present; run supabase init only when an approved story requires local stack activation\n"; \
+	fi
+
+supabase-start:
+	$(SUPABASE) start --workdir "$(SUPABASE_WORKDIR)"
+
+supabase-stop:
+	$(SUPABASE) stop --workdir "$(SUPABASE_WORKDIR)"
+
+supabase-status:
+	$(SUPABASE) status --workdir "$(SUPABASE_WORKDIR)"
+
+supabase-db-reset:
+	$(SUPABASE) db reset --workdir "$(SUPABASE_WORKDIR)"
+
+supabase-migration-new:
+	@test -n "$(SUPABASE_MIGRATION_NAME)" || (printf "Set SUPABASE_MIGRATION_NAME=INFRA-123_short_name\n"; exit 2)
+	$(SUPABASE) migration new "$(SUPABASE_MIGRATION_NAME)" --workdir "$(SUPABASE_WORKDIR)"

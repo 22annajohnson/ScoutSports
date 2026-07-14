@@ -12,7 +12,7 @@
 
 | Proposed Tech Plan ID | Status | Title | Description | Why Now? | Dependencies | Priority | Complexity |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| EVENT-002 | 🟦 Not Started | V1 Community Game Scope | Define the smallest viable version of community games, including event card, detail, join/request behavior, and organizer responsibilities. | Scout's product goal depends on getting people onto the court, and this scopes the first real-world coordination capability before schema or UI work begins. | EVENT-001, PROFILE-001, DESIGN-001 | High | L |
+| EVENT-002 | 🟦 Not Started | V1 Community Game Scope | Define the smallest viable version of community games, including event card, detail, join/request behavior, and organizer responsibilities. | Scout's product goal depends on getting people onto the court, and this scopes the first real-world coordination capability before schema or UI work begins. | EVENT-001, PROFILE-001, PROFILE-002, DESIGN-001 | High | L |
 | EVENT-003 | 🟦 Not Started | Event Lifecycle & Participant Permissions | Define lifecycle transitions, participant states, and organizer permissions for v1. | Lifecycle and permission rules block safe event joins, organizer tools, notifications, and event chat. | EVENT-001, ARCH-001 | High | L |
 
 ## ⚪ Soon
