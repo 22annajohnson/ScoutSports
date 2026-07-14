@@ -72,15 +72,15 @@ Review routing:
 - Do not merge your own PRs unless explicitly instructed.
 - Do not manually mark implementation tickets `Awaiting CI`, `Ready for Review`, or `Done` when automation is expected to handle those transitions.
 
-## Testing and Simulator Workflow
+## Testing and CI Expectations
 
-- The first full validation pass should run on the pull request through GitHub Actions.
-- Do not run the full local test suite automatically after every small change.
-- If CI passes, agents do not need to rerun the full suite locally for a simple change.
-- If CI fails, inspect the CI failure first, then either fix and push when the cause is clear or run a targeted local test when local reproduction is needed.
+- The first validation pass should run on the pull request through GitHub Actions.
+- Agents do not need to run local tests before opening a PR unless the ticket, implementation plan, or reviewer explicitly asks for local validation.
+- Run targeted local tests when actively debugging a failed CI check, reproducing a CI failure, capturing requested visual evidence, or validating a fix before pushing an update.
 - Use local simulator work only for debugging a failed UI test, reproducing a CI-only visual failure, capturing a requested screenshot, recording or updating an approved snapshot, or verifying a visual change that CI cannot explain clearly.
-- Avoid defaulting to `make test` for small changes while it may boot multiple simulators. Prefer targeted local commands when debugging.
-- After fixing an issue, push again and allow CI to rerun as the source of truth.
+- Avoid defaulting to `make test` for small changes while it may boot multiple simulators.
+- Documentation-only and workflow-only PRs should not run iOS tests locally unless they are debugging a failed CI check.
+- PR descriptions and handoffs should state that validation is expected to run in PR CI when no local tests were run.
 
 ## Pull Request Label Workflow
 

@@ -207,6 +207,8 @@ Local simulator work is appropriate for debugging a failed UI test, reproducing 
 
 Avoid defaulting to `make test` for small changes while it may boot multiple simulators. Use targeted local commands when debugging.
 
+Documentation-only and workflow-only PRs should not run iOS tests locally unless the agent is investigating a failed CI check. When no local tests were run, the PR description and handoff should say that validation is expected to run in PR CI.
+
 ## Pull Request Review Workflow
 
 Scout uses GitHub labels as the canonical review handoff between agents, Stephan, and human reviewers.
