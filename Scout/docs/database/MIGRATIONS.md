@@ -169,13 +169,18 @@ Makefile command shape:
 make supabase-doctor
 make supabase-start
 make supabase-migration-new SUPABASE_MIGRATION_NAME=<jira-key>_<short_description>
+make supabase-migration-up
 make supabase-db-reset
+make supabase-test-db
 make supabase-stop
 ```
 
-These targets run the Supabase CLI with `SUPABASE_WORKDIR=backend/supabase` by default. The migration creation target must use the implementation story key, not only the epic key.
+These targets run the Supabase CLI with `SUPABASE_WORKDIR=backend` by default.
+The CLI project files remain under `backend/supabase/`. The migration creation
+target must use the implementation story key, not only the epic key.
 
-Generated type targets and output paths remain deferred to the generated type workflow story.
+Swift generated type output is currently `backend/supabase/types/swift/Database.generated.swift`.
+Freshness validation remains owned by the generated type workflow story.
 
 Future database PRs should document:
 

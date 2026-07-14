@@ -9,7 +9,8 @@ DB-001 activates the repository structure without creating product schema. Futur
 - `migrations/`: future Supabase SQL migrations.
 - `seed/`: future local/dev seed files.
 - `types/`: future generated Supabase type outputs.
-- `config/`: local configuration placeholders and setup notes.
+- `config.toml`: active local Supabase CLI configuration.
+- `config/`: environment and setup notes.
 
 ## Local Workflow
 
@@ -19,11 +20,18 @@ Use the root `Makefile` for local Supabase workflow commands:
 make supabase-doctor
 make supabase-start
 make supabase-migration-new SUPABASE_MIGRATION_NAME=<jira-key>_<short_description>
+make supabase-migration-up
 make supabase-db-reset
+make supabase-test-db
+make supabase-gen-types-swift
 make supabase-stop
 ```
 
-These commands use `backend/supabase` as the Supabase CLI workdir by default.
+These commands use `backend` as the Supabase CLI workdir by default. The CLI
+then reads and writes Supabase assets under `backend/supabase/`.
+
+Do not run Supabase CLI commands with `SUPABASE_WORKDIR=backend/supabase`;
+that creates an incorrect nested `backend/supabase/supabase/` project.
 
 ## Current Boundary
 
