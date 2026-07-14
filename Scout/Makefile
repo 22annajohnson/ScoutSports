@@ -17,7 +17,7 @@ APP_PATH := $(DERIVED_DATA)/Build/Products/$(CONFIGURATION)-iphonesimulator/Scou
 XCODEBUILD := xcodebuild
 XCPRETTY := $(shell command -v xcbeautify >/dev/null 2>&1 && printf "xcbeautify" || printf "cat")
 SUPABASE ?= supabase
-SUPABASE_WORKDIR ?= ../backend
+SUPABASE_WORKDIR ?= backend/supabase
 SUPABASE_MIGRATION_NAME ?=
 
 .PHONY: help doctor build build-release run test clean supabase-doctor supabase-start supabase-stop supabase-status supabase-db-reset supabase-migration-new
@@ -44,7 +44,7 @@ help:
 	@printf "  RUN_DESTINATION='platform=iOS Simulator,name=iPhone 17 Pro'\n"
 	@printf "  SIM_DEVICE='iPhone 17 Pro'\n"
 	@printf "  DERIVED_DATA=.build/DerivedData\n"
-	@printf "  SUPABASE_WORKDIR=../backend\n"
+	@printf "  SUPABASE_WORKDIR=backend/supabase\n"
 	@printf "  SUPABASE_MIGRATION_NAME=INFRA-123_short_name\n"
 
 doctor:
@@ -97,10 +97,10 @@ supabase-doctor:
 	@printf "supabase: "
 	@command -v $(SUPABASE)
 	@$(SUPABASE) --version
-	@test -d "$(SUPABASE_WORKDIR)/supabase/migrations"
-	@test -d "$(SUPABASE_WORKDIR)/supabase/seed"
-	@test -d "$(SUPABASE_WORKDIR)/supabase/types"
-	@test -d "$(SUPABASE_WORKDIR)/supabase/config"
+	@test -d "$(SUPABASE_WORKDIR)/migrations"
+	@test -d "$(SUPABASE_WORKDIR)/seed"
+	@test -d "$(SUPABASE_WORKDIR)/types"
+	@test -d "$(SUPABASE_WORKDIR)/config"
 	@if command -v docker >/dev/null 2>&1; then \
 		if docker info >/dev/null 2>&1; then \
 			printf "docker: available\n"; \
@@ -110,7 +110,7 @@ supabase-doctor:
 	else \
 		printf "docker: not installed\n"; \
 	fi
-	@if [ -f "$(SUPABASE_WORKDIR)/supabase/config.toml" ]; then \
+	@if [ -f "$(SUPABASE_WORKDIR)/config.toml" ]; then \
 		printf "supabase config: present\n"; \
 	else \
 		printf "supabase config: not present; run supabase init only when an approved story requires local stack activation\n"; \

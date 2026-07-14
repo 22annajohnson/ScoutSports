@@ -23,7 +23,7 @@ make supabase-db-reset
 make supabase-stop
 ```
 
-From the repository root, use `backend` as the Supabase CLI workdir. From the Scout app Makefile, the same project is referenced as `../backend` because the Makefile lives under `Scout/`.
+These commands use `backend/supabase` as the Supabase CLI workdir by default.
 
 ## Current Boundary
 

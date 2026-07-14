@@ -138,13 +138,7 @@ make supabase-db-reset
 make supabase-stop
 ```
 
-From the repository root, the Supabase CLI workdir is `backend`:
-
-```text
-supabase db reset --workdir backend
-```
-
-The Scout app Makefile wraps the same project with `SUPABASE_WORKDIR=../backend` because the Makefile lives under `Scout/`. The migration creation target must use the implementation story key, not only the epic key.
+These targets run the Supabase CLI with `SUPABASE_WORKDIR=backend/supabase` by default. The migration creation target must use the implementation story key, not only the epic key.
 
 Generated type targets and output paths remain deferred to the generated type workflow story.
 
