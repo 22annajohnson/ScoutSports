@@ -188,6 +188,14 @@ Agent handoffs should include:
 
 For documentation-only changes, say that no build was run unless project configuration changed.
 
+## Testing and CI Expectations
+
+Pull request CI is the default first validation pass for Scout agent work.
+
+Agents do not need to run local tests before opening a pull request unless the Jira ticket, approved implementation plan, task prompt, or reviewer explicitly requires local validation. Local tests are expected when an agent is actively debugging a failed CI check, reproducing a CI-only failure, or validating a fix before pushing an update.
+
+Documentation-only and workflow-only PRs should not run iOS tests locally unless the agent is investigating a failed CI check. When no local tests were run, the PR description and handoff should say that validation is expected to run in PR CI.
+
 ## Pull Request Review Workflow
 
 Scout uses GitHub labels as the canonical review handoff between agents, Stephan, and human reviewers.
