@@ -34,7 +34,7 @@ jobs:
 
           cat changed-files.txt
 
-          if grep -E '^(Scout/Makefile|Scout/backend/supabase/|Scout/docs/database/|Scout/implementation/(proposed|approved)/.*supabase.*|\.github/workflows/supabase-validation\.yml)$' changed-files.txt; then
+          if grep -E '^(Scout/Makefile|Scout/backend/supabase/.*|Scout/docs/database/.*|Scout/implementation/(proposed|approved)/.*supabase.*|\.github/workflows/supabase-validation\.yml)$' changed-files.txt; then
             echo "should-run-supabase=true" >> "$GITHUB_OUTPUT"
           else
             echo "should-run-supabase=false" >> "$GITHUB_OUTPUT"
