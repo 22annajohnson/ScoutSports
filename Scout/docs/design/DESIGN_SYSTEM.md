@@ -117,6 +117,30 @@ Motion should clarify state changes and social feedback:
 
 Motion should not block core tasks.
 
+### Motion and State Patterns
+
+Motion should communicate state, reinforce user intent, and follow Apple's Human Interface Guidelines as the iOS baseline. Custom motion patterns should be documented in an approved design plan before implementation.
+
+Operational expectations:
+
+- Use motion to clarify cause and effect, such as a swipe decision, save confirmation, match reveal, or event participation change.
+- Keep motion short enough that it does not delay the next user action.
+- Use consistent motion for similar state changes across Profile, Swipe, Feed, Events, Chat, Maps, and Notifications.
+- Respect Reduced Motion. Essential state changes must remain understandable without animation.
+- Do not rely on motion alone to communicate success, error, or completion.
+
+Shared state expectations:
+
+| State | Expected Behavior |
+| --- | --- |
+| Loading | Preserve layout stability where possible, communicate that work is in progress, and avoid blocking unrelated actions. |
+| Empty | Explain why there is no content and provide a useful next action or education path. |
+| Error | Explain what happened in user-facing language and provide a recovery path such as retry, edit, dismiss, or contact support. |
+| Success | Confirm completion without trapping the user or interrupting the next likely action. |
+| Recovery | Keep the user oriented, preserve entered data where possible, and make the next safe action clear. |
+
+UI tickets and PRs that affect motion or state handling should document the loading, empty, error, success, recovery, accessibility, and Reduced Motion implications.
+
 ## Component Families
 
 Initial component families to document and standardize:
@@ -134,6 +158,63 @@ Initial component families to document and standardize:
 - Event cards and attendance controls.
 
 New components should be added only when existing components cannot be extended cleanly.
+
+## Feature Ownership Matrix
+
+This matrix follows `DESIGN-001` and identifies which product area owns each design surface before future agents add or change UI.
+
+| Design Area | Owner | Consumers | Reuse Guidance |
+| --- | --- | --- | --- |
+| Foundations | Design | All features | Color, typography, spacing, icons, elevation, shape, layout rhythm, and motion timing are shared foundations. Changes require design approval. |
+| Navigation | App / Design | Profile, Swipe, Feed, Events, Chat, Maps | Preserve platform expectations and a clear sense of place. |
+| Inputs | Design | Profile, Events, Chat, Maps, Settings | Reuse form, picker, selector, media, validation, and recovery patterns before creating feature-specific inputs. |
+| Feedback | Design | All features | Loading, empty, error, success, validation, save, and recovery states should use shared patterns. |
+| Cards | Design | Swipe, Feed, Events, Profile, Chat | Card variants should extend shared card behavior rather than duplicate layout, spacing, or state treatment. |
+| Lists | Design | Feed, Events, Chat, Profile, Maps, Notifications | Lists should remain dense, grouped, scannable, and predictable. |
+| Profile components | Profile | Swipe, Events, Chat, Feed, Teams, Search | Profile summaries, identity cues, sport badges, skill indicators, media, and availability previews should stay consistent across consumers. |
+| Swipe components | Swipe | Feed, Profile, Recommendations | Swipe UI should emphasize sports compatibility and play intent, not dating-app cues. |
+| Feed components | Feed | Profile, Swipe, Events, Notifications | Feed surfaces should guide useful action without becoming a generic social network. |
+| Event components | Events | Feed, Profile, Chat, Maps, Notifications | Event UI should make time, place, capacity, organizer context, and participation state clear. |
+| Chat components | Chat | Profile, Events, Teams, Notifications | Chat UI should support coordination toward real play, including match or event context. |
+| Map components | Maps | Events, Profile, Feed | Map UI should communicate location with appropriate privacy and precision. |
+| Notification components | Notifications | Feed, Events, Chat, Profile | Notification UI should reuse feedback and list patterns, and route users to the relevant domain context. |
+| Animations | Design | All features | Motion should communicate state, reinforce intent, and remain consistent for similar changes. |
+| Accessibility | Design | All features | Accessibility behavior is shared across design and feature owners. |
+
+When ownership overlaps, agents should identify the primary user intent and the domain that owns the underlying product concept. Shared design areas should be extended before a domain creates a parallel pattern. If two domains need the same component behavior, document the overlap and route the change through design review before making it shared.
+
+## Component Hierarchy
+
+Scout's design system hierarchy follows `DESIGN-001` and should be used as the reference point for UI planning and implementation tickets:
+
+| Level | Area | Role |
+| --- | --- | --- |
+| 1 | Foundations | Color, typography, spacing, icons, elevation, shape, layout rhythm, and motion timing. |
+| 2 | Navigation | Root structure, tab or section navigation, stack navigation, modal and sheet behavior, dismissal, and future routes. |
+| 3 | Inputs | Text entry, pickers, segmented controls, toggles, sliders, sport and skill selectors, date/time inputs, location inputs, and media inputs. |
+| 4 | Feedback | Loading, empty, error, success, inline validation, recovery, match feedback, and save confirmation states. |
+| 5 | Cards | Swipe cards, profile summary cards, feed cards, event cards, match cards, and invitation cards. |
+| 6 | Lists | Feed lists, profile detail lists, participant lists, search results, settings lists, and notification lists. |
+| 7 | Domain components | Profile, Swipe, Feed, Event, Chat, Map, Team, Search, and Notification components owned by their product domains. |
+| 8 | Animations | Screen transitions, swipe decisions, match confirmation, loading transitions, save feedback, error recovery, and empty-state reveals. |
+| 9 | Accessibility | Dynamic Type, VoiceOver, contrast, touch targets, reduced motion, non-color state indication, and future web focus behavior. |
+
+Foundation changes are design system direction changes. Do not change or add color scales, typography scales, spacing systems, icon strategy, elevation, shape, layout rhythm, motion timing, design tokens, or cross-platform design tooling without an approved design proposal.
+
+## Reuse Rules
+
+Before creating or changing UI, agents should:
+
+- Inspect the current iOS design areas listed above and the relevant feature area.
+- Identify the design system level and product domain owner for the UI being changed.
+- Reuse existing foundations, components, modifiers, and interaction patterns where they fit the use case.
+- Extend an existing component with a clear variant, state, or configuration when the behavior belongs to the same component family.
+- Keep feature-specific components inside the owning feature unless repeated use proves they should graduate into shared design system documentation.
+- Document loading, empty, error, accessibility, and motion impact for UI implementation tickets.
+
+Create a new component only when existing components cannot be extended cleanly. The ticket or PR should explain what was inspected, what is being reused, why extension is insufficient, and whether the new component is feature-specific or a candidate for shared reuse.
+
+New shared components, new foundation patterns, cross-feature component ownership changes, and any divergence from native iOS platform behavior require design review or an approved proposal before implementation.
 
 UI implementation tickets must follow the checklist in `jira/JIRA_WORKFLOW.md`, reference `DESIGN-001`, and document existing components reused, new components introduced, accessibility, loading, empty, error, screenshot, animation, and Apple HIG divergence expectations.
 

@@ -69,6 +69,20 @@ Major feature implementation should not begin without an approved implementation
 
 Roadmaps in `roadmap/` are lightweight long-term backlogs. They should not contain detailed engineering design. When work is imminent, promote a roadmap item into `implementation/proposed/`.
 
+## Authority Chain
+
+Agents must follow Scout's planning authority in this order:
+
+1. Product docs define product direction.
+2. Architecture docs and ADRs define system structure and durable technical direction.
+3. Approved tech plans define implementation approach.
+4. Jira epics group approved work.
+5. Jira stories define executable scope.
+
+When these sources conflict, agents must stop implementation and document the conflict. Product conflicts belong in product planning, architecture conflicts belong in architecture docs or ADRs, implementation-plan conflicts belong in the tech plan, and execution-scope conflicts belong in Jira. Do not resolve conflicts by guessing in code.
+
+Implementation agents should use the most specific approved source for scope. A Jira story may narrow an approved plan, but it must not expand product behavior, architecture, database ownership, auth strategy, shared contracts, CI behavior, or repository structure.
+
 ## Domain-Level Plan Standard
 
 Major domains such as Profile, Events, Swipe, Feed, Chat, Maps, Search, Notifications, Teams, and Recommendations must use the domain-level plan structure.
@@ -136,6 +150,8 @@ Implementation agents should inspect:
 - Existing feature code and tests.
 - The repository `Makefile` for validation.
 
+For UI work, implementation agents should also inspect `docs/design/DESIGN_SYSTEM.md` and reference `DESIGN-001`. New foundations, shared components, component ownership changes, and platform behavior divergences require design review or an approved proposal before implementation.
+
 ## Pull Request Jira References
 
 GitHub PR titles and descriptions should mention only the Jira ticket being worked by that PR.
@@ -202,6 +218,8 @@ Agent handoffs should include:
 - Follow-ups.
 
 For documentation-only changes, say that no build was run unless project configuration changed.
+
+For UI changes, include state coverage in the handoff: loading, empty, error, success, recovery, accessibility, screenshots or recordings, and any motion or Reduced Motion impact.
 
 ## Testing and CI Expectations
 
