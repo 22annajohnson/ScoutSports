@@ -17,26 +17,89 @@ final class SwipeDeckViewModel {
         let message: String
     }
 
-    private let cardProvider: SwipeCardProviding
+    enum QueuePresentationState: Equatable {
+        case idle
+        case loading
+        case ready
+        case empty(DiscoveryEmptyReason?)
+        case exhausted(DiscoveryExhaustedReason?)
+        case refreshing
+        case failed(DiscoveryQueueFailure, DiscoveryRetryGuidance?)
+    }
+
+    private let cardProvider: SwipeCardProviding?
+    private let discoveryRepository: DiscoveryRepository?
     private let session: SessionStore
 
     private(set) var rankingContext: SwipeRankingContext?
     private(set) var candidates: [SwipeCandidate] = []
     private(set) var cards: [CardViewModel] = []
+    private(set) var candidateCards: [CandidateCard] = []
+    private(set) var discoveryQueue = DiscoveryQueue()
+    private(set) var queuePresentationState: QueuePresentationState = .idle
     private(set) var isLoading = true
     var alert: AlertItem?
 
     private var hasLoadedCards = false
+    private var lastDiscoveryFailure: DiscoveryQueueFailure?
 
     init(cardProvider: SwipeCardProviding, session: SessionStore) {
         self.cardProvider = cardProvider
+        self.discoveryRepository = nil
+        self.session = session
+    }
+
+    init(discoveryRepository: DiscoveryRepository, session: SessionStore) {
+        self.cardProvider = nil
+        self.discoveryRepository = discoveryRepository
         self.session = session
     }
 
     func loadCardsIfNeeded() async {
         guard !hasLoadedCards else { return }
         hasLoadedCards = true
-        await loadCards()
+        if discoveryRepository != nil {
+            await loadDiscoveryQueue()
+        } else {
+            await loadCards()
+        }
+    }
+
+    func refreshDiscoveryQueue() async {
+        guard let discoveryRepository else { return }
+        guard queuePresentationState != .loading, queuePresentationState != .refreshing else { return }
+
+        let existingQueue = discoveryQueue
+        queuePresentationState = .refreshing
+        discoveryQueue = DiscoveryQueue.refreshing(existing: existingQueue)
+
+        let refreshedQueue = await discoveryRepository.refreshQueue(existing: existingQueue)
+        applyDiscoveryQueue(refreshedQueue, preserveExistingQueueOnFailure: !candidateCards.isEmpty)
+    }
+
+    func retryDiscoveryQueue() async {
+        guard let discoveryRepository else { return }
+
+        let failure = discoveryQueue.failure ?? lastDiscoveryFailure
+        queuePresentationState = .loading
+        isLoading = candidateCards.isEmpty
+
+        let retriedQueue = await discoveryRepository.retryQueue(after: failure)
+        applyDiscoveryQueue(retriedQueue, preserveExistingQueueOnFailure: !candidateCards.isEmpty)
+        isLoading = false
+    }
+
+    func markDiscoveryQueueExhausted(reason: DiscoveryExhaustedReason = .allCandidatesPresented) {
+        let exhaustedQueue = DiscoveryQueue.exhausted(
+            id: discoveryQueue.id,
+            candidates: candidateCards,
+            reason: reason,
+            generatedAt: discoveryQueue.metadata.generatedAt ?? Date()
+        )
+
+        discoveryQueue = exhaustedQueue
+        queuePresentationState = .exhausted(reason)
+        candidateCards = []
     }
 
     func signOut() async {
@@ -55,6 +118,7 @@ final class SwipeDeckViewModel {
         defer { isLoading = false }
 
         do {
+            guard let cardProvider else { return }
             let batch = try await cardProvider.fetchSwipeCandidates()
             rankingContext = batch.rankingContext
             candidates = batch.candidates
@@ -67,6 +131,59 @@ final class SwipeDeckViewModel {
                 title: "Couldn’t load players",
                 message: error.localizedDescription
             )
+        }
+    }
+
+    private func loadDiscoveryQueue() async {
+        guard let discoveryRepository else { return }
+
+        isLoading = true
+        queuePresentationState = .loading
+
+        let queue = await discoveryRepository.loadQueue()
+        applyDiscoveryQueue(queue, preserveExistingQueueOnFailure: false)
+        isLoading = false
+    }
+
+    private func applyDiscoveryQueue(
+        _ queue: DiscoveryQueue,
+        preserveExistingQueueOnFailure: Bool
+    ) {
+        switch queue.state {
+        case .ready:
+            discoveryQueue = queue
+            candidateCards = queue.candidates
+            lastDiscoveryFailure = nil
+            queuePresentationState = .ready
+        case .empty:
+            discoveryQueue = queue
+            candidateCards = []
+            lastDiscoveryFailure = nil
+            queuePresentationState = .empty(queue.emptyReason)
+        case .exhausted:
+            discoveryQueue = queue
+            candidateCards = []
+            lastDiscoveryFailure = nil
+            queuePresentationState = .exhausted(queue.exhaustedReason)
+        case .failed:
+            if !preserveExistingQueueOnFailure {
+                discoveryQueue = queue
+                candidateCards = []
+            }
+
+            if let failure = queue.failure {
+                lastDiscoveryFailure = failure
+                queuePresentationState = .failed(failure, queue.retryGuidance)
+            }
+        case .loading:
+            discoveryQueue = queue
+            queuePresentationState = .loading
+        case .refreshing:
+            discoveryQueue = queue
+            queuePresentationState = .refreshing
+        case .idle:
+            discoveryQueue = queue
+            queuePresentationState = .idle
         }
     }
 }
