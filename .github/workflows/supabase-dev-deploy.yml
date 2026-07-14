@@ -4,9 +4,11 @@ on:
   workflow_dispatch:
     inputs:
       confirm_dev_target:
-        description: "Type Scout Sports V1.3 to deploy committed migrations to the dev Supabase project."
+        description: "Select the approved dev Supabase deployment target."
         required: true
-        type: string
+        type: choice
+        options:
+          - Scout Sports V1.3
 
 permissions:
   contents: read
