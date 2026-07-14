@@ -11,6 +11,7 @@ Related documents:
 - `docs/database/MIGRATIONS.md`: proposed migration workflow.
 - `implementation/proposed/INFRA-001-database-foundation.md`: proposed database foundation plan.
 - `implementation/proposed/DB-001-supabase-database-foundation.md`: Supabase database foundation plan.
+- `implementation/proposed/INFRA-004-supabase-development-pipeline.md`: Supabase pipeline plan.
 
 ## Current Strategy
 
@@ -19,9 +20,11 @@ Swift generated Supabase types are checked in for the Profile V1 schema by
 
 Current decision:
 
-- Do not generate or commit type files until the owning platform strategy is approved.
 - iOS Swift output is approved for the Profile V1 schema at
   `backend/supabase/types/swift/Database.generated.swift`.
+- Local Swift generation uses `SUPABASE_WORKDIR=backend` and the root Makefile.
+- Swift generated type freshness is checked by regenerating from the local
+  database into a temporary file and diffing against the committed output.
 - Future web type output should be approved when the web app is part of the repository strategy.
 - Schema-changing PRs must state whether generated types were updated, not changed, or deferred.
 
@@ -39,17 +42,34 @@ This keeps the first schema migrations from silently creating platform contracts
 
 ## Command Shape
 
-Exact output paths and generation targets must be confirmed by the authorizing schema or platform story before generated files are committed.
-
-Use the Supabase CLI `gen types` command with an explicit language, target, schema, and output path.
+Use the root Makefile from the repository root:
 
 ```text
-supabase gen types --local --lang swift --schema public > backend/supabase/types/swift/Database.generated.swift
-supabase gen types --local --lang typescript --schema public > backend/supabase/types/typescript/database.generated.ts
-supabase gen types --project-id <project-ref> --lang typescript --schema public > backend/supabase/types/typescript/database.generated.ts
+make supabase-gen-types-swift
+make supabase-check-types-swift
 ```
 
-The local target is preferred for migration PR validation when local Supabase workflow is approved. Remote project generation should be used only when the approved plan says the remote project is the expected target for that validation.
+Defaults:
+
+```text
+SUPABASE_WORKDIR=backend
+SUPABASE_GEN_SCHEMA=public
+SUPABASE_SWIFT_TYPES=backend/supabase/types/swift/Database.generated.swift
+```
+
+The Swift generation target is equivalent to:
+
+```text
+supabase gen types --local --lang swift --schema public --swift-access-control internal --workdir backend > backend/supabase/types/swift/Database.generated.swift
+```
+
+The freshness check regenerates the same Swift output to a temporary file and
+fails when the committed file differs.
+
+Future TypeScript or remote generation commands must be confirmed by the
+authorizing platform story before generated files are committed. Remote project
+generation should be used only when the approved plan says the remote project is
+the expected target for that validation.
 
 ## Output Ownership
 
@@ -79,6 +99,7 @@ The note should identify:
 - Command used, if generation ran.
 - Output path, if files were committed.
 - Reason for deferral, if files were not committed.
+- Freshness check result, when committed generated output exists.
 
 ## Review Expectations
 
@@ -86,18 +107,20 @@ Generated type files, once approved, should be treated as generated artifacts:
 
 - Do not hand-edit generated files.
 - Regenerate after applying the migration to the approved target.
+- Run `make supabase-check-types-swift` after regeneration for Swift schema
+  changes.
 - Keep generated type changes in the same PR as the schema change unless the approved plan says otherwise.
 - Include generated type impact in migration headers and PR descriptions.
 - Avoid committing generated output for platforms whose ownership or path is not approved.
 
 ## Open Decisions
 
-- Whether iOS generated types are checked into the current root iOS app before any future app move.
 - Whether future web generated types wait for web monorepo planning.
 - Whether Edge Function types are generated separately from client types.
-- Which generated type commands and output paths Scout standardizes.
-- Whether CI validates generated type freshness after the first schema migration.
+- Whether CI should run Swift freshness on every PR or only schema/generated
+  type PRs once Supabase CI is enabled.
 
 ## Approval Boundary
 
-This document does not approve generating type files, committing generated files, changing Swift models, changing web code, creating Supabase directories, or adding CI jobs.
+This document does not approve changing Swift models, changing web code, adding
+new generated output languages, creating product schema, or adding CI jobs.

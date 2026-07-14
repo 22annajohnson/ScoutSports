@@ -23,7 +23,7 @@ SUPABASE_SEED_FILE ?= backend/supabase/seed.sql
 SUPABASE_GEN_SCHEMA ?= public
 SUPABASE_SWIFT_TYPES ?= backend/supabase/types/swift/Database.generated.swift
 
-.PHONY: help doctor build build-release run test clean supabase-doctor supabase-start supabase-stop supabase-status supabase-db-reset supabase-validate-reset-seed supabase-migration-new supabase-migration-up supabase-test-db supabase-gen-types-swift
+.PHONY: help doctor build build-release run test clean supabase-doctor supabase-start supabase-stop supabase-status supabase-db-reset supabase-validate-reset-seed supabase-migration-new supabase-migration-up supabase-test-db supabase-gen-types-swift supabase-check-types-swift
 
 help:
 	@printf "Targets:\n"
@@ -44,6 +44,7 @@ help:
 	@printf "  make supabase-migration-up  Apply pending local migrations\n"
 	@printf "  make supabase-test-db       Run local pgTAP database tests\n"
 	@printf "  make supabase-gen-types-swift Generate Swift Supabase types locally\n"
+	@printf "  make supabase-check-types-swift Check committed Swift Supabase types are fresh\n"
 	@printf "\nOverrides:\n"
 	@printf "  CONFIGURATION=Debug|Release\n"
 	@printf "  DESTINATION='generic/platform=iOS Simulator'\n"
@@ -155,3 +156,16 @@ supabase-test-db:
 
 supabase-gen-types-swift:
 	$(SUPABASE) gen types --local --lang swift --schema "$(SUPABASE_GEN_SCHEMA)" --swift-access-control internal --workdir "$(SUPABASE_WORKDIR)" > "$(SUPABASE_SWIFT_TYPES)"
+
+supabase-check-types-swift:
+	@test -f "$(SUPABASE_SWIFT_TYPES)" || (printf "Missing generated Swift types: $(SUPABASE_SWIFT_TYPES)\n"; exit 2)
+	@tmp_file=$$(mktemp); \
+	trap 'rm -f "$$tmp_file"' EXIT; \
+	$(SUPABASE) gen types --local --lang swift --schema "$(SUPABASE_GEN_SCHEMA)" --swift-access-control internal --workdir "$(SUPABASE_WORKDIR)" > "$$tmp_file"; \
+	if diff -u "$(SUPABASE_SWIFT_TYPES)" "$$tmp_file" >/dev/null; then \
+		printf "Swift Supabase generated types are fresh: $(SUPABASE_SWIFT_TYPES)\n"; \
+	else \
+		printf "Swift Supabase generated types are stale. Run make supabase-gen-types-swift after resetting the local database.\n"; \
+		diff -u "$(SUPABASE_SWIFT_TYPES)" "$$tmp_file"; \
+		exit 1; \
+	fi
