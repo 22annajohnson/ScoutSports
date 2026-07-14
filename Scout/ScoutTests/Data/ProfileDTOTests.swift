@@ -627,4 +627,237 @@ final class ProfileDTOTests: XCTestCase {
         XCTAssertEqual(mock.updateAvailabilityCalls.count, 1)
         XCTAssertEqual(mock.updatePrivacyCalls.count, 1)
     }
+
+    @MainActor
+    func test_ownerEditableProfileMapper_mapsFullOwnerProfileRows() throws {
+        let profileID = UUID(uuidString: "00000000-0000-0000-0000-000000000042")!
+
+        let profile = try OwnerEditableProfileMapper.ownerEditableProfile(
+            profile: ownerEditableProfileRow(profileID: profileID),
+            sports: [
+                OwnerProfileSportRow(
+                    profileId: profileID,
+                    sportSlug: "pickleball",
+                    skillLevel: "level_3",
+                    isPrimary: true
+                ),
+                OwnerProfileSportRow(
+                    profileId: profileID,
+                    sportSlug: "tennis",
+                    skillLevel: "level_2",
+                    isPrimary: false
+                )
+            ],
+            availability: OwnerProfileAvailabilityRow(
+                profileId: profileID,
+                preferredDays: ["monday", "saturday"],
+                preferredTimes: ["morning", "flexible"],
+                playIntent: "competitive",
+                homeArea: "Raleigh",
+                travelRadiusMiles: 25,
+                preferredPlayStyle: "doubles"
+            ),
+            privacy: OwnerProfilePrivacyRow(
+                profileId: profileID,
+                profileVisibility: "authenticated",
+                discoverable: true,
+                locationPrecision: "coarse"
+            )
+        )
+
+        XCTAssertEqual(profile.id, profileID.uuidString)
+        XCTAssertEqual(profile.displayName, "Anna")
+        XCTAssertEqual(profile.username, "anna_pb")
+        XCTAssertEqual(profile.profilePhotoPath, "profiles/anna/headshot.jpg")
+        XCTAssertEqual(profile.actionPhotoPath, "profiles/anna/action.jpg")
+        XCTAssertEqual(profile.bio, "Always up for a good doubles game.")
+        XCTAssertEqual(profile.sports, ["pickleball", "tennis"])
+        XCTAssertEqual(profile.primarySport, "pickleball")
+        XCTAssertEqual(profile.skillLevelBySport, ["pickleball": 3, "tennis": 2])
+        XCTAssertEqual(profile.preferredDays, [.monday, .saturday])
+        XCTAssertEqual(profile.preferredTimeWindows, [.morning, .flexible])
+        XCTAssertEqual(profile.playIntent, .competitive)
+        XCTAssertEqual(profile.homeArea, "Raleigh")
+        XCTAssertEqual(profile.travelRadiusMiles, 25)
+        XCTAssertEqual(profile.preferredPlayStyle, .doubles)
+        XCTAssertEqual(profile.profileVisibility, .authenticated)
+        XCTAssertTrue(profile.isDiscoverable)
+        XCTAssertEqual(profile.locationPrecision, .coarse)
+        XCTAssertEqual(profile.completionState, .discoveryReady)
+        XCTAssertEqual(profile.accountStatus, .active)
+        XCTAssertNotNil(profile.createdAt)
+        XCTAssertNotNil(profile.lastActiveAt)
+    }
+
+    @MainActor
+    func test_ownerEditableProfileMapper_defaultsMissingOptionalRowsTowardSafeOwnerState() throws {
+        let profileID = UUID(uuidString: "00000000-0000-0000-0000-000000000043")!
+
+        let profile = try OwnerEditableProfileMapper.ownerEditableProfile(
+            profile: ownerEditableProfileRow(
+                profileID: profileID,
+                profilePhotoPath: nil,
+                actionPhotoPath: nil,
+                bio: nil,
+                lastActiveAt: nil
+            ),
+            sports: [],
+            availability: nil,
+            privacy: nil
+        )
+
+        XCTAssertNil(profile.profilePhotoPath)
+        XCTAssertNil(profile.actionPhotoPath)
+        XCTAssertNil(profile.bio)
+        XCTAssertTrue(profile.sports.isEmpty)
+        XCTAssertNil(profile.primarySport)
+        XCTAssertTrue(profile.skillLevelBySport.isEmpty)
+        XCTAssertTrue(profile.preferredDays.isEmpty)
+        XCTAssertTrue(profile.preferredTimeWindows.isEmpty)
+        XCTAssertNil(profile.playIntent)
+        XCTAssertNil(profile.homeArea)
+        XCTAssertNil(profile.travelRadiusMiles)
+        XCTAssertNil(profile.preferredPlayStyle)
+        XCTAssertEqual(profile.profileVisibility, .privateProfile)
+        XCTAssertFalse(profile.isDiscoverable)
+        XCTAssertEqual(profile.locationPrecision, .coarse)
+        XCTAssertNil(profile.lastActiveAt)
+    }
+
+    @MainActor
+    func test_ownerEditableProfileMapper_reportsMissingProfile() {
+        XCTAssertThrowsProfileRepositoryError(.profileMissing) {
+            _ = try OwnerEditableProfileMapper.ownerEditableProfile(
+                profile: nil,
+                sports: [],
+                availability: nil,
+                privacy: nil
+            )
+        }
+    }
+
+    @MainActor
+    func test_ownerEditableProfileMapper_rejectsMalformedRows() {
+        let profileID = UUID(uuidString: "00000000-0000-0000-0000-000000000044")!
+
+        XCTAssertThrowsProfileRepositoryError(.mappingFailed) {
+            _ = try OwnerEditableProfileMapper.ownerEditableProfile(
+                profile: ownerEditableProfileRow(profileID: profileID, createdAt: "not-a-date"),
+                sports: [],
+                availability: nil,
+                privacy: nil
+            )
+        }
+
+        XCTAssertThrowsProfileRepositoryError(.mappingFailed) {
+            _ = try OwnerEditableProfileMapper.ownerEditableProfile(
+                profile: ownerEditableProfileRow(profileID: profileID),
+                sports: [
+                    OwnerProfileSportRow(
+                        profileId: profileID,
+                        sportSlug: "pickleball",
+                        skillLevel: "intermediate",
+                        isPrimary: true
+                    )
+                ],
+                availability: nil,
+                privacy: nil
+            )
+        }
+
+        XCTAssertThrowsProfileRepositoryError(.mappingFailed) {
+            _ = try OwnerEditableProfileMapper.ownerEditableProfile(
+                profile: ownerEditableProfileRow(profileID: profileID),
+                sports: [],
+                availability: OwnerProfileAvailabilityRow(
+                    profileId: profileID,
+                    preferredDays: ["monday", "funday"],
+                    preferredTimes: ["morning"],
+                    playIntent: "casual",
+                    homeArea: nil,
+                    travelRadiusMiles: nil,
+                    preferredPlayStyle: nil
+                ),
+                privacy: nil
+            )
+        }
+
+        XCTAssertThrowsProfileRepositoryError(.mappingFailed) {
+            _ = try OwnerEditableProfileMapper.ownerEditableProfile(
+                profile: ownerEditableProfileRow(profileID: profileID),
+                sports: [],
+                availability: OwnerProfileAvailabilityRow(
+                    profileId: profileID,
+                    preferredDays: [],
+                    preferredTimes: [],
+                    playIntent: nil,
+                    homeArea: nil,
+                    travelRadiusMiles: 101,
+                    preferredPlayStyle: nil
+                ),
+                privacy: nil
+            )
+        }
+
+        XCTAssertThrowsProfileRepositoryError(.mappingFailed) {
+            _ = try OwnerEditableProfileMapper.ownerEditableProfile(
+                profile: ownerEditableProfileRow(profileID: profileID),
+                sports: [],
+                availability: nil,
+                privacy: OwnerProfilePrivacyRow(
+                    profileId: profileID,
+                    profileVisibility: "friends",
+                    discoverable: true,
+                    locationPrecision: "coarse"
+                )
+            )
+        }
+    }
+
+    private func ownerEditableProfileRow(
+        profileID: UUID,
+        displayName: String? = " Anna ",
+        profilePhotoPath: String? = "profiles/anna/headshot.jpg",
+        actionPhotoPath: String? = "profiles/anna/action.jpg",
+        bio: String? = "Always up for a good doubles game.",
+        profileCompletionState: String = "discovery_ready",
+        accountStatus: String = "active",
+        createdAt: String = "2026-07-14T12:00:00Z",
+        lastActiveAt: String? = "2026-07-14T13:00:00Z"
+    ) -> OwnerEditableProfileRow {
+        OwnerEditableProfileRow(
+            id: profileID,
+            displayName: displayName,
+            username: "anna_pb",
+            profilePhotoPath: profilePhotoPath,
+            actionPhotoPath: actionPhotoPath,
+            bio: bio,
+            profileCompletionState: profileCompletionState,
+            accountStatus: accountStatus,
+            createdAt: createdAt,
+            lastActiveAt: lastActiveAt
+        )
+    }
+
+    private func XCTAssertThrowsProfileRepositoryError(
+        _ expectedError: ProfileRepositoryError,
+        file: StaticString = #filePath,
+        line: UInt = #line,
+        operation: () throws -> Void
+    ) {
+        do {
+            try operation()
+            XCTFail("Expected ProfileRepositoryError.\(expectedError)", file: file, line: line)
+        } catch let error as ProfileRepositoryError {
+            switch (expectedError, error) {
+            case (.profileMissing, .profileMissing),
+                 (.mappingFailed, .mappingFailed):
+                XCTAssertTrue(true)
+            default:
+                XCTFail("Expected \(expectedError), got \(error)", file: file, line: line)
+            }
+        } catch {
+            XCTFail("Expected ProfileRepositoryError, got \(error)", file: file, line: line)
+        }
+    }
 }
