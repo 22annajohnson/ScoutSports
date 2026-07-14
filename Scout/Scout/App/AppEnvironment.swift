@@ -77,6 +77,11 @@ final class AppEnvironment {
   }
 
   @MainActor
+  func makeOwnerProfileViewModel() -> OwnerProfileViewModel {
+    OwnerProfileViewModel(repository: ownerEditableProfileRepository)
+  }
+
+  @MainActor
   func makeSwipeDeckViewModel(session: SessionStore) -> SwipeDeckViewModel {
     SwipeDeckViewModel(
       cardProvider: swipeCardProvider,
