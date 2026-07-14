@@ -20,6 +20,7 @@ SUPABASE ?= supabase
 SUPABASE_WORKDIR ?= backend
 SUPABASE_MIGRATION_NAME ?=
 SUPABASE_SEED_FILE ?= backend/supabase/seed.sql
+SUPABASE_TEST_DB_PATH ?= backend/supabase/tests/database
 SUPABASE_GEN_SCHEMA ?= public
 SUPABASE_SWIFT_TYPES ?= backend/supabase/types/swift/Database.generated.swift
 
@@ -55,6 +56,7 @@ help:
 	@printf "  SUPABASE_WORKDIR=backend\n"
 	@printf "  SUPABASE_MIGRATION_NAME=INFRA-123_short_name\n"
 	@printf "  SUPABASE_SEED_FILE=backend/supabase/seed.sql\n"
+	@printf "  SUPABASE_TEST_DB_PATH=backend/supabase/tests/database\n"
 	@printf "  SUPABASE_GEN_SCHEMA=public\n"
 	@printf "  SUPABASE_SWIFT_TYPES=backend/supabase/types/swift/Database.generated.swift\n"
 
@@ -112,6 +114,7 @@ supabase-doctor:
 	@test -d "$(SUPABASE_WORKDIR)/supabase/seed"
 	@test -d "$(SUPABASE_WORKDIR)/supabase/types"
 	@test -d "$(SUPABASE_WORKDIR)/supabase/config"
+	@test -d "$(SUPABASE_TEST_DB_PATH)"
 	@test -f "$(SUPABASE_SEED_FILE)"
 	@if command -v docker >/dev/null 2>&1; then \
 		if docker info >/dev/null 2>&1; then \
@@ -152,7 +155,7 @@ supabase-migration-up:
 	$(SUPABASE) migration up --workdir "$(SUPABASE_WORKDIR)"
 
 supabase-test-db:
-	$(SUPABASE) test db --workdir "$(SUPABASE_WORKDIR)"
+	$(SUPABASE) test db "$(SUPABASE_TEST_DB_PATH)" --workdir "$(SUPABASE_WORKDIR)"
 
 supabase-gen-types-swift:
 	$(SUPABASE) gen types --local --lang swift --schema "$(SUPABASE_GEN_SCHEMA)" --swift-access-control internal --workdir "$(SUPABASE_WORKDIR)" > "$(SUPABASE_SWIFT_TYPES)"

@@ -97,6 +97,23 @@ Future RLS implementation plans should include a test matrix or manual verificat
 - Service role use cases and boundaries.
 - Cross-domain consumer access through approved contracts.
 
+Automated pgTAP/RLS tests should live under:
+
+```text
+backend/supabase/tests/database/
+```
+
+Run them locally with:
+
+```text
+make supabase-test-db
+```
+
+Schema stories must add pgTAP tests when they create or change user-owned or
+user-visible tables, RLS policies, database functions, triggers, constraints, or
+seed data used by RLS validation. If a schema story cannot add automated tests,
+the PR must document why and include equivalent manual local verification steps.
+
 ## Copyable Test Matrix
 
 Future schema plans can copy this matrix for each table or policy group:
