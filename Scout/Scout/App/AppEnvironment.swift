@@ -15,6 +15,7 @@ final class AppEnvironment {
   let supabase: SupabaseClient
   let authService: AuthProviding
   let profileRepository: ProfileProviding
+  let ownerEditableProfileRepository: OwnerEditableProfileProviding
   let matchSignalsRepository: PlayerMatchSignalsProviding
   let profileRelationshipsRepository: PlayerProfileRelationshipsProviding
   let imageUploadService: ImageUploadProviding
@@ -35,6 +36,7 @@ final class AppEnvironment {
     authService = AuthService(supabase: supabase)
     let profileRepository = ProfileRepository(supabase: supabase)
     self.profileRepository = profileRepository
+    self.ownerEditableProfileRepository = profileRepository
     self.matchSignalsRepository = profileRepository
     self.profileRelationshipsRepository = profileRepository
     imageUploadService = ImageUploadService(
