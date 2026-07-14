@@ -304,6 +304,26 @@ final class ProfileDTOTests: XCTestCase {
         XCTAssertTrue(values.3)
     }
 
+    func test_profileDomainEnums_useSchemaBackedRawValues() async {
+        let values = await MainActor.run {
+            (
+                ProfileVisibility.publicProfile.rawValue,
+                ProfileVisibility.authenticated.rawValue,
+                ProfileVisibility.privateProfile.rawValue,
+                ProfileCompletionState.accountCreated.rawValue,
+                ProfileCompletionState.discoveryReady.rawValue,
+                ProfileTimeWindow.flexible.rawValue
+            )
+        }
+
+        XCTAssertEqual(values.0, "public")
+        XCTAssertEqual(values.1, "authenticated")
+        XCTAssertEqual(values.2, "private")
+        XCTAssertEqual(values.3, "account_created")
+        XCTAssertEqual(values.4, "discovery_ready")
+        XCTAssertEqual(values.5, "flexible")
+    }
+
     func test_profileIdentityUpdateCommand_validatesDisplayNameAndUsernameOnly() async {
         let validations = await MainActor.run {
             let invalid = ProfileIdentityUpdateCommand(
@@ -357,21 +377,43 @@ final class ProfileDTOTests: XCTestCase {
         XCTAssertTrue(validations.2)
     }
 
-    func test_profileAvailabilityUpdateCommand_rejectsNegativeTravelRadius() async {
-        let isInvalid = await MainActor.run {
-            let invalid = ProfileAvailabilityUpdateCommand(
+    func test_profileAvailabilityUpdateCommand_rejectsOutOfRangeTravelRadius() async {
+        let validations = await MainActor.run {
+            let zero = ProfileAvailabilityUpdateCommand(
                 preferredDays: [.monday, .wednesday],
                 preferredTimeWindows: [.evening],
                 playIntent: .casual,
                 homeArea: "Durham",
-                travelRadiusMiles: -1,
+                travelRadiusMiles: 0,
+                preferredPlayStyle: .open
+            )
+            let tooHigh = ProfileAvailabilityUpdateCommand(
+                preferredDays: [.monday, .wednesday],
+                preferredTimeWindows: [.evening],
+                playIntent: .casual,
+                homeArea: "Durham",
+                travelRadiusMiles: 101,
+                preferredPlayStyle: .open
+            )
+            let valid = ProfileAvailabilityUpdateCommand(
+                preferredDays: [.monday, .wednesday],
+                preferredTimeWindows: [.flexible],
+                playIntent: .casual,
+                homeArea: "Durham",
+                travelRadiusMiles: 100,
                 preferredPlayStyle: .open
             )
 
-            return invalid.validationErrors() == [.negativeTravelRadius]
+            return (
+                zero.validationErrors() == [.travelRadiusOutOfRange],
+                tooHigh.validationErrors() == [.travelRadiusOutOfRange],
+                valid.validationErrors().isEmpty
+            )
         }
 
-        XCTAssertTrue(isInvalid)
+        XCTAssertTrue(validations.0)
+        XCTAssertTrue(validations.1)
+        XCTAssertTrue(validations.2)
     }
 
     func test_mockProfileRepository_tracks_newBoundaryCalls() async throws {

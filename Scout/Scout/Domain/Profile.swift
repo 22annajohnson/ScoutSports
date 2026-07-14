@@ -39,6 +39,8 @@ struct OwnerEditableProfile: Identifiable, Equatable, Sendable {
     var bio: String?
     var sports: [String]
     var primarySport: String?
+    /// Domain editing shape for sport-specific skills.
+    /// Repository mappers must convert this to approved storage skill labels/values.
     var skillLevelBySport: [String: Int]
     var preferredDays: [ProfileWeekday]
     var preferredTimeWindows: [ProfileTimeWindow]
@@ -69,6 +71,7 @@ enum ProfileTimeWindow: String, CaseIterable, Codable, Equatable, Sendable {
     case morning
     case afternoon
     case evening
+    case flexible
 }
 
 enum ProfilePlayIntent: String, CaseIterable, Codable, Equatable, Sendable {
@@ -85,9 +88,9 @@ enum PreferredProfilePlayStyle: String, CaseIterable, Codable, Equatable, Sendab
 }
 
 enum ProfileVisibility: String, CaseIterable, Codable, Equatable, Sendable {
-    case publicProfile
-    case matchedOnly
-    case privateProfile
+    case publicProfile = "public"
+    case authenticated
+    case privateProfile = "private"
 }
 
 enum ProfileLocationPrecision: String, CaseIterable, Codable, Equatable, Sendable {
@@ -96,11 +99,11 @@ enum ProfileLocationPrecision: String, CaseIterable, Codable, Equatable, Sendabl
 }
 
 enum ProfileCompletionState: String, CaseIterable, Codable, Equatable, Sendable {
-    case accountCreated
-    case basicIdentity
-    case discoveryReady
-    case eventReady
-    case fullyComplete
+    case accountCreated = "account_created"
+    case basicIdentity = "basic_identity"
+    case discoveryReady = "discovery_ready"
+    case eventReady = "event_ready"
+    case fullyComplete = "fully_complete"
 }
 
 enum ProfileAccountStatus: String, CaseIterable, Codable, Equatable, Sendable {
@@ -115,7 +118,7 @@ enum ProfileUpdateValidationError: Equatable, Sendable {
     case usernameFormat
     case primarySportNotSelected
     case primarySportSkillMissing
-    case negativeTravelRadius
+    case travelRadiusOutOfRange
 }
 
 struct ProfileIdentityUpdateCommand: Equatable, Sendable {
@@ -176,8 +179,8 @@ struct ProfileAvailabilityUpdateCommand: Equatable, Sendable {
     var preferredPlayStyle: PreferredProfilePlayStyle?
 
     func validationErrors() -> [ProfileUpdateValidationError] {
-        if let travelRadiusMiles, travelRadiusMiles < 0 {
-            return [.negativeTravelRadius]
+        if let travelRadiusMiles, !(1...100).contains(travelRadiusMiles) {
+            return [.travelRadiusOutOfRange]
         }
 
         return []
