@@ -20,12 +20,7 @@ platform :ios do
 
     run_tests(
       scheme: "Scout",
-      clean: true,
-      devices: ["iPhone 17 Pro"],
-      force_quit_simulator: true,
-      reset_simulator: true,
-      disable_concurrent_testing: true,
-      max_concurrent_simulators: 1
+      clean: true
     )
 
   end

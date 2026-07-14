@@ -28,7 +28,7 @@ jobs:
           git diff --name-only "$BASE_SHA" "$HEAD_SHA" > changed-files.txt
           cat changed-files.txt
 
-          if grep -E '^Scout/(Gemfile|Gemfile\.lock|Makefile|Scout/|Scout\.xcodeproj/|ScoutDesign/|ScoutTests/|ScoutUITests/|fastlane/)' changed-files.txt; then
+          if grep -E '^Scout/(Gemfile|Gemfile\.lock|Scout/|Scout\.xcodeproj/|ScoutDesign/|ScoutTests/|ScoutUITests/|fastlane/)' changed-files.txt; then
             echo "should-run-ios=true" >> "$GITHUB_OUTPUT"
           else
             echo "should-run-ios=false" >> "$GITHUB_OUTPUT"
