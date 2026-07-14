@@ -14,12 +14,14 @@ Related documents:
 
 ## Current Strategy
 
-Generated Supabase types are not checked in yet.
+Swift generated Supabase types are checked in for the Profile V1 schema by
+`SOCIAL-90`.
 
 Current decision:
 
 - Do not generate or commit type files until the owning platform strategy is approved.
-- iOS type output should be approved before any Swift-facing generated file is added.
+- iOS Swift output is approved for the Profile V1 schema at
+  `backend/supabase/types/swift/Database.generated.swift`.
 - Future web type output should be approved when the web app is part of the repository strategy.
 - Schema-changing PRs must state whether generated types were updated, not changed, or deferred.
 
@@ -55,7 +57,7 @@ Reserved output locations:
 
 | Platform | Reserved Path | Current Status |
 | --- | --- | --- |
-| iOS / Swift data layer | `backend/supabase/types/swift/Database.generated.swift` | Reserved; do not commit generated output until Swift generated type ownership is approved. |
+| iOS / Swift data layer | `backend/supabase/types/swift/Database.generated.swift` | Active for Profile V1 generated output as of `SOCIAL-90`. |
 | Future web / TypeScript data layer | `backend/supabase/types/typescript/database.generated.ts` | Reserved; do not commit generated output until web generated type ownership is approved. |
 
 Generated types are data-layer artifacts. SwiftUI views, domain models, and feature view models should not consume generated database types directly. Repository and mapping layers own translation from generated rows to approved domain contracts.
