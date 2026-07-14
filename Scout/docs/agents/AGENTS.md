@@ -136,6 +136,8 @@ Implementation agents should inspect:
 - Existing feature code and tests.
 - The repository `Makefile` for validation.
 
+For UI work, implementation agents should also inspect `docs/design/DESIGN_SYSTEM.md` and reference `DESIGN-001`. New foundations, shared components, component ownership changes, and platform behavior divergences require design review or an approved proposal before implementation.
+
 ## Agent Identity
 
 Each active agent must know its assigned Scout identity before starting work. The identity should be visible in the agent's handoff and PR description.
