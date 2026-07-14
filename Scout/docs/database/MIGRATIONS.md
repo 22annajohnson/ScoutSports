@@ -125,7 +125,7 @@ Required checks:
 - Generated type impact is documented as updated, not changed, or deferred.
 - RLS impact is documented, including positive and negative checks when the migration changes user-owned or user-visible data.
 - Dashboard usage, if any, was inspection/debugging only and did not create durable schema drift.
-- Deployment target is identified as `scout-dev`; staging and production are not part of the migration unless a later approved plan explicitly adds them.
+- Deployment target is identified as `Scout Sports V1.3/main`, the current temporary development database; staging and production are not part of the migration unless a later approved plan explicitly adds them.
 - Rollback or forward-fix approach is documented.
 - No unrelated schema, auth, storage, Edge Function, generated type, seed, or CI changes are bundled into the PR.
 
@@ -141,7 +141,7 @@ Migration validation:
 - [ ] Generated type impact is documented.
 - [ ] RLS positive/negative checks are documented, or RLS impact is explicitly not applicable.
 - [ ] Dashboard inspection, if any, was inspection/debugging only.
-- [ ] Deployment target is scout-dev only.
+- [ ] Deployment target is `Scout Sports V1.3/main` only.
 - [ ] Rollback or forward-fix approach is documented.
 ```
 
@@ -189,7 +189,9 @@ Future database PRs should document:
 
 ## Deployment Order
 
-`scout-dev` is the only current deployment target for Scout database changes.
+`Scout Sports V1.3/main` is the only current deployment target for Scout database changes.
+
+This project is temporarily treated as the development database because Scout has no production users yet and Supabase branching is not available on the current plan. A separate production project should be created before real users are onboarded.
 
 Future migration deployment should follow this order:
 
@@ -199,8 +201,8 @@ Future migration deployment should follow this order:
 4. Confirm generated types were updated, not changed, or deferred according to `docs/database/GENERATED_TYPES.md`.
 5. Confirm RLS checks were performed for affected user data or explicitly marked not applicable.
 6. Confirm the Supabase dashboard has not been used for durable schema edits outside the migration.
-7. Apply the approved migration to `scout-dev`.
-8. Inspect `scout-dev` after apply for migration status, schema shape, RLS status, and obvious seed/type mismatches.
+7. Apply the approved migration to `Scout Sports V1.3/main`.
+8. Inspect `Scout Sports V1.3/main` after apply for migration status, schema shape, RLS status, and obvious seed/type mismatches.
 9. Record deployment notes on the PR or release handoff, including the migration identifier, target, validation evidence, and any follow-up.
 
 Staging and production projects are future environments. They must not be introduced through a migration PR alone. Adding staging/prod promotion requires explicit approval and may require an ADR if it changes CI, auth, deployment, secrets, or database ownership.

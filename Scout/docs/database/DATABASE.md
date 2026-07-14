@@ -32,7 +32,8 @@ The canonical database schema should be documented here or in `backend/supabase/
 
 Current planning assumptions:
 
-- `scout-dev` is the active Supabase development project.
+- `Scout Sports V1.3` on Supabase `main` is temporarily treated as Scout's development database because the project has no production users yet and Supabase branching is not available on the current plan.
+- A separate production Supabase project will be created later before real users are onboarded.
 - Staging and production projects will be introduced later through approved planning.
 - Migrations in the repository should become the authoritative schema history after approval.
 - Supabase dashboard edits are for inspection/debugging only, not durable schema changes.

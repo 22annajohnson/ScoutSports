@@ -16,7 +16,7 @@ Use documentation or example files with variable names only. Do not commit real 
 
 | Variable | Purpose | Secret? | Notes |
 | --- | --- | --- | --- |
-| `SUPABASE_PROJECT_REF` | Identifies the target project, such as `scout-dev`. | No | Required only when an approved workflow links to a remote project. |
+| `SUPABASE_PROJECT_REF` | Identifies the target project, currently `Scout Sports V1.3/main` until a separate production project exists. | No | Required only when an approved workflow links to a remote project. |
 | `SUPABASE_URL` | Supabase API URL for a specific environment. | No | Environment-specific client configuration. |
 | `SUPABASE_ANON_KEY` | Client-safe anon key for authenticated user flows. | No, but environment-specific | Keep separate from service role usage. |
 | `SUPABASE_SERVICE_ROLE_KEY` | Admin/server-side Supabase access. | Yes | Never use in client apps or commit. |
