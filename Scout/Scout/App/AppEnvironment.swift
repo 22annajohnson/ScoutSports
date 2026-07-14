@@ -16,6 +16,7 @@ final class AppEnvironment {
   let authService: AuthProviding
   let profileRepository: ProfileProviding
   let ownerEditableProfileRepository: OwnerEditableProfileProviding
+  let publicProfileRepository: PublicProfileProviding
   let matchSignalsRepository: PlayerMatchSignalsProviding
   let profileRelationshipsRepository: PlayerProfileRelationshipsProviding
   let imageUploadService: ImageUploadProviding
@@ -37,6 +38,7 @@ final class AppEnvironment {
     let profileRepository = ProfileRepository(supabase: supabase)
     self.profileRepository = profileRepository
     self.ownerEditableProfileRepository = profileRepository
+    self.publicProfileRepository = profileRepository
     self.matchSignalsRepository = profileRepository
     self.profileRelationshipsRepository = profileRepository
     imageUploadService = ImageUploadService(
@@ -84,6 +86,11 @@ final class AppEnvironment {
   @MainActor
   func makeOwnerEditProfileViewModel(profile: OwnerEditableProfile) -> OwnerEditProfileViewModel {
     OwnerEditProfileViewModel(profile: profile, repository: ownerEditableProfileRepository)
+  }
+
+  @MainActor
+  func makePublicProfileViewModel(profileID: UUID) -> PublicProfileViewModel {
+    PublicProfileViewModel(profileID: profileID, repository: publicProfileRepository)
   }
 
   @MainActor
