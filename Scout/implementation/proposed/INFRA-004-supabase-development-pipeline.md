@@ -319,6 +319,8 @@ V0:
 
 - Use `Scout Sports V1.3/main` as the temporary development/integration remote.
 - Deploy from `develop` only, through manual `workflow_dispatch`.
+- Automatically deploy from `develop` only when committed migration files under
+  `Scout/backend/supabase/migrations/` changed.
 - Use the approved GitHub repo variable `SUPABASE_PROJECT_REF` and repo secret
   `SUPABASE_ACCESS_TOKEN` for dev deployment.
 - Use the approved GitHub repo secret `SUPABASE_DB_PASSWORD` as the remote

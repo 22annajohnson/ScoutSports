@@ -124,17 +124,20 @@ Production seed loading is disabled by default. It must not be enabled without a
 
 ## Dev Deployment
 
-Committed repository migrations may be manually deployed to `Scout Sports V1.3`
-through the `Supabase Dev Deployment` GitHub Actions workflow after local
-validation passes.
+Committed repository migrations deploy to `Scout Sports V1.3` through the
+`Supabase Dev Deployment` GitHub Actions workflow after local validation passes.
 
 Current dev deployment rules:
 
-- The workflow is manual only and gated to `develop`.
+- The workflow can be run manually from `develop`.
+- The workflow also runs automatically on pushes to `develop` when committed
+  migration files under `Scout/backend/supabase/migrations/` changed.
 - The target project ref is `rwhyyujlcvwjdfssykkq`.
 - The workflow uses `SUPABASE_ACCESS_TOKEN` for Supabase CLI deployment.
 - The workflow uses `SUPABASE_DB_PASSWORD` for non-interactive remote database
   linking and migration push.
+- The workflow logs Supabase CLI version and dev migration status without
+  printing secrets.
 - The iOS publishable key is not used for deployment.
 - The Supabase secret key is not required for migration deployment.
 - Supabase Branching, staging, production, Edge Functions, and storage buckets

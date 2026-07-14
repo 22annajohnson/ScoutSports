@@ -277,28 +277,54 @@ Use a hotfix migration only when waiting for normal feature-branch flow would le
 
 When production exists, production hotfix deployment still requires protected environment approval unless the owner documents a separate emergency break-glass process.
 
-## Manual Dev Deployment
+## Dev Deployment
 
-`Supabase Dev Deployment` is the current manual workflow for applying committed
+`Supabase Dev Deployment` is the current workflow for applying committed
 repository migrations to `Scout Sports V1.3/main`, Scout's temporary development
-database.
+database. It can run manually or automatically after migration files merge to
+`develop`.
 
-This workflow:
+Manual dispatch:
 
 - Runs only through `workflow_dispatch`.
 - Is gated to the `develop` branch.
 - Requires the manual confirmation input `Scout Sports V1.3`.
+
+Automatic deployment:
+
+- Runs on pushes to `develop` only when files under
+  `Scout/backend/supabase/migrations/` changed.
+- Does not run for docs-only, iOS-only, seed-only, generated-type-only, or
+  unrelated GitHub Actions changes.
+- Applies pending migrations through `supabase db push`, which uses Supabase
+  migration history to avoid reapplying migrations already recorded on the
+  remote database.
+
+Both paths:
+
 - Uses GitHub repo variable `SUPABASE_PROJECT_REF`, expected to equal
   `rwhyyujlcvwjdfssykkq`.
 - Uses GitHub repo secret `SUPABASE_ACCESS_TOKEN` for Supabase CLI deployment.
 - Uses GitHub repo secret `SUPABASE_DB_PASSWORD` as the remote database password
   for non-interactive `supabase link` and `supabase db push`.
-- Runs local validation before linking or pushing to the remote dev project.
+- Run local validation before linking or pushing to the remote dev project.
+- List dev migration status before and after deployment for visible deployment
+  logs.
 - Runs `supabase db push` without `--include-seed`, so production-like or
   remote seed deployment remains disabled.
 
 This is dev deployment only. It is not staging, production CD, preview branching,
 Edge Function deployment, storage provisioning, or schema invention.
+
+If automatic dev deployment fails:
+
+1. Do not manually run SQL against `Scout Sports V1.3/main`.
+2. Inspect the failed GitHub Actions step and migration status logs.
+3. Fix the migration, local validation, or drift issue in a follow-up PR.
+4. Rerun the workflow after the fix merges, or use manual dispatch from
+   `develop` after confirming the committed migration set is correct.
+5. If the failure indicates migration history drift, follow the drift response
+   process in this document before attempting another deployment.
 
 ## Future CI Hooks
 

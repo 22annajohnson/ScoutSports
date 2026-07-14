@@ -9,6 +9,10 @@ on:
         type: choice
         options:
           - Scout Sports V1.3
+  push:
+    branches: [ develop ]
+    paths:
+      - Scout/backend/supabase/migrations/**
 
 permissions:
   contents: read
@@ -47,7 +51,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          if [ "${CONFIRM_DEV_TARGET}" != "Scout Sports V1.3" ]; then
+          if [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ] && [ "${CONFIRM_DEV_TARGET}" != "Scout Sports V1.3" ]; then
             printf "Invalid confirmation input: %s\n" "${CONFIRM_DEV_TARGET}"
             printf "Type exactly: Scout Sports V1.3\n"
             exit 2
@@ -59,6 +63,10 @@ jobs:
 
           printf "Deploy target: Scout Sports V1.3 dev (%s)\n" "${SUPABASE_PROJECT_REF}"
           printf "Branch: %s\n" "${GITHUB_REF_NAME}"
+          printf "Trigger: %s\n" "${GITHUB_EVENT_NAME}"
+          if [ "${GITHUB_EVENT_NAME}" = "push" ]; then
+            printf "Automatic dev deployment triggered by migration changes on develop.\n"
+          fi
           printf "Remote database password secret: configured\n"
           printf "This workflow is dev deployment only; it is not staging or production CD.\n"
 
@@ -84,5 +92,12 @@ jobs:
       - name: Link Scout Sports V1.3 dev project
         run: make supabase-link-dev
 
+      - name: List Scout Sports V1.3 dev migrations before deploy
+        run: make supabase-list-dev-migrations
+
       - name: Deploy committed migrations to Scout Sports V1.3 dev
         run: make supabase-deploy-dev
+
+      - name: List Scout Sports V1.3 dev migrations after deploy
+        if: always()
+        run: make supabase-list-dev-migrations
