@@ -76,7 +76,11 @@ Optional risk labels:
 
 ## CI and Validation
 
-Run the validation appropriate to the touched area and document it in the PR. Documentation-only changes should state that no build was run unless project configuration changed. After opening a PR, monitor Jira and GitHub; if automation moves a ticket back to `In Progress` because CI failed, inspect the failure, fix it, and push an update.
+PR CI is the default first full validation pass. Agents do not need to run the full local test suite before opening a PR unless the ticket, approved implementation plan, task prompt, or reviewer explicitly requires local validation.
+
+Run targeted local tests when actively debugging a failed CI check, reproducing a CI failure, capturing requested visual evidence, or validating a fix before pushing an update. Avoid defaulting to `make test` for small changes while it may boot multiple simulators.
+
+Documentation-only changes should state that no build was run unless project configuration changed. After opening a PR, monitor Jira and GitHub; if automation moves a ticket back to `In Progress` because CI failed, inspect the failure, fix it, and push an update.
 
 ## Documentation Updates
 

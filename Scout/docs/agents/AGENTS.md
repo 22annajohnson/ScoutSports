@@ -188,6 +188,25 @@ Agent handoffs should include:
 
 For documentation-only changes, say that no build was run unless project configuration changed.
 
+## Testing and Simulator Workflow
+
+PR CI is Scout's default first full validation pass. Agents should not run the full local test suite automatically after every small change.
+
+Default workflow:
+
+1. Complete the change locally.
+2. Push the change and open or update the pull request.
+3. Let CI run the required build and test checks.
+4. If CI passes, do not rerun the full suite locally for a simple change.
+5. If CI fails, inspect the CI failure first.
+6. If the cause is clear, fix it and push again.
+7. If local reproduction is needed, run a targeted local test or one-simulator visual debugging command.
+8. Push the fix and let CI rerun as the source of truth.
+
+Local simulator work is appropriate for debugging a failed UI test, reproducing a CI-only visual failure, capturing a requested screenshot, recording or updating an approved snapshot, or verifying a visual change that CI cannot explain clearly.
+
+Avoid defaulting to `make test` for small changes while it may boot multiple simulators. Use targeted local commands when debugging.
+
 ## Pull Request Review Workflow
 
 Scout uses GitHub labels as the canonical review handoff between agents, Stephan, and human reviewers.
