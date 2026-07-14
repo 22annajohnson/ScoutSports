@@ -21,6 +21,7 @@ final class ProfileBuilderViewModelTests: XCTestCase {
 
         let viewModel = ProfileBuilderViewModel(
             profileRepository: profileRepository,
+            ownerEditableProfileRepository: profileRepository,
             matchSignalsRepository: profileRepository,
             profileRelationshipsRepository: profileRepository,
             imageUploadService: imageUploadService,
@@ -31,7 +32,10 @@ final class ProfileBuilderViewModelTests: XCTestCase {
 
         await viewModel.saveProfile()
 
-        XCTAssertEqual(profileRepository.updateMyProfileCalls.count, 1)
+        XCTAssertEqual(profileRepository.updateMyProfileCalls.count, 0)
+        XCTAssertEqual(profileRepository.updateIdentityCalls.count, 1)
+        XCTAssertEqual(profileRepository.updateSportsCalls.count, 1)
+        XCTAssertEqual(profileRepository.updateAvailabilityCalls.count, 1)
         XCTAssertEqual(profileRepository.updateMatchSignalsCalls.count, 0)
         XCTAssertEqual(profileRepository.replaceClubMembershipCalls.count, 0)
     }
@@ -43,6 +47,7 @@ final class ProfileBuilderViewModelTests: XCTestCase {
 
         let viewModel = ProfileBuilderViewModel(
             profileRepository: profileRepository,
+            ownerEditableProfileRepository: profileRepository,
             matchSignalsRepository: profileRepository,
             profileRelationshipsRepository: profileRepository,
             imageUploadService: imageUploadService,
@@ -69,6 +74,7 @@ final class ProfileBuilderViewModelTests: XCTestCase {
 
         let viewModel = ProfileBuilderViewModel(
             profileRepository: profileRepository,
+            ownerEditableProfileRepository: profileRepository,
             matchSignalsRepository: profileRepository,
             profileRelationshipsRepository: profileRepository,
             imageUploadService: imageUploadService,
@@ -94,6 +100,7 @@ final class ProfileBuilderViewModelTests: XCTestCase {
 
         let viewModel = ProfileBuilderViewModel(
             profileRepository: profileRepository,
+            ownerEditableProfileRepository: profileRepository,
             matchSignalsRepository: profileRepository,
             profileRelationshipsRepository: profileRepository,
             imageUploadService: imageUploadService,
@@ -104,10 +111,67 @@ final class ProfileBuilderViewModelTests: XCTestCase {
 
         await viewModel.saveProfile()
 
-        XCTAssertEqual(profileRepository.updateMyProfileCalls.count, 1)
-        let input = try XCTUnwrap(profileRepository.updateMyProfileCalls.first)
-        XCTAssertTrue(input.shouldClearHomeCourtID)
-        XCTAssertTrue(input.shouldClearHomeCourtName)
+        XCTAssertEqual(profileRepository.updateAvailabilityCalls.count, 1)
+        let input = try XCTUnwrap(profileRepository.updateAvailabilityCalls.first)
+        XCTAssertNil(input.homeArea)
+    }
+
+    func test_loadProfile_prefillsOwnerEditableFieldsWithoutMarkingSignalsEdited() async {
+        let profileRepository = MockProfileRepository()
+        let imageUploadService = MockImageUploadService()
+        let userID = UUID()
+        profileRepository.currentEditableProfileResult.bio = "Ready for doubles"
+        profileRepository.currentEditableProfileResult.skillLevelBySport = ["pickleball": 4]
+        profileRepository.currentEditableProfileResult.playIntent = .competitive
+        profileRepository.currentEditableProfileResult.homeArea = "North Courts"
+        profileRepository.currentEditableProfileResult.preferredPlayStyle = .doubles
+
+        let viewModel = ProfileBuilderViewModel(
+            profileRepository: profileRepository,
+            ownerEditableProfileRepository: profileRepository,
+            matchSignalsRepository: profileRepository,
+            profileRelationshipsRepository: profileRepository,
+            imageUploadService: imageUploadService,
+            userIDProvider: { userID }
+        )
+
+        await viewModel.loadProfileIfNeeded()
+        viewModel.actionShotImage = UIImage()
+        await viewModel.saveProfile()
+
+        XCTAssertEqual(viewModel.form.bio, "Ready for doubles")
+        XCTAssertEqual(viewModel.form.skill, 4)
+        XCTAssertEqual(viewModel.form.preferredMatchIntensity, .competitive)
+        XCTAssertEqual(viewModel.form.homeCourtName, "North Courts")
+        XCTAssertEqual(viewModel.form.playStyle, .doubles)
+        XCTAssertEqual(profileRepository.currentEditableProfileCalls, [false])
+        XCTAssertEqual(profileRepository.updateMatchSignalsCalls.count, 0)
+        XCTAssertEqual(profileRepository.replaceClubMembershipCalls.count, 0)
+    }
+
+    func test_saveProfile_whenOwnerRepositoryFails_preservesUnsavedInput() async {
+        let profileRepository = MockProfileRepository()
+        let imageUploadService = MockImageUploadService()
+        let userID = UUID()
+        profileRepository.updateIdentityError = ProfileRepositoryError.networkUnavailable
+
+        let viewModel = ProfileBuilderViewModel(
+            profileRepository: profileRepository,
+            ownerEditableProfileRepository: profileRepository,
+            matchSignalsRepository: profileRepository,
+            profileRelationshipsRepository: profileRepository,
+            imageUploadService: imageUploadService,
+            userIDProvider: { userID }
+        )
+        viewModel.actionShotImage = UIImage()
+        viewModel.form.bio = "Do not lose this"
+
+        await viewModel.saveProfile()
+
+        XCTAssertEqual(viewModel.form.bio, "Do not lose this")
+        XCTAssertTrue(viewModel.isShowingAlert)
+        XCTAssertEqual(viewModel.alertTitle, "Save Failed")
+        XCTAssertFalse(viewModel.didSaveSuccessfully)
     }
 }
 

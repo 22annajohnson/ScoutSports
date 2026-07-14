@@ -80,6 +80,9 @@ struct ProfileBuilderView: View {
                 .task(id: vm.headshotItem) {
                     await vm.loadHeadshotIfNeeded()
                 }
+                .task {
+                    await vm.loadProfileIfNeeded()
+                }
 
                 controls
             }
