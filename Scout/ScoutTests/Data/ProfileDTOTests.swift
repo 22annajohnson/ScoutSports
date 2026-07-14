@@ -6,6 +6,7 @@
 //
 
 import XCTest
+import Supabase
 @testable import Scout
 
 final class ProfileDTOTests: XCTestCase {
@@ -629,6 +630,41 @@ final class ProfileDTOTests: XCTestCase {
     }
 
     @MainActor
+    func test_profileRepository_uniqueNonEmptyValues_trimsDeduplicatesAndPreservesOrder() {
+        let values = ProfileRepository.uniqueNonEmptyValues([
+            " pickleball ",
+            "",
+            "tennis",
+            "pickleball",
+            "   ",
+            "padel",
+            "tennis"
+        ])
+
+        XCTAssertEqual(values, ["pickleball", "tennis", "padel"])
+    }
+
+    @MainActor
+    func test_profileRepository_postgrestErrorMapping_returnsBoundaryErrors() {
+        let cases: [(String?, ProfileRepositoryError)] = [
+            ("42501", .permissionDenied),
+            ("23505", .validationFailed([])),
+            ("23514", .validationFailed([])),
+            ("PGRST116", .profileMissing),
+            ("PGRST301", .serverUnavailable),
+            (nil, .serverUnavailable)
+        ]
+
+        for (code, expectedError) in cases {
+            let mapped = ProfileRepository.profileRepositoryError(
+                from: PostgrestError(code: code, message: "Synthetic test error")
+            )
+
+            XCTAssertProfileRepositoryError(mapped, equals: expectedError)
+        }
+    }
+
+    @MainActor
     func test_ownerEditableProfileMapper_mapsFullOwnerProfileRows() throws {
         let profileID = UUID(uuidString: "00000000-0000-0000-0000-000000000042")!
 
@@ -858,6 +894,24 @@ final class ProfileDTOTests: XCTestCase {
             }
         } catch {
             XCTFail("Expected ProfileRepositoryError, got \(error)", file: file, line: line)
+        }
+    }
+
+    private func XCTAssertProfileRepositoryError(
+        _ actual: ProfileRepositoryError,
+        equals expected: ProfileRepositoryError,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        switch (actual, expected) {
+        case (.permissionDenied, .permissionDenied),
+             (.profileMissing, .profileMissing),
+             (.serverUnavailable, .serverUnavailable):
+            XCTAssertTrue(true, file: file, line: line)
+        case (.validationFailed(let actualErrors), .validationFailed(let expectedErrors)):
+            XCTAssertEqual(actualErrors, expectedErrors, file: file, line: line)
+        default:
+            XCTFail("Expected \(expected), got \(actual)", file: file, line: line)
         }
     }
 }
