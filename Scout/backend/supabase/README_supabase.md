@@ -22,6 +22,7 @@ make supabase-start
 make supabase-migration-new SUPABASE_MIGRATION_NAME=<jira-key>_<short_description>
 make supabase-migration-up
 make supabase-db-reset
+make supabase-validate-reset-seed
 make supabase-test-db
 make supabase-gen-types-swift
 make supabase-stop
@@ -32,6 +33,12 @@ then reads and writes Supabase assets under `backend/supabase/`.
 
 Do not run Supabase CLI commands with `SUPABASE_WORKDIR=backend/supabase`;
 that creates an incorrect nested `backend/supabase/supabase/` project.
+
+`make supabase-validate-reset-seed` is the standard local validation target for
+schema PRs that need to prove the database rebuilds from repo-owned migrations
+and configured seed files. The current root seed entrypoint is
+`backend/supabase/seed.sql`, which is intentionally data-free until an approved
+domain story introduces deterministic local/dev fixtures.
 
 ## Current Boundary
 
