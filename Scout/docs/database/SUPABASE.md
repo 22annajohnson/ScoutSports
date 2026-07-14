@@ -107,6 +107,21 @@ Expected future behavior:
 - CI validates migrations and generated types when the strategy is approved.
 - Staging/prod promotion is introduced only after environment strategy approval.
 
+## Production Boundary
+
+Production Supabase deployment is not configured yet and should remain dormant until the production project exists.
+
+Before production deployment is enabled, Scout must approve:
+
+- The production Supabase project and project ref.
+- The protected GitHub environment and manual approval rule.
+- The production secret names and rotation owner.
+- The deployment trigger, such as release tag, protected `main`, or another approved release path.
+- The staging/integration success requirement.
+- The rollback, forward-fix, and destructive migration approval expectations in `docs/database/MIGRATIONS.md`.
+
+Production seed loading is disabled by default. It must not be enabled without a production data plan.
+
 ## Approval Boundary
 
 This document does not approve:
