@@ -6,6 +6,36 @@ This document describes Scout's current architecture and intended monorepo direc
 
 Any change to project organization, database schema, shared service contracts, app boundaries, or build infrastructure requires an approved technical plan before implementation.
 
+## Authority Model
+
+Scout work follows a strict authority chain:
+
+1. `docs/product/PRODUCT.md` controls product direction.
+2. `docs/architecture/ARCHITECTURE.md` and Architecture Decision Records in `docs/decisions/` control system structure and durable technical direction.
+3. Approved tech plans in `tech-plans/approved/` control implementation approach for approved initiatives.
+4. Jira epics group approved work into delivery milestones.
+5. Jira stories define the executable scope for implementation agents.
+
+Implementation must stay inside the most specific approved artifact. A Jira story can narrow scope from an approved plan, but it cannot expand architecture, product behavior, database ownership, auth strategy, CI strategy, repository layout, or shared contracts beyond the approved plan.
+
+If product docs, architecture docs, ADRs, tech plans, Jira epics, or Jira stories conflict, implementation must stop. The conflict must be resolved in the planning artifact that owns the decision before code, schema, configuration, or durable documentation changes proceed.
+
+## Development Lifecycle
+
+Scout uses this software factory lifecycle:
+
+1. Product vision defines what Scout should become and why.
+2. Architecture docs and ADRs define durable structure, ownership, boundaries, and approval gates.
+3. Approved tech plans define how a specific initiative should be implemented.
+4. Jira epics group approved work into reviewable delivery tracks.
+5. Jira stories define small, executable implementation scopes.
+6. Implementation follows the story, approved plan, and existing architecture.
+7. CI validates the changed system.
+8. Code review checks correctness, maintainability, product intent, and plan alignment.
+9. Merge happens only after required validation and review.
+
+Work should not skip lifecycle stages. Small documentation or implementation tasks may have lightweight plans, but meaningful product, architecture, database, API, design system, repository-organization, auth, or CI changes must be traceable through this lifecycle before implementation starts.
+
 ## Current State
 
 Scout is currently an iOS-focused repository with a Swift/SwiftUI application at the repository root.

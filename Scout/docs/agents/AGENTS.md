@@ -69,6 +69,20 @@ Major feature implementation should not begin without an approved implementation
 
 Roadmaps in `roadmap/` are lightweight long-term backlogs. They should not contain detailed engineering design. When work is imminent, promote a roadmap item into `implementation/proposed/`.
 
+## Authority Chain
+
+Agents must follow Scout's planning authority in this order:
+
+1. Product docs define product direction.
+2. Architecture docs and ADRs define system structure and durable technical direction.
+3. Approved tech plans define implementation approach.
+4. Jira epics group approved work.
+5. Jira stories define executable scope.
+
+When these sources conflict, agents must stop implementation and document the conflict. Product conflicts belong in product planning, architecture conflicts belong in architecture docs or ADRs, implementation-plan conflicts belong in the tech plan, and execution-scope conflicts belong in Jira. Do not resolve conflicts by guessing in code.
+
+Implementation agents should use the most specific approved source for scope. A Jira story may narrow an approved plan, but it must not expand product behavior, architecture, database ownership, auth strategy, shared contracts, CI behavior, or repository structure.
+
 ## Domain-Level Plan Standard
 
 Major domains such as Profile, Events, Swipe, Feed, Chat, Maps, Search, Notifications, Teams, and Recommendations must use the domain-level plan structure.
