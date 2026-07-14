@@ -1,0 +1,79 @@
+name: Supabase Dev Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_dev_target:
+        description: "Type Scout Sports V1.3 to deploy committed migrations to the dev Supabase project."
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: supabase-dev-deployment
+  cancel-in-progress: false
+
+jobs:
+  deploy-dev:
+    name: Deploy To Scout Sports V1.3 Dev
+    if: github.ref == 'refs/heads/develop' && inputs.confirm_dev_target == 'Scout Sports V1.3'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Scout
+    env:
+      SUPABASE_PROJECT_REF: ${{ vars.SUPABASE_PROJECT_REF }}
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: 2.95.4
+
+      - name: Install zsh
+        run: sudo apt-get update && sudo apt-get install -y zsh
+
+      - name: Confirm dev deployment target
+        run: |
+          set -euo pipefail
+
+          test "${SUPABASE_PROJECT_REF}" = "rwhyyujlcvwjdfssykkq"
+          test -n "${SUPABASE_ACCESS_TOKEN}"
+          test -n "${SUPABASE_DB_PASSWORD}"
+
+          printf "Deploy target: Scout Sports V1.3 dev (%s)\n" "${SUPABASE_PROJECT_REF}"
+          printf "Branch: %s\n" "${GITHUB_REF_NAME}"
+          printf "Remote database password secret: configured\n"
+          printf "This workflow is dev deployment only; it is not staging or production CD.\n"
+
+      - name: Check Supabase prerequisites
+        run: make supabase-doctor
+
+      - name: Start local Supabase
+        run: make supabase-start
+
+      - name: Validate local reset and seed
+        run: make supabase-validate-reset-seed
+
+      - name: Run pgTAP database tests
+        run: make supabase-test-db
+
+      - name: Check Swift generated type freshness
+        run: make supabase-check-types-swift
+
+      - name: Stop local Supabase
+        if: always()
+        run: make supabase-stop
+
+      - name: Link Scout Sports V1.3 dev project
+        run: make supabase-link-dev
+
+      - name: Deploy committed migrations to Scout Sports V1.3 dev
+        run: make supabase-deploy-dev

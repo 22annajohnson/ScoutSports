@@ -277,6 +277,29 @@ Use a hotfix migration only when waiting for normal feature-branch flow would le
 
 When production exists, production hotfix deployment still requires protected environment approval unless the owner documents a separate emergency break-glass process.
 
+## Manual Dev Deployment
+
+`Supabase Dev Deployment` is the current manual workflow for applying committed
+repository migrations to `Scout Sports V1.3/main`, Scout's temporary development
+database.
+
+This workflow:
+
+- Runs only through `workflow_dispatch`.
+- Is gated to the `develop` branch.
+- Requires the manual confirmation input `Scout Sports V1.3`.
+- Uses GitHub repo variable `SUPABASE_PROJECT_REF`, expected to equal
+  `rwhyyujlcvwjdfssykkq`.
+- Uses GitHub repo secret `SUPABASE_ACCESS_TOKEN` for Supabase CLI deployment.
+- Uses GitHub repo secret `SUPABASE_DB_PASSWORD` as the remote database password
+  for non-interactive `supabase link` and `supabase db push`.
+- Runs local validation before linking or pushing to the remote dev project.
+- Runs `supabase db push` without `--include-seed`, so production-like or
+  remote seed deployment remains disabled.
+
+This is dev deployment only. It is not staging, production CD, preview branching,
+Edge Function deployment, storage provisioning, or schema invention.
+
 ## Future CI Hooks
 
 Database CI is not approved by this document. Future CI work should consider hooks for:

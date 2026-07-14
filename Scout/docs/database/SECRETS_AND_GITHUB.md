@@ -46,6 +46,22 @@ Exact GitHub secret names are not approved yet. Future CI/database integration p
 
 CI secrets should be scoped to the minimum environment and workflow that needs them.
 
+## Approved Dev Deployment Inputs
+
+INFRA-63 approves the following inputs for the manual `Supabase Dev Deployment`
+workflow:
+
+- GitHub repo variable `SUPABASE_PROJECT_REF`, expected to equal
+  `rwhyyujlcvwjdfssykkq` for `Scout Sports V1.3`.
+- GitHub repo secret `SUPABASE_ACCESS_TOKEN` for Supabase CLI deployment.
+- GitHub repo secret `SUPABASE_DB_PASSWORD` for non-interactive remote
+  database linking and migration push.
+
+Do not use the iOS publishable key for deployment. Do not use the Supabase secret
+key unless a future workflow explicitly requires server-side API access. Do not
+commit the remote database password or expose it through Make command echoing,
+workflow logs, PR text, or app configuration.
+
 ## GitHub Integration Expectations
 
 Future GitHub/Supabase integration should remain proposed until approved:
