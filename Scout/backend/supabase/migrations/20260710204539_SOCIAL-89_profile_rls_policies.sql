@@ -12,20 +12,6 @@ for select
 to authenticated
 using ((select auth.uid()) = user_id);
 
-create policy "profiles_visible_select"
-on public.profiles
-for select
-to authenticated
-using (
-  account_status = 'active'
-  and exists (
-    select 1
-    from public.profile_privacy
-    where profile_privacy.profile_id = profiles.id
-      and profile_privacy.profile_visibility in ('authenticated', 'public')
-  )
-);
-
 create policy "profiles_owner_insert"
 on public.profiles
 for insert
@@ -49,22 +35,6 @@ using (
     from public.profiles
     where profiles.id = profile_sports.profile_id
       and profiles.user_id = (select auth.uid())
-  )
-);
-
-create policy "profile_sports_visible_select"
-on public.profile_sports
-for select
-to authenticated
-using (
-  exists (
-    select 1
-    from public.profiles
-    join public.profile_privacy
-      on profile_privacy.profile_id = profiles.id
-    where profiles.id = profile_sports.profile_id
-      and profiles.account_status = 'active'
-      and profile_privacy.profile_visibility in ('authenticated', 'public')
   )
 );
 
@@ -188,12 +158,6 @@ using (
   )
 );
 
-create policy "profile_privacy_visible_select"
-on public.profile_privacy
-for select
-to authenticated
-using (profile_visibility in ('authenticated', 'public'));
-
 create policy "profile_privacy_owner_insert"
 on public.profile_privacy
 for insert
@@ -229,25 +193,22 @@ with check (
 );
 
 create view public.profile_public_summaries
-with (security_invoker = true)
+with (security_barrier = true)
 as
 select
   profiles.id as profile_id,
   profiles.display_name,
   profiles.username,
   profiles.profile_photo_path,
-  profiles.bio,
-  profiles.profile_completion_state,
-  profile_privacy.profile_visibility,
-  profile_privacy.discoverable,
-  profile_privacy.location_precision
+  profiles.bio
 from public.profiles
 join public.profile_privacy
   on profile_privacy.profile_id = profiles.id
-where profile_privacy.profile_visibility in ('authenticated', 'public');
+where profiles.account_status = 'active'
+  and profile_privacy.profile_visibility in ('authenticated', 'public');
 
 create view public.profile_sport_summaries
-with (security_invoker = true)
+with (security_barrier = true)
 as
 select
   profile_sports.profile_id,
@@ -255,9 +216,12 @@ select
   profile_sports.skill_level,
   profile_sports.is_primary
 from public.profile_sports
+join public.profiles
+  on profiles.id = profile_sports.profile_id
 join public.profile_privacy
   on profile_privacy.profile_id = profile_sports.profile_id
-where profile_privacy.profile_visibility in ('authenticated', 'public');
+where profiles.account_status = 'active'
+  and profile_privacy.profile_visibility in ('authenticated', 'public');
 
 grant select on public.profile_public_summaries to authenticated;
 grant select on public.profile_sport_summaries to authenticated;
@@ -267,6 +231,8 @@ revoke all on public.profile_sports from anon, authenticated;
 revoke all on public.profile_availability from anon, authenticated;
 revoke all on public.profile_privacy from anon, authenticated;
 
+-- Base table grants are paired with owner-only RLS policies. Non-owner
+-- profile reads must use the approved summary views above.
 grant select (
   id,
   display_name,
