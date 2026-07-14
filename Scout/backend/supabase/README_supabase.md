@@ -45,16 +45,18 @@ domain story introduces deterministic local/dev fixtures.
 Swift generated database types. Run it after local reset validation when a PR
 changes schema or committed generated output.
 
+`make supabase-test-db` runs pgTAP tests from
+`backend/supabase/tests/database`. Future schema stories should add focused
+tests there when they create or change user-data tables, RLS policies,
+database functions, triggers, constraints, or seed data used for RLS validation.
+
 ## Current Boundary
 
 This structure does not introduce:
 
 - Product tables or schema.
-- SQL migrations.
-- Row Level Security policies.
 - Storage buckets.
 - Edge Functions.
-- Generated type files.
 - Remote project linking.
 
 Do not introduce schema, auth, storage, migration, generated type, or Edge Function changes without an approved technical plan and authorizing Jira story.

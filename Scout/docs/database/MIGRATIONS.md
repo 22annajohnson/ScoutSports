@@ -192,6 +192,13 @@ clearly fake deterministic local/dev values, avoid secrets and production-like
 private data, and document whether seed loading is required for RLS validation,
 generated type validation, repository tests, or app smoke checks.
 
+`make supabase-test-db` runs pgTAP tests from
+`backend/supabase/tests/database`. Future migration PRs that create or change
+user-data tables, RLS policies, database functions, triggers, constraints, or
+RLS seed fixtures should add focused tests in that directory. If automated tests
+are not possible for a schema story, the PR must document the reason and include
+equivalent manual local verification steps.
+
 Swift generated type output is currently `backend/supabase/types/swift/Database.generated.swift`.
 Freshness validation remains owned by the generated type workflow story.
 
