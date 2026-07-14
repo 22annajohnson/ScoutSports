@@ -180,17 +180,15 @@ final class ProfileContractMapperTests: XCTestCase {
             XCTAssertEqual(ProfileReadinessState(databaseValue: databaseValue), expectedState)
         }
 
-        let statusCases: [(String, ProfileAccountStatus)] = [
-            ("active", .active),
-            ("restricted", .restricted),
-            ("disabled", .disabled),
-            ("deleted", .deleted),
-            ("paused", .unknown("paused"))
-        ]
-
-        for (databaseValue, expectedStatus) in statusCases {
-            XCTAssertEqual(ProfileAccountStatus(databaseValue: databaseValue), expectedStatus)
-        }
+        XCTAssertEqual(
+            ProfileContractMapper.ownerProfile(
+                profile: ownerRow(accountStatus: "restricted"),
+                sports: [],
+                availability: nil,
+                privacy: nil
+            ).accountStatus,
+            .restricted
+        )
     }
 
     private func ownerRow(

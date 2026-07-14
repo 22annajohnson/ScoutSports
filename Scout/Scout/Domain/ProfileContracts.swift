@@ -31,29 +31,6 @@ enum ProfileReadinessState: Equatable, Sendable {
     }
 }
 
-enum ProfileAccountStatus: Equatable, Sendable {
-    case active
-    case restricted
-    case disabled
-    case deleted
-    case unknown(String)
-
-    init(databaseValue: String) {
-        switch databaseValue {
-        case "active":
-            self = .active
-        case "restricted":
-            self = .restricted
-        case "disabled":
-            self = .disabled
-        case "deleted":
-            self = .deleted
-        default:
-            self = .unknown(databaseValue)
-        }
-    }
-}
-
 struct ProfileSportContext: Equatable, Sendable {
     let sportSlug: String
     let skillLevel: String?

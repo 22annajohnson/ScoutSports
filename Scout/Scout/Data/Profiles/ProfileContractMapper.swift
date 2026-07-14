@@ -71,7 +71,7 @@ enum ProfileContractMapper {
             actionPhotoPath: profile.actionPhotoPath,
             bio: profile.bio,
             readinessState: ProfileReadinessState(databaseValue: profile.profileCompletionState),
-            accountStatus: ProfileAccountStatus(databaseValue: profile.accountStatus),
+            accountStatus: toAccountStatus(profile.accountStatus),
             sports: sports.map(toSportContext),
             availability: availability.map(toAvailabilityContext),
             privacy: privacy.map(toPrivacySettings)
@@ -174,5 +174,9 @@ enum ProfileContractMapper {
             discoverable: row.discoverable,
             locationPrecision: row.locationPrecision
         )
+    }
+
+    private static func toAccountStatus(_ databaseValue: String) -> ProfileAccountStatus {
+        ProfileAccountStatus(rawValue: databaseValue) ?? .restricted
     }
 }
