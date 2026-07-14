@@ -169,13 +169,31 @@ Makefile command shape:
 make supabase-doctor
 make supabase-start
 make supabase-migration-new SUPABASE_MIGRATION_NAME=<jira-key>_<short_description>
+make supabase-migration-up
 make supabase-db-reset
+make supabase-validate-reset-seed
+make supabase-test-db
 make supabase-stop
 ```
 
-These targets run the Supabase CLI with `SUPABASE_WORKDIR=backend/supabase` by default. The migration creation target must use the implementation story key, not only the epic key.
+These targets run the Supabase CLI with `SUPABASE_WORKDIR=backend` by default.
+The CLI project files remain under `backend/supabase/`. The migration creation
+target must use the implementation story key, not only the epic key.
 
-Generated type targets and output paths remain deferred to the generated type workflow story.
+`make supabase-validate-reset-seed` is the standard local validation target for
+future schema PRs that must prove migration ordering and seed loading from a
+clean local database. It runs `supabase db reset --workdir backend`, which
+applies repo-owned migrations and loads the configured root seed entrypoint at
+`backend/supabase/seed.sql`.
+
+The current seed entrypoint is intentionally data-free. Future seed data must be
+introduced only by the domain story that owns the schema/data contract, use
+clearly fake deterministic local/dev values, avoid secrets and production-like
+private data, and document whether seed loading is required for RLS validation,
+generated type validation, repository tests, or app smoke checks.
+
+Swift generated type output is currently `backend/supabase/types/swift/Database.generated.swift`.
+Freshness validation remains owned by the generated type workflow story.
 
 Future database PRs should document:
 
