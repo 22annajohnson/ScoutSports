@@ -190,6 +190,8 @@ Agent handoffs should include:
 
 For documentation-only changes, say that no build was run unless project configuration changed.
 
+For UI changes, include state coverage in the handoff: loading, empty, error, success, recovery, accessibility, screenshots or recordings, and any motion or Reduced Motion impact.
+
 ## Testing and CI Expectations
 
 Pull request CI is the default first validation pass for Scout agent work.

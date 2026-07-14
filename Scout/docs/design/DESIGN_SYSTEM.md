@@ -117,6 +117,30 @@ Motion should clarify state changes and social feedback:
 
 Motion should not block core tasks.
 
+### Motion and State Patterns
+
+Motion should communicate state, reinforce user intent, and follow Apple's Human Interface Guidelines as the iOS baseline. Custom motion patterns should be documented in an approved design plan before implementation.
+
+Operational expectations:
+
+- Use motion to clarify cause and effect, such as a swipe decision, save confirmation, match reveal, or event participation change.
+- Keep motion short enough that it does not delay the next user action.
+- Use consistent motion for similar state changes across Profile, Swipe, Feed, Events, Chat, Maps, and Notifications.
+- Respect Reduced Motion. Essential state changes must remain understandable without animation.
+- Do not rely on motion alone to communicate success, error, or completion.
+
+Shared state expectations:
+
+| State | Expected Behavior |
+| --- | --- |
+| Loading | Preserve layout stability where possible, communicate that work is in progress, and avoid blocking unrelated actions. |
+| Empty | Explain why there is no content and provide a useful next action or education path. |
+| Error | Explain what happened in user-facing language and provide a recovery path such as retry, edit, dismiss, or contact support. |
+| Success | Confirm completion without trapping the user or interrupting the next likely action. |
+| Recovery | Keep the user oriented, preserve entered data where possible, and make the next safe action clear. |
+
+UI tickets and PRs that affect motion or state handling should document the loading, empty, error, success, recovery, accessibility, and Reduced Motion implications.
+
 ## Component Families
 
 Initial component families to document and standardize:
