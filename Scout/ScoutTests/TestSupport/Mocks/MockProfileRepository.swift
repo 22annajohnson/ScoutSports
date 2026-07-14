@@ -10,7 +10,7 @@ import Foundation
 /// Test double for `ProfileProviding`.
 /// - Configurable return values for fetch/update
 /// - Tracks calls and captured inputs
-final class MockProfileRepository: ProfileProviding, OwnerEditableProfileProviding, PlayerMatchSignalsProviding, PlayerProfileRelationshipsProviding, MatchFeedbackProviding, InternalMatchFeedbackProviding, PlayerMetricsProviding {
+final class MockProfileRepository: ProfileProviding, OwnerEditableProfileProviding, PublicProfileProviding, PlayerMatchSignalsProviding, PlayerProfileRelationshipsProviding, MatchFeedbackProviding, InternalMatchFeedbackProviding, PlayerMetricsProviding {
 
     // MARK: - Captured inputs
 
@@ -24,6 +24,7 @@ final class MockProfileRepository: ProfileProviding, OwnerEditableProfileProvidi
     private(set) var submittedMatchFeedbackCalls: [MatchPlayerFeedbackInput] = []
     private(set) var markProfileCompletedCallCount: Int = 0
     private(set) var currentEditableProfileCalls: [Bool] = []
+    private(set) var publicProfileCalls: [UUID] = []
     private(set) var updateIdentityCalls: [ProfileIdentityUpdateCommand] = []
     private(set) var updateSportsCalls: [ProfileSportsUpdateCommand] = []
     private(set) var updateAvailabilityCalls: [ProfileAvailabilityUpdateCommand] = []
@@ -48,6 +49,7 @@ final class MockProfileRepository: ProfileProviding, OwnerEditableProfileProvidi
     var submitMatchFeedbackError: Error?
     var markProfileCompletedError: Error?
     var currentEditableProfileError: Error?
+    var publicProfileError: Error?
     var updateIdentityError: Error?
     var updateSportsError: Error?
     var updateAvailabilityError: Error?
@@ -75,6 +77,16 @@ final class MockProfileRepository: ProfileProviding, OwnerEditableProfileProvidi
         accountStatus: .active,
         createdAt: Date(timeIntervalSince1970: 0),
         lastActiveAt: nil
+    )
+    var publicProfileResult = PublicProfile(
+        id: UUID(uuidString: "00000000-0000-0000-0000-000000000101")!,
+        displayName: "Public Test",
+        username: "public_test",
+        profilePhotoPath: nil,
+        bio: "Ready to rally.",
+        sports: [
+            ProfileSportContext(sportSlug: "pickleball", skillLevel: "3", isPrimary: true)
+        ]
     )
     var feedbackReceivedResult: [MatchPlayerFeedback] = []
     var feedbackReceivedState: RepositoryFixtureState<[MatchPlayerFeedback]>?
@@ -104,6 +116,7 @@ final class MockProfileRepository: ProfileProviding, OwnerEditableProfileProvidi
     var onSubmitMatchFeedback: ((MatchPlayerFeedbackInput) -> Void)?
     var onMarkProfileCompleted: (() -> Void)?
     var onCurrentEditableProfile: ((Bool) -> Void)?
+    var onPublicProfile: ((UUID) -> Void)?
     var onUpdateIdentity: ((ProfileIdentityUpdateCommand) -> Void)?
     var onUpdateSports: ((ProfileSportsUpdateCommand) -> Void)?
     var onUpdateAvailability: ((ProfileAvailabilityUpdateCommand) -> Void)?
@@ -236,6 +249,13 @@ final class MockProfileRepository: ProfileProviding, OwnerEditableProfileProvidi
         onCurrentEditableProfile?(forceRefresh)
         if let currentEditableProfileError { throw currentEditableProfileError }
         return currentEditableProfileResult
+    }
+
+    func publicProfile(profileID: UUID) async throws -> PublicProfile {
+        publicProfileCalls.append(profileID)
+        onPublicProfile?(profileID)
+        if let publicProfileError { throw publicProfileError }
+        return publicProfileResult
     }
 
     func updateIdentity(_ command: ProfileIdentityUpdateCommand) async throws -> OwnerEditableProfile {
