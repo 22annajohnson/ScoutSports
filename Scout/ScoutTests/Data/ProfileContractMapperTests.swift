@@ -6,6 +6,7 @@
 import XCTest
 @testable import Scout
 
+@MainActor
 final class ProfileContractMapperTests: XCTestCase {
     private let profileID = UUID(uuidString: "00000000-0000-0000-0000-000000000091")!
     private let userID = UUID(uuidString: "11111111-1111-1111-1111-111111111191")!
