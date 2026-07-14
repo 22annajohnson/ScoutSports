@@ -67,13 +67,35 @@ Ticket descriptions should include:
 - Validation steps
 - Links to relevant docs, plans, and designs
 
+## UI Implementation Ticket Checklist
+
+UI implementation tickets must reference `DESIGN-001` and `docs/design/DESIGN_SYSTEM.md`. For iOS work, Apple's Human Interface Guidelines are the baseline for platform behavior unless an approved design plan documents a Scout-specific divergence.
+
+Every UI implementation ticket should include:
+
+- Existing design areas, components, modifiers, or patterns inspected.
+- Existing components reused.
+- New components introduced, if any.
+- Why any new component is necessary instead of extending an existing component.
+- Foundation changes proposed, if any, with the required design approval path.
+- Accessibility considerations, including Dynamic Type, VoiceOver, contrast, touch targets, and Reduced Motion where relevant.
+- Loading state expectations.
+- Empty state expectations.
+- Error state expectations, including the user recovery path.
+- Success or confirmation state expectations where relevant.
+- Screenshots or screen recordings required for review.
+- Animations or motion patterns affected.
+- Any divergence from Apple's Human Interface Guidelines.
+
+Tickets that introduce new shared components, change foundations, alter component ownership, or diverge from native platform behavior should be treated as blocked on design review or an approved design proposal unless an approved plan already authorizes the change.
+
 ## Ticket Sizing
 
 Prefer tickets that can be completed in a few hours.
 
 Story points estimate developer-day effort for an AI-assisted workflow, including both agent implementation time and human review time.
 
-Use fractional story points:
+Use fractional story points in `0.25` increments. Values such as `0.75`, `1.25`, and `1.5` are valid when they best represent the combined implementation, validation, review, and revision effort.
 
 - `0.25`: Agent can complete the work and a human can review it in about 2 total hours.
 - `0.5`: Agent implementation takes about 2 hours and human review takes about 2 hours.
@@ -138,6 +160,7 @@ Agents are responsible for starting work and monitoring their own PRs:
 - Do not mention other raw Jira issue keys or Jira links in a PR title or body for dependencies, related work, follow-ups, "next" work, parent/child story ranges, or implementation order. Jira automation may interpret any mentioned issue key as connected to the PR and transition that ticket when the PR opens, passes CI, or merges.
 - If related work needs to be described in GitHub, use plain language that does not contain an issue key, such as "the next profile repository story", "the generated types follow-up", "the parent epic", or "the Design Factory verification story".
 - Keep exact follow-up ticket keys in Jira comments, implementation plans, roadmap documents, or the relevant epic rather than the GitHub PR body.
+- Pull requests must follow the canonical GitHub label review workflow in `AGENTS.md` and `docs/agents/AGENTS.md`.
 
 Scout Jira automation handles PR, CI, review, and merge transitions:
 
@@ -149,6 +172,50 @@ Scout Jira automation handles PR, CI, review, and merge transitions:
 After opening a pull request, an agent should monitor its ticket. When an agent notices that one of its tickets has moved back to `In Progress`, it should treat that as a signal to inspect the pull request, review failed checks, update the code or documentation as needed, and push a follow-up commit. Agents should not ignore tickets that automation returns to `In Progress`.
 
 Agents should not manually mark their own implementation tickets `Awaiting CI`, `Ready for Review`, or `Done` when Jira automation is configured to do so. If automation does not run, the agent should mention the status gap in its handoff rather than guessing.
+
+## Pull Request Label Workflow
+
+Jira status and GitHub labels answer different questions. Jira tracks ticket execution state, while GitHub labels track PR review ownership and risk.
+
+General PR labels:
+
+- `documentation`: Documentation, tech plans, architecture docs, or planning artifacts.
+- `ruby`: CI, GitHub Actions, Fastlane, Ruby scripts, Markdown validation, or repository automation.
+
+Author identity labels:
+
+- `author-stephan`: PR was authored by Stephan.
+- `author-tom`: PR was authored by Tom.
+- `author-jerry`: PR was authored by Jerry.
+
+Agents should apply the author label that matches their Scout identity when opening a PR.
+
+Documentation PRs:
+
+- Start with `documentation` and `needs-stephan-review`.
+- If Stephan authored the documentation PR, skip Stephan self-review and start with `documentation` and `needs-human-review`.
+- Stephan reviews for architecture consistency, planning quality, roadmap alignment, implementation readiness, and documentation quality.
+- Stephan leaves a written GitHub comment and does not approve.
+- If changes are required, use `needs-changes`.
+- When Stephan review is complete, replace `needs-stephan-review` with `needs-human-review`.
+
+Implementation PRs:
+
+- Start with `needs-ai-review`.
+- The opposite worker agent reviews, leaves a written GitHub review comment, and does not approve. Jerry reviews Tom-authored PRs, and Tom reviews Jerry-authored PRs.
+- If changes are required, use `needs-changes`.
+- When AI review is complete, replace `needs-ai-review` with `ai-reviewed` and `needs-human-review`.
+
+Manual QA and risk labels:
+
+- Use `needs-human-qa` for significant UI changes, animations, camera, push notifications, gesture-heavy interactions, accessibility concerns, or anything difficult to validate in CI.
+- Use `architecture-risk` for architecture violations, technical debt, bypassed repository boundaries, or questionable abstractions.
+- Use `scope-risk` for PRs that exceed Jira scope, include feature creep, or bundle unrelated changes.
+- Use `follow-up-ticket` when deferred work or cleanup should be tracked separately.
+
+Agents must never approve PRs, merge PRs, or review their own PRs.
+
+Agents should include their Scout identity in PR descriptions and handoffs.
 
 ## Approval Rules
 
