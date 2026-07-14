@@ -112,6 +112,28 @@ final class ProfileBuilderViewModel {
             case .singles: return .singles
             }
         }
+
+        init?(preferredProfilePlayStyle: PreferredProfilePlayStyle) {
+            switch preferredProfilePlayStyle {
+            case .singles:
+                self = .singles
+            case .doubles, .mixed:
+                self = .doubles
+            case .open:
+                return nil
+            }
+        }
+
+        var preferredProfilePlayStyle: PreferredProfilePlayStyle? {
+            switch self {
+            case .doubles:
+                return .doubles
+            case .singles:
+                return .singles
+            case .casual, .competitive, .drills:
+                return nil
+            }
+        }
     }
 
     enum MatchIntensity: String, CaseIterable, Hashable {
@@ -124,6 +146,28 @@ final class ProfileBuilderViewModel {
             case .casual: return "Casual"
             case .balanced: return "Balanced"
             case .competitive: return "Competitive"
+            }
+        }
+
+        init(playIntent: ProfilePlayIntent) {
+            switch playIntent {
+            case .casual:
+                self = .casual
+            case .competitive:
+                self = .competitive
+            case .flexible:
+                self = .balanced
+            }
+        }
+
+        var playIntent: ProfilePlayIntent {
+            switch self {
+            case .casual:
+                return .casual
+            case .balanced:
+                return .flexible
+            case .competitive:
+                return .competitive
             }
         }
     }
@@ -152,6 +196,7 @@ final class ProfileBuilderViewModel {
 
     private let mode: Mode
     private let profileRepository: ProfileProviding
+    private let ownerEditableProfileRepository: OwnerEditableProfileProviding
     private let matchSignalsRepository: PlayerMatchSignalsProviding
     private let profileRelationshipsRepository: PlayerProfileRelationshipsProviding
     private let imageUploadService: ImageUploadProviding
@@ -162,6 +207,8 @@ final class ProfileBuilderViewModel {
     var step: Step = .actionShot
     var form: Form = .init() {
         didSet {
+            guard !isApplyingLoadedProfile else { return }
+
             if oldValue.clubsText != form.clubsText {
                 didEditClubs = true
             }
@@ -188,7 +235,17 @@ final class ProfileBuilderViewModel {
     var headshotImage: UIImage?
 
     var isSaving: Bool = false
+    var isLoadingProfile: Bool = false
+    var didSaveSuccessfully: Bool = false
+    var profileLoadErrorMessage: String?
     private var didEditClubs: Bool = false
+    private var loadedPreferredDays: [ProfileWeekday] = []
+    private var loadedPreferredTimeWindows: [ProfileTimeWindow] = []
+    private var loadedPlayIntent: ProfilePlayIntent?
+    private var loadedTravelRadiusMiles: Int?
+    private var loadedPreferredPlayStyle: PreferredProfilePlayStyle?
+    private var hasLoadedProfile: Bool = false
+    private var isApplyingLoadedProfile: Bool = false
     private var editedMatchSignalFields: Set<MatchSignalField> = []
 
     // Alerts
@@ -199,6 +256,7 @@ final class ProfileBuilderViewModel {
     init(
         mode: Mode = .requiredForMatching,
         profileRepository: ProfileProviding,
+        ownerEditableProfileRepository: OwnerEditableProfileProviding,
         matchSignalsRepository: PlayerMatchSignalsProviding,
         profileRelationshipsRepository: PlayerProfileRelationshipsProviding,
         imageUploadService: ImageUploadProviding,
@@ -206,6 +264,7 @@ final class ProfileBuilderViewModel {
     ) {
         self.mode = mode
         self.profileRepository = profileRepository
+        self.ownerEditableProfileRepository = ownerEditableProfileRepository
         self.matchSignalsRepository = matchSignalsRepository
         self.profileRelationshipsRepository = profileRelationshipsRepository
         self.imageUploadService = imageUploadService
@@ -298,6 +357,62 @@ final class ProfileBuilderViewModel {
         }
     }
 
+    // MARK: - Repository loading
+
+    func loadProfileIfNeeded() async {
+        guard !hasLoadedProfile else { return }
+        await loadProfile(forceRefresh: false)
+    }
+
+    func loadProfile(forceRefresh: Bool) async {
+        isLoadingProfile = true
+        profileLoadErrorMessage = nil
+        defer { isLoadingProfile = false }
+
+        do {
+            let profile = try await ownerEditableProfileRepository.currentEditableProfile(forceRefresh: forceRefresh)
+            apply(profile)
+            hasLoadedProfile = true
+        } catch let error as ProfileRepositoryError {
+            if case .profileMissing = error {
+                profileLoadErrorMessage = "Profile setup needed."
+                hasLoadedProfile = true
+            } else {
+                profileLoadErrorMessage = "Couldn’t load your profile. You can keep editing and try saving again."
+            }
+        } catch {
+            profileLoadErrorMessage = "Couldn’t load your profile. You can keep editing and try saving again."
+        }
+    }
+
+    private func apply(_ profile: OwnerEditableProfile) {
+        isApplyingLoadedProfile = true
+        defer { isApplyingLoadedProfile = false }
+
+        form.bio = profile.bio ?? ""
+        if let primarySport = profile.primarySport,
+           let skill = profile.skillLevelBySport[primarySport],
+           (1...5).contains(skill) {
+            form.skill = skill
+        }
+        if let playIntent = profile.playIntent {
+            form.preferredMatchIntensity = MatchIntensity(playIntent: playIntent)
+        }
+        if let homeArea = profile.homeArea {
+            form.homeCourtName = homeArea
+        }
+        if let preferredPlayStyle = profile.preferredPlayStyle,
+           let playStyle = PlayStyle(preferredProfilePlayStyle: preferredPlayStyle) {
+            form.playStyle = playStyle
+        }
+
+        loadedPreferredDays = profile.preferredDays
+        loadedPreferredTimeWindows = profile.preferredTimeWindows
+        loadedPlayIntent = profile.playIntent
+        loadedTravelRadiusMiles = profile.travelRadiusMiles
+        loadedPreferredPlayStyle = profile.preferredPlayStyle
+    }
+
     // MARK: - Saving
 
     func saveProfile() async {
@@ -330,26 +445,35 @@ final class ProfileBuilderViewModel {
                 try await profileRepository.setCurrentUserSinglePhoto(type: .headshot, path: headshotPath, blurhash: nil)
             }
 
-            // 3) Update profile fields
-            var input = PlayerPublicProfileUpdateInput()
-
+            // 3) Update approved owner-editable profile fields
             let homeCourtTrimmed = form.homeCourtName.trimmingCharacters(in: .whitespacesAndNewlines)
-            if homeCourtTrimmed.isEmpty {
-                input.shouldClearHomeCourtID = true
-                input.shouldClearHomeCourtName = true
-            } else {
-                input.shouldClearHomeCourtID = true
-                input.homeCourtName = homeCourtTrimmed
-            }
-
-            input.backgroundLevel = form.background.toRepoValue()
-            input.skillLevel = Int16(form.skill)
-            input.playStyle = form.playStyle.toRepoValue()
-
             let bioTrimmed = form.bio.trimmingCharacters(in: .whitespacesAndNewlines)
-            input.bio = bioTrimmed.isEmpty ? nil : bioTrimmed
-
-            try await profileRepository.updateCurrentUserProfile(input)
+            _ = try await ownerEditableProfileRepository.updateIdentity(
+                ProfileIdentityUpdateCommand(
+                    displayName: nil,
+                    username: nil,
+                    bio: bioTrimmed.isEmpty ? "" : bioTrimmed
+                )
+            )
+            _ = try await ownerEditableProfileRepository.updateSports(
+                ProfileSportsUpdateCommand(
+                    sports: ["pickleball"],
+                    primarySport: "pickleball",
+                    skillLevelBySport: ["pickleball": form.skill]
+                )
+            )
+            _ = try await ownerEditableProfileRepository.updateAvailability(
+                ProfileAvailabilityUpdateCommand(
+                    preferredDays: loadedPreferredDays,
+                    preferredTimeWindows: loadedPreferredTimeWindows,
+                    playIntent: editedMatchSignalFields.contains(.preferredMatchIntensity)
+                        ? form.preferredMatchIntensity.playIntent
+                        : loadedPlayIntent,
+                    homeArea: homeCourtTrimmed.isEmpty ? nil : homeCourtTrimmed,
+                    travelRadiusMiles: loadedTravelRadiusMiles,
+                    preferredPlayStyle: form.playStyle.preferredProfilePlayStyle ?? loadedPreferredPlayStyle
+                )
+            )
 
             if !editedMatchSignalFields.isEmpty {
                 var matchSignalsInput = PlayerMatchSignalsUpdateInput()
@@ -373,10 +497,9 @@ final class ProfileBuilderViewModel {
                 try await profileRelationshipsRepository.replaceCurrentUserClubMemberships(with: form.clubs)
             }
             
-            // 4) Mark completion
-            try await profileRepository.markProfileCompletedIfReady()
             editedMatchSignalFields.removeAll()
             didEditClubs = false
+            didSaveSuccessfully = true
 
         } catch {
             showAlert(title: "Save Failed", message: error.localizedDescription)
