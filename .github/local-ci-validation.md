@@ -1,6 +1,8 @@
 # Local CI Validation
 
-Use these commands before opening or updating a CI-relevant pull request. Run commands from the repository root unless a command explicitly changes into `Scout/`.
+Use these commands when targeted local validation is needed. Run commands from the repository root unless a command explicitly changes into `Scout/`.
+
+PR CI is the default first full validation pass for Scout agent work. Do not run the full local test suite automatically after every small change. Prefer local commands when debugging a failed CI check, reproducing a local issue, capturing requested visual evidence, or validating a targeted fix before pushing.
 
 ## iOS Build
 
@@ -12,6 +14,8 @@ make build
 This is the local build equivalent for app-affecting changes. It uses the repository Makefile and writes derived data under `Scout/.build/`.
 
 ## iOS Tests
+
+Use the full local iOS test command only when a ticket, reviewer, or CI failure calls for it. It may boot more simulator resources than a focused local debugging session needs.
 
 ```sh
 cd Scout
@@ -50,6 +54,16 @@ Some CI behavior can only be verified after a pull request is open:
 - Dependabot scheduling and generated update pull requests
 
 Document any GitHub-only verification in the PR and Jira ticket after the checks run.
+
+## Targeted Simulator Debugging
+
+When local simulator work is needed, prefer a single known simulator and a focused scenario. The current Makefile default test destination is:
+
+```sh
+platform=iOS Simulator,name=iPhone 17 Pro
+```
+
+Future `INFRA-52` work should add a documented one-simulator visual debugging flow for launching a deterministic screen or fixture state, capturing a simulator screenshot, and attaching or linking evidence in the PR when requested.
 
 ## Deferred Checks
 

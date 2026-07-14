@@ -78,7 +78,9 @@ Optional risk labels:
 
 PR CI is the default first validation pass. Agents do not need to run local tests before opening a PR unless the ticket, approved implementation plan, task prompt, or reviewer explicitly requires local validation.
 
-Run local tests when actively debugging a failed CI check, reproducing a CI failure, or validating a fix before pushing an update. Documentation-only and workflow-only changes should state that no local build or iOS test run was performed unless project configuration changed or the PR is investigating a failed CI check.
+Run targeted local tests when actively debugging a failed CI check, reproducing a CI failure, capturing requested visual evidence, or validating a fix before pushing an update. Avoid defaulting to `make test` for small changes while it may boot multiple simulators.
+
+Documentation-only and workflow-only changes should state that no local build or iOS test run was performed unless project configuration changed or the PR is investigating a failed CI check.
 
 After opening a PR, monitor Jira and GitHub. If automation moves a ticket back to `In Progress` because CI failed, inspect the failure, fix it, and push an update.
 
