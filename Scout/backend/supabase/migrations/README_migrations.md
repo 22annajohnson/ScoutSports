@@ -14,7 +14,7 @@ YYYYMMDDHHMMSS_<jira-key>_<short_description>.sql
 
 Each migration should include the required Jira, tech plan, purpose, affected area, RLS impact, generated type impact, and rollback header fields documented in `docs/database/MIGRATIONS.md`.
 
-Future migration PRs should also complete the validation and deployment checklist in `docs/database/MIGRATIONS.md` before review. `scout-dev` is the current deployment target; staging and production promotion remain future work until explicitly approved.
+Future migration PRs should also complete the validation and deployment checklist in `docs/database/MIGRATIONS.md` before review. `Scout Sports V1.3/main` is the current temporary development deployment target; staging and production promotion remain future work until explicitly approved.
 
 Use the root Makefile target when an approved schema story authorizes a new migration:
 

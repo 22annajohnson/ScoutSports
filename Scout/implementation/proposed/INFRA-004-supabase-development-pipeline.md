@@ -103,7 +103,7 @@ Official Supabase guidance relevant to Scout:
 - The repo has iOS CI, docs validation, YAML validation, PR templates, and placeholder Supabase validation docs.
 - `backend/supabase/` exists as a planned home for migrations, seeds, generated types, config, and future functions.
 - No real Supabase migrations, seed data, generated type outputs, pgTAP tests, or Edge Functions are active in the repo yet.
-- Scout has a current `scout-dev` Supabase project, with staging/prod planned later.
+- Scout currently treats `Scout Sports V1.3/main` as the temporary development Supabase database because there are no production users yet and Supabase branching is not available on the current plan.
 - Domain plans are ready to create schema/RLS work, but the backend pipeline is not yet approved enough for safe schema PRs.
 - Current app code already uses Supabase, creating schema drift risk until migrations and generated type validation exist.
 
@@ -137,7 +137,7 @@ flowchart LR
     DEV["Feature branch"] --> PR["Pull Request"]
     PR --> LOCALCI["PR CI: local Supabase validation"]
     LOCALCI --> DEVELOP["Merge to develop"]
-    DEVELOP --> STAGING["Deploy migrations to scout-dev / staging"]
+    DEVELOP --> STAGING["Deploy migrations to Scout Sports V1.3/main"]
     STAGING --> RELEASE["Release approval"]
     RELEASE --> PROD["Deploy to production"]
 ```
@@ -147,12 +147,12 @@ Recommended environments:
 | Environment | Timing | Purpose | Notes |
 | --- | --- | --- | --- |
 | Local | Now | Every agent/developer validates migrations, seeds, pgTAP, RLS locally. | Source of truth for PR validation. |
-| `scout-dev` as staging/integration | Now | Shared remote integration database for merged backend work. | Treat as staging until a separate staging project exists. |
+| `Scout Sports V1.3/main` as temporary dev/integration | Now | Shared remote integration database for merged backend work. | Treat as development only until a separate production project exists. |
 | Production | Before beta/public users | Real user data and production auth/storage/functions. | Manual deployment approval required. |
 | Supabase preview branches | Later | Ephemeral PR environments for high-volume backend work. | Defer until migration volume/parallelism justifies cost and complexity. |
-| Dedicated staging project separate from `scout-dev` | Later | More production-like pre-release verification. | Add before beta if `scout-dev` becomes too noisy for release validation. |
+| Dedicated staging project separate from the temporary dev database | Later | More production-like pre-release verification. | Add before beta if `Scout Sports V1.3/main` becomes too noisy for release validation. |
 
-Recommendation: start with **Local + `scout-dev` staging/integration + Production later**. Do not enable GitHub-integrated preview branching in V0. Evaluate Supabase Branching after the first 3-5 schema/RLS PRs or when multiple agents regularly touch migrations in parallel.
+Recommendation: start with **Local + `Scout Sports V1.3/main` temporary dev/integration + Production later**. Do not enable GitHub-integrated preview branching in V0 because the current Supabase plan does not include branching. Re-evaluate Supabase Branching after upgrading Supabase or when multiple agents regularly touch migrations in parallel.
 
 ## Development Workflow
 
@@ -206,7 +206,7 @@ Feature branch rules:
 Merge strategy:
 
 - PRs target `develop`.
-- `develop` deploys to `scout-dev`/staging after Supabase CI passes.
+- `develop` deploys to `Scout Sports V1.3/main` after Supabase CI passes, until a separate staging or production project exists.
 - Production deployment is manual/approved from a release branch, tag, or protected `main` strategy once production exists.
 - Only one remote database deployment should run at a time per environment.
 
@@ -232,7 +232,7 @@ PR CI should not deploy to remote Supabase projects.
 Run:
 
 - All PR checks.
-- Deploy pending migrations to `scout-dev`/staging after approval of required secrets and workflow.
+- Deploy pending migrations to `Scout Sports V1.3/main` after approval of required secrets and workflow.
 - Regenerate/validate types against staging if needed.
 - Run staging smoke checks for migration history and critical RLS tests.
 
@@ -264,7 +264,7 @@ Run:
 
 V0:
 
-- Use `scout-dev` as the staging/integration remote.
+- Use `Scout Sports V1.3/main` as the temporary development/integration remote.
 - Deploy from `develop` only.
 - Use GitHub Actions environment secrets scoped to staging.
 - Make migration validation a required check before deployment.
@@ -369,7 +369,7 @@ flowchart TD
 5. Add generated type workflow and freshness check.
 6. Add pgTAP/RLS test structure.
 7. Add PR-only Supabase CI validation.
-8. Add staging deployment to `scout-dev`.
+8. Add temporary development deployment to `Scout Sports V1.3/main`.
 9. Run first real domain migration through the pipeline.
 10. Add production deployment workflow only after production project exists and owner approves secrets/environment.
 11. Re-evaluate Supabase Branching after several schema PRs or when parallel migration conflicts become common.
@@ -390,7 +390,7 @@ Story points use Scout's `0.25` increment scale.
 | 4 | Supabase Pipeline: Add generated type workflow and freshness check | 🤖 AI Implementation | 1 | Supabase, iOS, CI/CD | Story 3 |
 | 5 | Supabase Pipeline: Add pgTAP and RLS test harness | 🤖 AI Implementation | 1.5 | Supabase, CI/CD | Story 3 |
 | 6 | Supabase Pipeline: Add PR Supabase validation workflow | 🤖 AI Implementation | 1 | CI/CD, Supabase | Stories 3-5 |
-| 7 | Supabase Pipeline: Configure staging deployment to scout-dev | 🤝 Shared | 1 | CI/CD, Supabase | Story 6, owner secrets |
+| 7 | Supabase Pipeline: Configure deployment to Scout Sports V1.3/main | 🤝 Shared | 1 | CI/CD, Supabase | Story 6, owner secrets |
 | 8 | Supabase Pipeline: Define production deployment approval workflow | 🤝 Shared | 0.75 | CI/CD, Supabase, Docs | Story 7, production project |
 | 9 | Supabase Pipeline: Document rollback, drift, and hotfix procedures | 🤖 AI Implementation | 0.5 | Docs, Supabase | Stories 6-8 |
 | 10 | Supabase Pipeline: Evaluate Supabase Branching after initial schema PRs | 🤝 Shared | 0.5 | Docs, Supabase | First 3-5 schema PRs |

@@ -134,7 +134,7 @@ Private fields must be protected by RLS and contract mapping.
 
 ## Rollout Strategy
 
-1. Land migration and RLS in `scout-dev`.
+1. Land migration and RLS in `Scout Sports V1.3/main`, the current temporary development database.
 2. Generate types.
 3. Add Profile repository implementation in later stories/plans.
 4. Gate UI consumption until RLS validation passes.

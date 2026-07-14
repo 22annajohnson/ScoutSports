@@ -73,7 +73,9 @@ Every schema-changing PR should include a generated type note:
 The note should identify:
 
 - Target platform: iOS, web, Edge Functions, or not applicable.
-- Generation target: local database, `scout-dev`, or another approved project.
+- Generation target: local database, `Scout Sports V1.3/main`, or another approved project.
+
+`Scout Sports V1.3/main` is temporarily the approved remote development target until Scout creates a separate production Supabase project.
 - Command used, if generation ran.
 - Output path, if files were committed.
 - Reason for deferral, if files were not committed.
