@@ -9,9 +9,12 @@ This directory is reserved for approved generated Supabase type outputs.
 
 ## Current Boundary
 
-`INFRA-35` creates the generated type home only. It does not generate or commit type files.
+`INFRA-35` created the generated type home. `SOCIAL-90` activates the Swift
+generated type output for the Profile V1 schema.
 
-Generated files should be committed only after the owning platform strategy, output path, review pattern, and generation command are approved. Do not hand-edit generated type outputs.
+Generated files should be committed only after the owning platform strategy,
+output path, review pattern, and generation command are approved. Do not
+hand-edit generated type outputs.
 
 ## Command Shape
 
