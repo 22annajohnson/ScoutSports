@@ -25,6 +25,7 @@ make supabase-db-reset
 make supabase-validate-reset-seed
 make supabase-test-db
 make supabase-gen-types-swift
+make supabase-check-types-swift
 make supabase-stop
 ```
 
@@ -39,6 +40,10 @@ schema PRs that need to prove the database rebuilds from repo-owned migrations
 and configured seed files. The current root seed entrypoint is
 `backend/supabase/seed.sql`, which is intentionally data-free until an approved
 domain story introduces deterministic local/dev fixtures.
+
+`make supabase-check-types-swift` is the local freshness check for the committed
+Swift generated database types. Run it after local reset validation when a PR
+changes schema or committed generated output.
 
 ## Current Boundary
 
