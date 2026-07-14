@@ -86,18 +86,37 @@ Discovery success should be measured by real-world outcomes, not swipe volume.
 
 Conceptual success metrics:
 
-- Recommendation acceptance rate.
-- Match rate.
-- Successful games created.
-- Recommendation diversity.
-- Repeat-player satisfaction.
-- Empty deck rate.
-- Time to first meaningful connection.
-- Match-to-conversation or coordination rate.
-- Match-to-play conversion rate.
-- Negative feedback or block rate after recommendation.
+- Recommendation acceptance rate: the share of surfaced candidates that receive a positive discovery action.
+- Match rate: the share of positive decisions that become mutual matches through the authoritative match path.
+- Successful games created: the number of matches or recommendations that lead toward real-world play, aligned with EVENT-001 completion and attendance outcomes.
+- Recommendation diversity: whether users see a healthy mix of compatible players, skill levels, play styles, locations, and future contexts instead of a narrow repetitive set.
+- Repeat-player satisfaction: whether users continue to value recommendations after initial matching, including future feedback and repeat play signals.
+- Empty deck rate: how often eligible users have no candidates available, separated from intentional exclusion or privacy outcomes.
+- Time to first meaningful connection: how quickly a user reaches a useful match, conversation, or play coordination path after entering Discovery.
+- Match-to-conversation or coordination rate: whether matches move into practical coordination instead of remaining unused.
+- Match-to-play conversion rate: whether discovery-originated matches contribute to completed games or committed play when Events integration exists.
+- Negative feedback or block rate after recommendation: whether recommendations create safety, quality, or trust issues after presentation.
 
 Swipe count alone is not a success metric. A smaller number of high-quality recommendations is healthier than a large number of low-quality interactions.
+
+Quality signals should support those metrics without becoming analytics implementation requirements.
+
+| Quality Signal | What It Indicates | Example Inputs |
+| --- | --- | --- |
+| Compatibility | Candidate and viewer are likely to enjoy playing together. | Sport overlap, skill fit, play style, intent, preferred formats. |
+| Diversity | Discovery avoids repeatedly showing the same type of candidate when other compatible options exist. | Candidate mix, geography spread, skill variety, play-style variety. |
+| Freshness | Recommendations include relevant new or recently available candidates without ignoring strong existing matches. | Recent profile activity, new availability, new event context, unseen candidates. |
+| Reliability | Recommendations favor people likely to follow through on real-world play. | Future attendance, cancellation, response, or reputation signals after approval. |
+| Location | Candidates are practically reachable for the viewer's preferred play radius. | Home area, court/event proximity, travel radius, privacy-safe location buckets. |
+| Availability | Recommended candidates have plausible overlapping play windows. | Availability summaries, event attendance windows, preferred days or times. |
+| Player experience | Discovery feels useful, respectful, and safe for both viewer and candidate. | Negative feedback, blocks, reports, hides, empty deck recovery, repeat satisfaction. |
+
+Metric and signal boundaries:
+
+- These are domain-level review criteria, not analytics event names.
+- Analytics instrumentation, pipelines, dashboards, and data retention require a future approved implementation plan.
+- Ranking changes should show how they improve real-world connection quality, not only engagement volume.
+- EVENT-001 outcomes such as completed games, attendance, cancellation, and participant satisfaction may inform future learning only after privacy and contract approval.
 
 ## Conceptual Model
 
@@ -279,11 +298,43 @@ Candidate actions may include:
 
 Decisions must be idempotent and should not create duplicate state.
 
+Decision lifecycle:
+
+1. Candidate is presented through an approved recommendation contract.
+2. User submits one approved decision action for the candidate in that context.
+3. The authoritative decision owner validates current eligibility and lifecycle state.
+4. The decision is recorded once.
+5. The candidate is excluded from repeat presentation unless an approved rule allows re-entry.
+6. Any match check or feedback update happens through centralized Discovery/Match rules.
+
+Decision invariants:
+
+- The same user/candidate/context decision must be safe to retry.
+- Duplicate taps, network retries, or replayed requests must not create duplicate decision state.
+- A later decision cannot silently contradict an earlier decision unless a future undo or override rule is approved.
+- Client UI state is not the source of truth for whether a decision exists.
+- Decisions must be evaluated before a candidate re-enters a queue.
+
 ### Match
 
 Match represents mutual interest or another approved compatibility event.
 
 Match creation should have one authoritative source. Match behavior should support coordination toward real play.
+
+Match creation ownership:
+
+- Match creation belongs to an authoritative Discovery/Match service or repository boundary defined by a future implementation plan.
+- Presentation surfaces may request or display match outcomes, but they must not independently decide that a durable match exists.
+- Chat, Events, Feed, Notifications, and Profile may consume match contracts after creation.
+- Match creation must respect privacy, blocking, reporting, account status, and candidate eligibility at creation time.
+
+Match invariants:
+
+- Mutual interest or another approved compatibility event can create at most one active match for the same participants and context unless a future plan defines repeat-match semantics.
+- Match creation must be transactional or otherwise protected against duplicate creation.
+- A match cannot bypass exclusions or safety rules.
+- Match confirmation UI must be derived from authoritative match state.
+- Match state should support coordination toward real-world play rather than ending at swipe feedback.
 
 ### Feedback
 
@@ -317,6 +368,27 @@ Exclusions may include:
 - Safety restrictions.
 
 Exclusions override ranking.
+
+Exclusion categories:
+
+| Category | Meaning | Boundary |
+| --- | --- | --- |
+| Blocked | Viewer or candidate has blocked the other user. | Must always exclude before presentation. |
+| Reported or safety-restricted | Trust and safety state prevents recommendation. | Must override ranking and UI convenience. |
+| Hidden | User has hidden, muted, dismissed, or otherwise suppressed the candidate or related context. | Future semantics must define duration and scope. |
+| Already decided | Candidate has an existing pass, interest, or other terminal decision for this context. | Must be checked before queue presentation. |
+| Already matched | Candidate is already connected through an active match where repeat recommendation is not approved. | Match state must be authoritative. |
+| Ineligible | Candidate fails required sport, visibility, account status, privacy, or minimum profile gates. | Eligibility is evaluated before ranking. |
+| Exhausted | Candidate was previously shown enough times under approved presentation rules. | Re-entry requires explicit freshness or retry rules. |
+| Unavailable | Candidate is temporarily unavailable for the current context, such as schedule or location constraints. | Missing data should not equal unavailable unless approved. |
+
+Exclusion invariants:
+
+- Exclusions must be centralized and applied before presentation.
+- Ranking must never reintroduce excluded candidates.
+- Clients may render empty/recovery states, but they must not create feature-local exclusion systems.
+- Exclusion reasons exposed to users must be privacy-safe and should not reveal blocks, reports, safety state, or private preferences.
+- Future learning can consume exclusion outcomes only through approved feedback rules.
 
 ### Learning
 
@@ -549,6 +621,17 @@ Discovery owns recommendation logic and discovery state. Other systems consume r
 
 If a consuming feature needs recommendation data outside its approved contract, it must propose a contract change through an approved tech plan.
 
+Ownership constraints:
+
+- Swipe Deck owns card rendering, local gestures, empty states, and immediate interaction feedback. It must consume queue, card, decision, match, and exclusion contracts instead of recalculating ranking.
+- Feed may surface recommended players, events, or future groups, but it must consume recommendation summaries or future feed recommendation contracts. Feed must not maintain a separate ranking model.
+- Notifications may consume match notification and recommendation summary contracts for delivery timing and copy. Notifications must not infer match creation or eligibility independently.
+- Events may provide context used by Discovery and may consume recommendation summaries for organizer or player suggestions. Events owns event state, attendance, and coordination rules.
+- Chat may open from authoritative matches. Chat must not create matches, bypass exclusions, or infer that a conversation is allowed without the match contract.
+- Profiles may display candidate/player information from Player Identity contracts. Profiles must not become the source of discovery eligibility, ranking, or exclusion decisions.
+- Recommendations owns reusable recommendation summaries and future learning signals. Presentation features consume these contracts and send approved feedback only.
+- Future Teams may consume team or group recommendation contracts after approval. Team matching must not duplicate player discovery ranking or exclusion logic.
+
 ## Relationship Contracts
 
 Discovery consumes Player Identity contracts for candidate display and eligibility. It does not own player profile data.
@@ -571,6 +654,10 @@ Other domains consume Discovery contracts rather than direct recommendation engi
 - Notifications consume `Match Notification`.
 - Events may consume recommendation summaries for organizer or player suggestions.
 - Search may consume recommendation summaries when ranking search results.
+- Chat consumes authoritative match state before enabling discovery-originated conversations.
+- Profiles consume candidate card and player identity display contracts.
+- Recommendations consumes approved feedback and learning contracts.
+- Future Teams consume only future team-specific recommendation contracts after approval.
 
 This keeps ownership clear: Discovery owns recommendation logic; Profile owns player identity; Events owns real-world coordination; consumers receive contracts.
 
@@ -580,17 +667,17 @@ Discovery data is consumed across Scout. Any discovery change must consider down
 
 Known and future consumers:
 
-- Swipe deck.
-- Feed recommendations.
-- Match modal.
-- Notifications.
-- Chat entry points.
-- Events and organizer suggestions.
-- Search.
-- Player Profiles.
-- Recommendations service.
-- Future Teams.
-- Future web discovery surfaces.
+| Consumer | Allowed Discovery Contracts | Presentation Ownership | Must Not Own |
+| --- | --- | --- | --- |
+| Swipe Deck | `Discovery Queue`, `Candidate Card`, decision result, match result, exclusion reason | Card layout, gesture feedback, queue empty states | Ranking, eligibility, match creation, exclusions |
+| Feed | `Future Feed Recommendations`, `Recommendation Summary` | Feed placement, feed copy, dismiss UI | Parallel ranking, candidate eligibility, exclusion overrides |
+| Notifications | `Match Notification`, `Recommendation Summary` | Notification copy, delivery surface, deep link | Match creation, eligibility inference, ranking |
+| Events | `Recommendation Summary`, event-context recommendation contracts | Organizer/player suggestion UI | Event-independent ranking, profile ownership |
+| Chat | Authoritative match state and match notification context | Chat entry points and conversation UI | Match creation, exclusion bypass |
+| Profiles | `Candidate Card`, Player Identity display contracts | Profile screen rendering and profile actions | Discovery ranking, candidate queue state, eligibility |
+| Recommendations | Recommendation summaries, approved feedback and learning contracts | Shared recommendation presentation patterns | Undocumented learning signals or duplicate scoring |
+| Future Teams | Future team recommendation contracts | Team discovery UI after approval | Reusing player ranking as team ranking without approval |
+| Future web discovery surfaces | Documented discovery contracts | Web presentation and platform-specific navigation | Divergent cross-client ranking or exclusion behavior |
 
 Discovery changes should document:
 

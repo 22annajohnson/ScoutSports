@@ -172,6 +172,8 @@ Tickets generated for implementation should include:
 - Validation steps.
 - Handoff expectations.
 
+UI implementation tickets must also follow the checklist in `jira/JIRA_WORKFLOW.md`, including `DESIGN-001`, existing component reuse, new component justification, accessibility, loading, empty, error, screenshot, animation, and Apple HIG divergence expectations.
+
 Tickets should be small enough to complete in a few hours when possible.
 
 ## Handoff Format
@@ -185,6 +187,14 @@ Agent handoffs should include:
 - Follow-ups.
 
 For documentation-only changes, say that no build was run unless project configuration changed.
+
+## Testing and CI Expectations
+
+Pull request CI is the default first validation pass for Scout agent work.
+
+Agents do not need to run local tests before opening a pull request unless the Jira ticket, approved implementation plan, task prompt, or reviewer explicitly requires local validation. Local tests are expected when an agent is actively debugging a failed CI check, reproducing a CI-only failure, or validating a fix before pushing an update.
+
+Documentation-only and workflow-only PRs should not run iOS tests locally unless the agent is investigating a failed CI check. When no local tests were run, the PR description and handoff should say that validation is expected to run in PR CI.
 
 ## Pull Request Review Workflow
 

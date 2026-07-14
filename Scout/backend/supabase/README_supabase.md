@@ -11,6 +11,20 @@ DB-001 activates the repository structure without creating product schema. Futur
 - `types/`: future generated Supabase type outputs.
 - `config/`: local configuration placeholders and setup notes.
 
+## Local Workflow
+
+Use the root `Makefile` for local Supabase workflow commands:
+
+```text
+make supabase-doctor
+make supabase-start
+make supabase-migration-new SUPABASE_MIGRATION_NAME=<jira-key>_<short_description>
+make supabase-db-reset
+make supabase-stop
+```
+
+These commands use `backend/supabase` as the Supabase CLI workdir by default.
+
 ## Current Boundary
 
 This structure does not introduce:

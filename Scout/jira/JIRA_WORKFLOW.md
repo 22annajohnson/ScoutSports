@@ -67,6 +67,28 @@ Ticket descriptions should include:
 - Validation steps
 - Links to relevant docs, plans, and designs
 
+## UI Implementation Ticket Checklist
+
+UI implementation tickets must reference `DESIGN-001` and `docs/design/DESIGN_SYSTEM.md`. For iOS work, Apple's Human Interface Guidelines are the baseline for platform behavior unless an approved design plan documents a Scout-specific divergence.
+
+Every UI implementation ticket should include:
+
+- Existing design areas, components, modifiers, or patterns inspected.
+- Existing components reused.
+- New components introduced, if any.
+- Why any new component is necessary instead of extending an existing component.
+- Foundation changes proposed, if any, with the required design approval path.
+- Accessibility considerations, including Dynamic Type, VoiceOver, contrast, touch targets, and Reduced Motion where relevant.
+- Loading state expectations.
+- Empty state expectations.
+- Error state expectations, including the user recovery path.
+- Success or confirmation state expectations where relevant.
+- Screenshots or screen recordings required for review.
+- Animations or motion patterns affected.
+- Any divergence from Apple's Human Interface Guidelines.
+
+Tickets that introduce new shared components, change foundations, alter component ownership, or diverge from native platform behavior should be treated as blocked on design review or an approved design proposal unless an approved plan already authorizes the change.
+
 ## Ticket Sizing
 
 Prefer tickets that can be completed in a few hours.
