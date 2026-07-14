@@ -1,5 +1,5 @@
 -- Jira: SOCIAL-88
--- Tech Plan: implementation/proposed/PROFILE-006-profile-database-schema.md
+-- Tech Plan: implementation/approved/PROFILE-006-profile-database-schema.md
 -- Purpose: Create the V1 profile schema foundation for player identity.
 -- Affected Area: Supabase
 -- RLS Impact: Enables RLS on profile tables; policies are added in SOCIAL-89.
