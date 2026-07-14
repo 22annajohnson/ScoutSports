@@ -120,8 +120,9 @@ enum ProfilePlayStyle: String, Codable, CaseIterable, Sendable {
     case singles
 }
 
-final class ProfileRepository: ProfileProviding, PlayerMatchSignalsProviding, PlayerProfileRelationshipsProviding, MatchFeedbackProviding, InternalMatchFeedbackProviding, PlayerMetricsProviding {
+final class ProfileRepository: ProfileProviding, OwnerEditableProfileProviding, PlayerMatchSignalsProviding, PlayerProfileRelationshipsProviding, MatchFeedbackProviding, InternalMatchFeedbackProviding, PlayerMetricsProviding {
     private let supabase: SupabaseClient
+    private var cachedOwnerEditableProfile: OwnerEditableProfile?
 
     init(supabase: SupabaseClient) {
         self.supabase = supabase
@@ -397,6 +398,203 @@ final class ProfileRepository: ProfileProviding, PlayerMatchSignalsProviding, Pl
             .execute()
     }
 
+    // MARK: - Owner editable profile
+
+    func currentEditableProfile(forceRefresh: Bool) async throws -> OwnerEditableProfile {
+        guard let user = supabase.auth.currentUser else { throw ProfileRepositoryError.notAuthenticated }
+
+        if !forceRefresh, let cachedOwnerEditableProfile {
+            return cachedOwnerEditableProfile
+        }
+
+        return try await performOwnerProfileOperation {
+            try await loadOwnerEditableProfile(for: user.id)
+        }
+    }
+
+    func updateIdentity(_ command: ProfileIdentityUpdateCommand) async throws -> OwnerEditableProfile {
+        try validate(command.validationErrors())
+        guard let user = supabase.auth.currentUser else { throw ProfileRepositoryError.notAuthenticated }
+
+        return try await performOwnerProfileOperation {
+            struct IdentityPatch: Encodable {
+                var displayName: String?
+                var username: String??
+                var bio: String??
+
+                enum CodingKeys: String, CodingKey {
+                    case displayName = "display_name"
+                    case username
+                    case bio
+                }
+            }
+
+            var patch = IdentityPatch()
+            if let displayName = command.displayName {
+                patch.displayName = displayName.trimmingCharacters(in: .whitespacesAndNewlines)
+            }
+            if let username = command.username {
+                let normalizedUsername = username.trimmingCharacters(in: .whitespacesAndNewlines)
+                patch.username = normalizedUsername.isEmpty ? .some(nil) : .some(normalizedUsername)
+            }
+            if let bio = command.bio {
+                let normalizedBio = bio.trimmingCharacters(in: .whitespacesAndNewlines)
+                patch.bio = normalizedBio.isEmpty ? .some(nil) : .some(normalizedBio)
+            }
+
+            let isEmpty = patch.displayName == nil
+                && patch.username == nil
+                && patch.bio == nil
+
+            guard !isEmpty else {
+                return try await loadOwnerEditableProfile(for: user.id)
+            }
+
+            _ = try await supabase
+                .from("profiles")
+                .update(patch)
+                .eq("user_id", value: user.id)
+                .execute()
+
+            cachedOwnerEditableProfile = nil
+            return try await loadOwnerEditableProfile(for: user.id)
+        }
+    }
+
+    func updateSports(_ command: ProfileSportsUpdateCommand) async throws -> OwnerEditableProfile {
+        try validate(command.validationErrors())
+        guard let user = supabase.auth.currentUser else { throw ProfileRepositoryError.notAuthenticated }
+
+        return try await performOwnerProfileOperation {
+            let profileID = try await ownerProfileID(for: user.id)
+
+            _ = try await supabase
+                .from("profile_sports")
+                .delete()
+                .eq("profile_id", value: profileID)
+                .execute()
+
+            let normalizedSports = Self.uniqueNonEmptyValues(command.sports)
+            if !normalizedSports.isEmpty {
+                struct SportInsert: Encodable {
+                    let profileId: UUID
+                    let sportSlug: String
+                    let skillLevel: String?
+                    let isPrimary: Bool
+
+                    enum CodingKeys: String, CodingKey {
+                        case profileId = "profile_id"
+                        case sportSlug = "sport_slug"
+                        case skillLevel = "skill_level"
+                        case isPrimary = "is_primary"
+                    }
+                }
+
+                let inserts = normalizedSports.map { sportSlug in
+                    SportInsert(
+                        profileId: profileID,
+                        sportSlug: sportSlug,
+                        skillLevel: command.skillLevelBySport[sportSlug].map { "level_\($0)" },
+                        isPrimary: sportSlug == command.primarySport
+                    )
+                }
+
+                _ = try await supabase
+                    .from("profile_sports")
+                    .insert(inserts)
+                    .execute()
+            }
+
+            cachedOwnerEditableProfile = nil
+            return try await loadOwnerEditableProfile(for: user.id)
+        }
+    }
+
+    func updateAvailability(_ command: ProfileAvailabilityUpdateCommand) async throws -> OwnerEditableProfile {
+        try validate(command.validationErrors())
+        guard let user = supabase.auth.currentUser else { throw ProfileRepositoryError.notAuthenticated }
+
+        return try await performOwnerProfileOperation {
+            let profileID = try await ownerProfileID(for: user.id)
+
+            struct AvailabilityUpsert: Encodable {
+                let profileId: UUID
+                let preferredDays: [String]
+                let preferredTimes: [String]
+                let playIntent: String?
+                let homeArea: String?
+                let travelRadiusMiles: Int32?
+                let preferredPlayStyle: String?
+
+                enum CodingKeys: String, CodingKey {
+                    case profileId = "profile_id"
+                    case preferredDays = "preferred_days"
+                    case preferredTimes = "preferred_times"
+                    case playIntent = "play_intent"
+                    case homeArea = "home_area"
+                    case travelRadiusMiles = "travel_radius_miles"
+                    case preferredPlayStyle = "preferred_play_style"
+                }
+            }
+
+            let homeArea = command.homeArea?.trimmingCharacters(in: .whitespacesAndNewlines)
+            let upsert = AvailabilityUpsert(
+                profileId: profileID,
+                preferredDays: command.preferredDays.map(\.rawValue),
+                preferredTimes: command.preferredTimeWindows.map(\.rawValue),
+                playIntent: command.playIntent?.rawValue,
+                homeArea: homeArea?.isEmpty == true ? nil : homeArea,
+                travelRadiusMiles: command.travelRadiusMiles.map(Int32.init),
+                preferredPlayStyle: command.preferredPlayStyle?.rawValue
+            )
+
+            _ = try await supabase
+                .from("profile_availability")
+                .upsert(upsert, onConflict: "profile_id")
+                .execute()
+
+            cachedOwnerEditableProfile = nil
+            return try await loadOwnerEditableProfile(for: user.id)
+        }
+    }
+
+    func updatePrivacy(_ command: ProfilePrivacyUpdateCommand) async throws -> OwnerEditableProfile {
+        guard let user = supabase.auth.currentUser else { throw ProfileRepositoryError.notAuthenticated }
+
+        return try await performOwnerProfileOperation {
+            let profileID = try await ownerProfileID(for: user.id)
+
+            struct PrivacyUpsert: Encodable {
+                let profileId: UUID
+                let profileVisibility: String
+                let discoverable: Bool
+                let locationPrecision: String
+
+                enum CodingKeys: String, CodingKey {
+                    case profileId = "profile_id"
+                    case profileVisibility = "profile_visibility"
+                    case discoverable
+                    case locationPrecision = "location_precision"
+                }
+            }
+
+            let upsert = PrivacyUpsert(
+                profileId: profileID,
+                profileVisibility: command.profileVisibility.rawValue,
+                discoverable: command.isDiscoverable,
+                locationPrecision: command.locationPrecision.rawValue
+            )
+
+            _ = try await supabase
+                .from("profile_privacy")
+                .upsert(upsert, onConflict: "profile_id")
+                .execute()
+
+            cachedOwnerEditableProfile = nil
+            return try await loadOwnerEditableProfile(for: user.id)
+        }
+    }
+
     func updateCurrentUserMatchSignals(_ input: PlayerMatchSignalsUpdateInput) async throws {
         guard let user = supabase.auth.currentUser else { throw DataError.notAuthenticated }
 
@@ -652,5 +850,130 @@ final class ProfileRepository: ProfileProviding, PlayerMatchSignalsProviding, Pl
             .update(patch)
             .eq("id", value: user.id)
             .execute()
+    }
+
+    private func loadOwnerEditableProfile(for userID: UUID) async throws -> OwnerEditableProfile {
+        let profileRows: [OwnerEditableProfileRow] = try await supabase
+            .from("profiles")
+            .select("id, user_id, display_name, username, profile_photo_path, action_photo_path, bio, profile_completion_state, account_status, last_active_at, created_at, updated_at")
+            .eq("user_id", value: userID)
+            .limit(1)
+            .execute()
+            .value
+
+        guard let profileRow = profileRows.first else {
+            throw ProfileRepositoryError.profileMissing
+        }
+
+        let profileID = profileRow.id
+
+        let sportsRows: [OwnerProfileSportRow] = try await supabase
+            .from("profile_sports")
+            .select("id, profile_id, sport_slug, skill_level, is_primary, created_at, updated_at")
+            .eq("profile_id", value: profileID)
+            .order("sport_slug", ascending: true)
+            .execute()
+            .value
+
+        let availabilityRows: [OwnerProfileAvailabilityRow] = try await supabase
+            .from("profile_availability")
+            .select("profile_id, preferred_days, preferred_times, play_intent, home_area, travel_radius_miles, preferred_play_style, created_at, updated_at")
+            .eq("profile_id", value: profileID)
+            .limit(1)
+            .execute()
+            .value
+
+        let privacyRows: [OwnerProfilePrivacyRow] = try await supabase
+            .from("profile_privacy")
+            .select("profile_id, profile_visibility, discoverable, location_precision, created_at, updated_at")
+            .eq("profile_id", value: profileID)
+            .limit(1)
+            .execute()
+            .value
+
+        let profile = try OwnerEditableProfileMapper.ownerEditableProfile(
+            profile: profileRow,
+            sports: sportsRows,
+            availability: availabilityRows.first,
+            privacy: privacyRows.first
+        )
+
+        cachedOwnerEditableProfile = profile
+        return profile
+    }
+
+    private func ownerProfileID(for userID: UUID) async throws -> UUID {
+        if let cachedID = cachedOwnerEditableProfile.flatMap({ UUID(uuidString: $0.id) }) {
+            return cachedID
+        }
+
+        let profileRows: [OwnerEditableProfileRow] = try await supabase
+            .from("profiles")
+            .select("id, user_id, display_name, username, profile_photo_path, action_photo_path, bio, profile_completion_state, account_status, last_active_at, created_at, updated_at")
+            .eq("user_id", value: userID)
+            .limit(1)
+            .execute()
+            .value
+
+        guard let profileRow = profileRows.first else {
+            throw ProfileRepositoryError.profileMissing
+        }
+
+        return profileRow.id
+    }
+
+    private func performOwnerProfileOperation(
+        _ operation: () async throws -> OwnerEditableProfile
+    ) async throws -> OwnerEditableProfile {
+        do {
+            return try await operation()
+        } catch let error as ProfileRepositoryError {
+            throw error
+        } catch _ as DecodingError {
+            throw ProfileRepositoryError.decodingFailed
+        } catch let error as URLError {
+            if error.code == .notConnectedToInternet || error.code == .networkConnectionLost {
+                throw ProfileRepositoryError.networkUnavailable
+            }
+            throw ProfileRepositoryError.serverUnavailable
+        } catch let error as PostgrestError {
+            throw Self.profileRepositoryError(from: error)
+        } catch {
+            throw ProfileRepositoryError.unknown
+        }
+    }
+
+    static func profileRepositoryError(from error: PostgrestError) -> ProfileRepositoryError {
+        switch error.code {
+        case "42501":
+            return .permissionDenied
+        case "23505", "23514":
+            return .validationFailed([])
+        case "PGRST116":
+            return .profileMissing
+        default:
+            return .serverUnavailable
+        }
+    }
+
+    private func validate(_ errors: [ProfileUpdateValidationError]) throws {
+        guard errors.isEmpty else {
+            throw ProfileRepositoryError.validationFailed(errors)
+        }
+    }
+
+    static func uniqueNonEmptyValues(_ values: [String]) -> [String] {
+        var seen: Set<String> = []
+        var result: [String] = []
+
+        for value in values {
+            let normalized = value.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !normalized.isEmpty, !seen.contains(normalized) else { continue }
+
+            seen.insert(normalized)
+            result.append(normalized)
+        }
+
+        return result
     }
 }

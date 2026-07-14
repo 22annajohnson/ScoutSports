@@ -78,6 +78,59 @@ Existing Jira work related to this scope:
 
 Do not create duplicate DB foundation work. INFRA-004 should create one new epic for the remaining pipeline decisions and implementation tasks that DB-001 does not fully cover: CI validation, staging/prod promotion, deployment approvals, pgTAP/RLS testing standards, and future Edge Function deployment.
 
+## INFRA-57 Approval And Overlap Reconciliation
+
+INFRA-57 records the implementation-readiness review for this proposed plan. It
+does not by itself move this document to `implementation/approved/` or change
+the status above. Product owner or technical lead approval is still required
+before the plan is treated as approved.
+
+Approval-readiness decision:
+
+- `INFRA-004` is the canonical proposed plan for Scout's end-to-end Supabase
+  development, validation, CI, deployment, rollback, and environment promotion
+  pipeline.
+- `DB-001` remains the database foundation implementation slice. Its repository
+  structure, local command surface, migration conventions, seed conventions,
+  generated type workflow, and migration checklist should be reused rather than
+  duplicated.
+- `INFRA-004` should not recreate DB foundation stories. It should consume the
+  DB foundation work and own the remaining pipeline behaviors: pgTAP/RLS test
+  harness, PR Supabase validation, remote development deployment, production
+  deployment approval, rollback/drift/hotfix procedures, and future Supabase
+  Branching evaluation.
+- Older database foundation tickets remain valid for traceability unless they
+  have already been merged or superseded by explicit INFRA-004 implementation
+  stories. Do not create parallel replacement tickets for the same local
+  structure, command surface, seed entrypoint, or generated type workflow.
+
+Implementation sequence after INFRA-57:
+
+1. Complete the local pipeline primitives already represented by INFRA-58,
+   INFRA-59, and INFRA-60.
+2. Add the pgTAP/RLS test harness before adding PR Supabase CI validation.
+3. Add PR-only Supabase validation before any remote deployment automation.
+4. Configure deployment to `Scout Sports V1.3/main` only after the owner
+   approves required GitHub/Supabase secrets and environment settings.
+5. Define production deployment approval only after a production project exists
+   or the owner explicitly approves the production environment strategy.
+6. Document rollback, drift, and hotfix procedures after the validation and
+   deployment paths are concrete.
+7. Evaluate Supabase Branching only after initial schema PRs show whether the
+   extra operational complexity is justified.
+
+Owner gates before deployment-oriented stories:
+
+- Confirm `INFRA-004` approval and move or copy the plan into
+  `implementation/approved/`.
+- Confirm the current remote deployment target remains `Scout Sports V1.3/main`.
+- Provide or approve GitHub environment names, Supabase project references, and
+  secret names before any workflow depends on remote credentials.
+- Confirm staging and production project timing before any staging/prod workflow
+  or secret is introduced.
+- Confirm whether Supabase GitHub integration or Branching is intentionally
+  deferred, enabled, or revisited by a later ADR.
+
 ## Research Summary
 
 Official Supabase guidance relevant to Scout:

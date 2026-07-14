@@ -5,7 +5,7 @@
 
 import Foundation
 
-struct OwnerEditableProfileRow: Equatable, Sendable {
+struct OwnerEditableProfileRow: Decodable, Equatable, Sendable {
     var id: UUID
     var displayName: String?
     var username: String?
@@ -16,16 +16,36 @@ struct OwnerEditableProfileRow: Equatable, Sendable {
     var accountStatus: String
     var createdAt: String
     var lastActiveAt: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case displayName = "display_name"
+        case username
+        case profilePhotoPath = "profile_photo_path"
+        case actionPhotoPath = "action_photo_path"
+        case bio
+        case profileCompletionState = "profile_completion_state"
+        case accountStatus = "account_status"
+        case createdAt = "created_at"
+        case lastActiveAt = "last_active_at"
+    }
 }
 
-struct OwnerProfileSportRow: Equatable, Sendable {
+struct OwnerProfileSportRow: Decodable, Equatable, Sendable {
     var profileId: UUID
     var sportSlug: String
     var skillLevel: String?
     var isPrimary: Bool
+
+    enum CodingKeys: String, CodingKey {
+        case profileId = "profile_id"
+        case sportSlug = "sport_slug"
+        case skillLevel = "skill_level"
+        case isPrimary = "is_primary"
+    }
 }
 
-struct OwnerProfileAvailabilityRow: Equatable, Sendable {
+struct OwnerProfileAvailabilityRow: Decodable, Equatable, Sendable {
     var profileId: UUID
     var preferredDays: [String]
     var preferredTimes: [String]
@@ -33,13 +53,30 @@ struct OwnerProfileAvailabilityRow: Equatable, Sendable {
     var homeArea: String?
     var travelRadiusMiles: Int32?
     var preferredPlayStyle: String?
+
+    enum CodingKeys: String, CodingKey {
+        case profileId = "profile_id"
+        case preferredDays = "preferred_days"
+        case preferredTimes = "preferred_times"
+        case playIntent = "play_intent"
+        case homeArea = "home_area"
+        case travelRadiusMiles = "travel_radius_miles"
+        case preferredPlayStyle = "preferred_play_style"
+    }
 }
 
-struct OwnerProfilePrivacyRow: Equatable, Sendable {
+struct OwnerProfilePrivacyRow: Decodable, Equatable, Sendable {
     var profileId: UUID
     var profileVisibility: String
     var discoverable: Bool
     var locationPrecision: String
+
+    enum CodingKeys: String, CodingKey {
+        case profileId = "profile_id"
+        case profileVisibility = "profile_visibility"
+        case discoverable
+        case locationPrecision = "location_precision"
+    }
 }
 
 enum OwnerEditableProfileMapper {
