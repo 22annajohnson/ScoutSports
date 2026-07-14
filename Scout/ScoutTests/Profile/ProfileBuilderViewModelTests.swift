@@ -173,6 +173,104 @@ final class ProfileBuilderViewModelTests: XCTestCase {
         XCTAssertEqual(viewModel.alertTitle, "Save Failed")
         XCTAssertFalse(viewModel.didSaveSuccessfully)
     }
+
+    func test_loadProfile_whenProfileMissing_setsSetupNeededMessageAndStopsLoading() async {
+        let profileRepository = MockProfileRepository()
+        let imageUploadService = MockImageUploadService()
+        let userID = UUID()
+        profileRepository.currentEditableProfileError = ProfileRepositoryError.profileMissing
+
+        let viewModel = ProfileBuilderViewModel(
+            profileRepository: profileRepository,
+            ownerEditableProfileRepository: profileRepository,
+            matchSignalsRepository: profileRepository,
+            profileRelationshipsRepository: profileRepository,
+            imageUploadService: imageUploadService,
+            userIDProvider: { userID }
+        )
+
+        await viewModel.loadProfile(forceRefresh: true)
+
+        XCTAssertEqual(profileRepository.currentEditableProfileCalls, [true])
+        XCTAssertFalse(viewModel.isLoadingProfile)
+        XCTAssertEqual(viewModel.profileLoadErrorMessage, "Profile setup needed.")
+        XCTAssertFalse(viewModel.isShowingAlert)
+    }
+
+    func test_loadProfile_whenPermissionDenied_setsUiSafeLoadError() async {
+        let profileRepository = MockProfileRepository()
+        let imageUploadService = MockImageUploadService()
+        let userID = UUID()
+        profileRepository.currentEditableProfileError = ProfileRepositoryError.permissionDenied
+
+        let viewModel = ProfileBuilderViewModel(
+            profileRepository: profileRepository,
+            ownerEditableProfileRepository: profileRepository,
+            matchSignalsRepository: profileRepository,
+            profileRelationshipsRepository: profileRepository,
+            imageUploadService: imageUploadService,
+            userIDProvider: { userID }
+        )
+
+        await viewModel.loadProfile(forceRefresh: false)
+
+        XCTAssertFalse(viewModel.isLoadingProfile)
+        XCTAssertEqual(viewModel.profileLoadErrorMessage, "Couldn’t load your profile. You can keep editing and try saving again.")
+        XCTAssertFalse(viewModel.profileLoadErrorMessage?.localizedCaseInsensitiveContains("supabase") ?? true)
+        XCTAssertFalse(viewModel.profileLoadErrorMessage?.localizedCaseInsensitiveContains("rls") ?? true)
+    }
+
+    func test_saveProfile_whenValidationFailure_preservesFormStateAndUsesSaveFailureState() async {
+        let profileRepository = MockProfileRepository()
+        let imageUploadService = MockImageUploadService()
+        let userID = UUID()
+        profileRepository.updateAvailabilityError = ProfileRepositoryError.validationFailed([.travelRadiusOutOfRange])
+
+        let viewModel = ProfileBuilderViewModel(
+            profileRepository: profileRepository,
+            ownerEditableProfileRepository: profileRepository,
+            matchSignalsRepository: profileRepository,
+            profileRelationshipsRepository: profileRepository,
+            imageUploadService: imageUploadService,
+            userIDProvider: { userID }
+        )
+        viewModel.actionShotImage = UIImage()
+        viewModel.form.bio = "Keep me"
+        viewModel.form.homeCourtName = "East Courts"
+
+        await viewModel.saveProfile()
+
+        XCTAssertEqual(viewModel.form.bio, "Keep me")
+        XCTAssertEqual(viewModel.form.homeCourtName, "East Courts")
+        XCTAssertTrue(viewModel.isShowingAlert)
+        XCTAssertEqual(viewModel.alertTitle, "Save Failed")
+        XCTAssertFalse(viewModel.didSaveSuccessfully)
+    }
+
+    func test_saveProfile_whenRepositoryWritesSucceed_setsSavedState() async {
+        let profileRepository = MockProfileRepository()
+        let imageUploadService = MockImageUploadService()
+        let userID = UUID()
+
+        let viewModel = ProfileBuilderViewModel(
+            profileRepository: profileRepository,
+            ownerEditableProfileRepository: profileRepository,
+            matchSignalsRepository: profileRepository,
+            profileRelationshipsRepository: profileRepository,
+            imageUploadService: imageUploadService,
+            userIDProvider: { userID }
+        )
+        viewModel.actionShotImage = UIImage()
+
+        await viewModel.saveProfile()
+
+        XCTAssertFalse(viewModel.isSaving)
+        XCTAssertTrue(viewModel.didSaveSuccessfully)
+        XCTAssertFalse(viewModel.isShowingAlert)
+        XCTAssertEqual(profileRepository.updateIdentityCalls.count, 1)
+        XCTAssertEqual(profileRepository.updateSportsCalls.count, 1)
+        XCTAssertEqual(profileRepository.updateAvailabilityCalls.count, 1)
+    }
 }
 
 private struct MockImageUploadService: ImageUploadProviding {
