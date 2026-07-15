@@ -49,6 +49,7 @@
 			membershipExceptions = (
 				Data/ProfileContractMapperTests.swift,
 				Data/ProfileDTOTests.swift,
+				DesignFactory/DesignFactoryAccessTests.swift,
 				Profile/OwnerProfileViewModelTests.swift,
 				Profile/ProfileBuilderViewModelTests.swift,
 				Profile/PublicProfileViewModelTests.swift,
@@ -63,6 +64,7 @@
 			membershipExceptions = (
 				Data/ProfileContractMapperTests.swift,
 				Data/ProfileDTOTests.swift,
+				DesignFactory/DesignFactoryAccessTests.swift,
 				Profile/OwnerProfileViewModelTests.swift,
 				Profile/ProfileBuilderViewModelTests.swift,
 				Profile/PublicProfileViewModelTests.swift,
