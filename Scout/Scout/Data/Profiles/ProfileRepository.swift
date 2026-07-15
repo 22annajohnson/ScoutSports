@@ -120,7 +120,7 @@ enum ProfilePlayStyle: String, Codable, CaseIterable, Sendable {
     case singles
 }
 
-final class ProfileRepository: ProfileProviding, OwnerEditableProfileProviding, PlayerMatchSignalsProviding, PlayerProfileRelationshipsProviding, MatchFeedbackProviding, InternalMatchFeedbackProviding, PlayerMetricsProviding {
+final class ProfileRepository: ProfileProviding, OwnerEditableProfileProviding, PublicProfileProviding, PlayerMatchSignalsProviding, PlayerProfileRelationshipsProviding, MatchFeedbackProviding, InternalMatchFeedbackProviding, PlayerMetricsProviding {
     private let supabase: SupabaseClient
     private var cachedOwnerEditableProfile: OwnerEditableProfile?
 
@@ -593,6 +593,35 @@ final class ProfileRepository: ProfileProviding, OwnerEditableProfileProviding, 
             cachedOwnerEditableProfile = nil
             return try await loadOwnerEditableProfile(for: user.id)
         }
+    }
+
+    // MARK: - Public profile
+
+    func publicProfile(profileID: UUID) async throws -> PublicProfile {
+        let summaries: [ProfilePublicSummaryRow] = try await supabase
+            .from("profile_public_summaries")
+            .select("profile_id, display_name, username, profile_photo_path, bio")
+            .eq("profile_id", value: profileID)
+            .limit(1)
+            .execute()
+            .value
+
+        guard let summary = summaries.first else {
+            throw ProfileRepositoryError.profileMissing
+        }
+
+        let sports: [ProfileSportSummaryRow] = try await supabase
+            .from("profile_sport_summaries")
+            .select("profile_id, sport_slug, skill_level, is_primary")
+            .eq("profile_id", value: profileID)
+            .execute()
+            .value
+
+        guard let profile = ProfileContractMapper.publicProfile(summary: summary, sports: sports) else {
+            throw ProfileRepositoryError.mappingFailed
+        }
+
+        return profile
     }
 
     func updateCurrentUserMatchSignals(_ input: PlayerMatchSignalsUpdateInput) async throws {

@@ -318,9 +318,15 @@ Run:
 V0:
 
 - Use `Scout Sports V1.3/main` as the temporary development/integration remote.
-- Deploy from `develop` only.
-- Use GitHub Actions environment secrets scoped to staging.
+- Deploy from `develop` only, through manual `workflow_dispatch`.
+- Automatically deploy from `develop` only when committed migration files under
+  `Scout/backend/supabase/migrations/` changed.
+- Use the approved GitHub repo variable `SUPABASE_PROJECT_REF` and repo secret
+  `SUPABASE_ACCESS_TOKEN` for dev deployment.
+- Use the approved GitHub repo secret `SUPABASE_DB_PASSWORD` as the remote
+  database password for non-interactive Supabase CLI link and migration push.
 - Make migration validation a required check before deployment.
+- Treat this as dev deployment only until a separate staging or production project exists.
 
 ### Production Deployment
 
@@ -329,14 +335,16 @@ Before production exists:
 - Do not configure production deployment.
 - Do not connect GitHub to Supabase production.
 - Do not add production secrets.
+- Keep production workflow paths dormant or absent until the repository owner approves the production project, GitHub environment, and secret names.
 
 When production is created:
 
 - Use a protected GitHub environment with manual approval.
-- Deploy only from release branch/tag or protected main strategy.
+- Deploy only from release branch/tag or protected main strategy approved by the repository owner.
 - Require staging success before production deployment.
 - Keep production seed disabled unless explicitly approved.
 - Run post-deploy verification and document rollback/forward-fix plan.
+- Record migration identifiers, target project, approver, validation evidence, and follow-up checks in the release handoff.
 
 ### Rollback
 
@@ -346,6 +354,14 @@ Database rollback should be treated as forward-only by default:
 - Every migration PR must include rollback notes: safe revert, forward-fix, data repair, or backup restore requirement.
 - Production rollback may require a new migration rather than reverting Git.
 - Destructive migrations require explicit owner approval and backup/restore plan.
+
+### Drift And Hotfixes
+
+Dashboard edits are allowed for inspection and emergency debugging, but they are never the durable source of truth. Any dashboard-originated durable change must be converted into a reviewed migration or explicitly reverted.
+
+If drift is suspected, pause deployment to that target, inspect the difference, document the finding, and reconcile through a migration or approved recovery plan before continuing.
+
+Hotfix database changes should use the smallest possible forward-fix migration, reference the incident or Jira ticket, run the normal local/staging validation path where possible, and include post-deploy verification. Production hotfixes still require protected environment approval unless a future owner-approved break-glass process says otherwise.
 
 ### Edge Functions
 

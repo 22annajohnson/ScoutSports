@@ -68,6 +68,7 @@ final class AppEnvironment {
     ProfileBuilderViewModel(
       mode: .requiredForMatching,
       profileRepository: profileRepository,
+      ownerEditableProfileRepository: ownerEditableProfileRepository,
       matchSignalsRepository: matchSignalsRepository,
       profileRelationshipsRepository: profileRelationshipsRepository,
       imageUploadService: imageUploadService,

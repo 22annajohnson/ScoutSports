@@ -107,6 +107,42 @@ Expected future behavior:
 - CI validates migrations and generated types when the strategy is approved.
 - Staging/prod promotion is introduced only after environment strategy approval.
 
+## Production Boundary
+
+Production Supabase deployment is not configured yet and should remain dormant until the production project exists.
+
+Before production deployment is enabled, Scout must approve:
+
+- The production Supabase project and project ref.
+- The protected GitHub environment and manual approval rule.
+- The production secret names and rotation owner.
+- The deployment trigger, such as release tag, protected `main`, or another approved release path.
+- The staging/integration success requirement.
+- The rollback, forward-fix, and destructive migration approval expectations in `docs/database/MIGRATIONS.md`.
+
+Production seed loading is disabled by default. It must not be enabled without a production data plan.
+
+## Dev Deployment
+
+Committed repository migrations deploy to `Scout Sports V1.3` through the
+`Supabase Dev Deployment` GitHub Actions workflow after local validation passes.
+
+Current dev deployment rules:
+
+- The workflow can be run manually from `develop`.
+- The workflow also runs automatically on pushes to `develop` when committed
+  migration files under `Scout/backend/supabase/migrations/` changed.
+- The target project ref is `rwhyyujlcvwjdfssykkq`.
+- The workflow uses `SUPABASE_ACCESS_TOKEN` for Supabase CLI deployment.
+- The workflow uses `SUPABASE_DB_PASSWORD` for non-interactive remote database
+  linking and migration push.
+- The workflow logs Supabase CLI version and dev migration status without
+  printing secrets.
+- The iOS publishable key is not used for deployment.
+- The Supabase secret key is not required for migration deployment.
+- Supabase Branching, staging, production, Edge Functions, and storage buckets
+  remain out of scope.
+
 ## Approval Boundary
 
 This document does not approve:

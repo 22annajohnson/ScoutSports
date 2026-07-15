@@ -50,9 +50,12 @@
 				Data/ProfileContractMapperTests.swift,
 				Data/ProfileDTOTests.swift,
 				DesignFactory/DesignFactoryAccessTests.swift,
+				Profile/OwnerProfileViewModelTests.swift,
 				Profile/ProfileBuilderViewModelTests.swift,
+				Profile/PublicProfileViewModelTests.swift,
 				ScoutTests.swift,
 				Session/SessionStoreTests.swift,
+				Swipe/DiscoveryContractsTests.swift,
 			);
 			target = 954A49122F47530800BFAC10 /* Scout */;
 		};
@@ -62,9 +65,12 @@
 				Data/ProfileContractMapperTests.swift,
 				Data/ProfileDTOTests.swift,
 				DesignFactory/DesignFactoryAccessTests.swift,
+				Profile/OwnerProfileViewModelTests.swift,
 				Profile/ProfileBuilderViewModelTests.swift,
+				Profile/PublicProfileViewModelTests.swift,
 				ScoutTests.swift,
 				Session/SessionStoreTests.swift,
+				Swipe/DiscoveryContractsTests.swift,
 			);
 			target = 954A491F2F47530800BFAC10 /* ScoutTests */;
 		};

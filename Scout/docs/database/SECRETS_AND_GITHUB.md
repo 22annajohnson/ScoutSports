@@ -46,6 +46,27 @@ Exact GitHub secret names are not approved yet. Future CI/database integration p
 
 CI secrets should be scoped to the minimum environment and workflow that needs them.
 
+## Approved Dev Deployment Inputs
+
+INFRA-63 approves the following inputs for the manual `Supabase Dev Deployment`
+workflow:
+
+- GitHub repo variable `SUPABASE_PROJECT_REF`, expected to equal
+  `rwhyyujlcvwjdfssykkq` for `Scout Sports V1.3`.
+- GitHub repo secret `SUPABASE_ACCESS_TOKEN` for Supabase CLI deployment.
+- GitHub repo secret `SUPABASE_DB_PASSWORD` for non-interactive remote
+  database linking and migration push.
+
+Do not use the iOS publishable key for deployment. Do not use the Supabase secret
+key unless a future workflow explicitly requires server-side API access. Do not
+commit the remote database password or expose it through Make command echoing,
+workflow logs, PR text, or app configuration.
+
+INFRA-55 extends the same workflow to run automatically on pushes to `develop`
+when committed migration files under `Scout/backend/supabase/migrations/`
+changed. The automatic path uses the same repo variable and secrets as the
+manual path.
+
 ## GitHub Integration Expectations
 
 Future GitHub/Supabase integration should remain proposed until approved:
@@ -55,6 +76,20 @@ Future GitHub/Supabase integration should remain proposed until approved:
 - Staging/prod deployment should wait for environment strategy approval.
 - Supabase project changes should be reviewed through PRs rather than dashboard-only edits.
 - Required checks and branch protection changes require owner approval and may belong to a CI/CD plan.
+
+## Protected Environment Expectations
+
+Production deployment must remain unavailable until the owner creates and approves a protected GitHub environment for it.
+
+That environment should require:
+
+- Manual owner approval before any production database deployment job can access production secrets.
+- Environment-scoped Supabase access token and production project ref secrets.
+- No service role key exposure unless a future approved workflow proves it is required.
+- A required staging/integration success signal before production deployment.
+- Audit-friendly deployment notes that identify the approver, migration identifiers, target, and verification steps.
+
+Development or staging deployment secrets must not be reused for production. PR-only validation should continue to avoid remote production credentials.
 
 ## ADR Triggers
 
